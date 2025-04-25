@@ -6,6 +6,8 @@ export default function Footer() {
 //hi there
 //another comment
 //third comment
+//fourth comment
+//hi
 <footer class="bg-white dark:bg-gray-900">
     <div class="mx-auto w-full max-w-screen-xl p-4 py-6 lg:py-8">
         <div class="md:flex md:justify-between">
@@ -31,7 +33,7 @@ export default function Footer() {
                   <h2 class="mb-6 text-sm font-semibold text-gray-900 uppercase dark:text-white">Follow us</h2>
                   <ul class="text-gray-500 dark:text-gray-400 font-medium">
                       <li class="mb-4">
-                          <a href="https://github.com/williamjsobczak/FREEcycle" class="hover:underline ">Github</a>
+                          <a href="https://github.com/williamjsobczak/FREEcycle" class="hover:underline ">Mavis</a>
                       </li>
                       <li>
                           {/* <a href="https://discord.gg/4eeurUVvTy" class="hover:underline">Discord</a> */}
