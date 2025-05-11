@@ -2,10 +2,11 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 
-function CreatePostPage({ checkAuthenticated }) {
+function CreatePostPage({ checkAuthenticated, onPostCreated }) {
   const [title, setTitle] = useState("");
   const [file, setFile] = useState(null);
   const [uploadedItem, setUploadedItem] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -14,11 +15,13 @@ function CreatePostPage({ checkAuthenticated }) {
     formData.append("title", title);
     formData.append("pic", file);
   
+    setIsUploading(true); // Show spinner
+
     try {
       const response = await fetch("http://localhost:5000/create_post", {
         method: "POST",
         headers: {
-          "jwt_token": localStorage.getItem('token'), // ✅ USE jwt_token here
+          "jwt_token": localStorage.getItem('token'),
         },
         body: formData,
       });
@@ -26,16 +29,28 @@ function CreatePostPage({ checkAuthenticated }) {
       if (response.ok) {
         const data = await response.json();
         toast.success("Created Item Post Successfully");
+
         setUploadedItem({
           title: title,
           imageUrl: URL.createObjectURL(file),
         });
+
+        // ✅ Notify parent to refresh posts
+        if (onPostCreated) {
+          onPostCreated();
+        }
+
+        // Optional: Clear form
+        setTitle("");
+        setFile(null);
       } else {
         toast.error("Unable to create Item Post");
       }
     } catch (err) {
       console.error(err.message);
       toast.error("An error occurred");
+    } finally {
+      setIsUploading(false); // Hide spinner
     }
   };
 
@@ -43,6 +58,11 @@ function CreatePostPage({ checkAuthenticated }) {
     <div className="flex justify-center items-start min-h-screen bg-gray-100 pt-20"> 
       <div className="container mx-auto p-6 max-w-md bg-white shadow-md rounded-lg mt-12">
         <h1 className="text-2xl font-bold text-center mb-6">Create a New Post</h1>
+        
+        {isUploading && (
+          <p className="text-center text-sm text-gray-600 mb-4">Uploading...</p>
+        )}
+
         <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title:</label>
@@ -69,6 +89,7 @@ function CreatePostPage({ checkAuthenticated }) {
             Upload
           </button>
         </form>
+
         {uploadedItem && (
           <div className="mt-6">
             <h3 className="text-lg font-medium">Uploaded Item:</h3>

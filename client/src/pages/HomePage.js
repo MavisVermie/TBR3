@@ -36,20 +36,26 @@ function HomePage() {
 
   // Fetch posts
   const fetchPosts = async () => {
-    try {
-      const response = await fetch(`http://localhost:5000/posts`, {
-        method: "GET",
-      });
+  try {
+    const response = await fetch(`http://localhost:5000/posts`, {
+      method: "GET",
+    });
 
-      const postsData = await response.json();
+    const postsData = await response.json();
+    console.log("Fetched posts:", postsData); // Debug
 
-      console.log("Fetched posts:", postsData); // Debugging
-
+    if (Array.isArray(postsData)) {
       setPosts(postsData);
-    } catch (error) {
-      console.error('Error fetching posts:', error.message);
+    } else {
+      console.error("Unexpected posts response:", postsData);
+      setPosts([]); // fallback to prevent crash
     }
-  };
+  } catch (error) {
+    console.error('Error fetching posts:', error.message);
+    setPosts([]); // prevent crash if fetch fails
+  }
+};
+
 
   useEffect(() => {
     getProfile();

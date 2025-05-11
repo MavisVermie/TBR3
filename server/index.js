@@ -244,7 +244,9 @@ app.delete('/posts/:postId', authorize, async (req, res) => {
   }
 });
 
-
+setInterval(() => {
+  pool.query('SELECT 1').catch(() => {});
+}, 300000);
 app.listen(5000, () => {
     console.log("Server has started on port 5000");
 });
