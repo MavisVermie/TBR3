@@ -3,6 +3,12 @@ import '../index.css';
 import freecyclelogo from '../assets/logo2.png'
 
 const people = [
+   {
+    name: 'Rama',
+    role: 'The best girl ever',
+    imageUrl:
+      '',
+  },
   {
     name: 'Mavis',
     role: 'Scrum Master, Full Stack Developer',
