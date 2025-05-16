@@ -8,8 +8,9 @@ const fileUpload = require("express-fileupload");
 const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const authorize = require("./middleware/authorize");
-
+const sendemail = require("./middleware/mailer"); //gimme mailer
 const jwtSecret = process.env.JWT_SECRET; // Use environment variable
+const crypto = require('crypto');
 
 // Middleware
 app.use(cors());
@@ -128,7 +129,72 @@ app.post("/authentication/registration", async (req, res) => {
   }
 });
 
+app.post("/forgot-password", async (req, res) => {
+try{
+const {email} = req.body;
+//find user from his email
+const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+if(user.rows.length === 0){ //checks if the length 0
+  return res.status(404).json({message: "User not found"});
+}
+const userId = user.rows[0].id;
 
+//we are generating random token as the reset token and make it 15mins only
+const token = crypto.randomBytes(32).toString('hex');
+const expires = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes from now
+await pool.query('DELETE FROM password_resets WHERE user_id = $1', [userId]);
+//now we store token in database
+await pool.query(
+  'INSERT INTO password_resets (user_id, token, expires) VALUES ($1, $2, $3)',
+  [userId, token, expires]
+)
+const resetLink = `http://localhost:3000/reset-password?token=${token}`; 
+//send email to user
+await sendemail(email, resetLink); 
+res.json({message: "pass reset link sent to email."});
+}catch (err) { //if theres error
+  console.error("error in password forgot",err);
+  res.status(500).send("Server Error");
+}
+
+});
+//password reset here
+app.post('/reset-password', async (req, res) => {
+  try {
+    const { token, new_password } = req.body;
+
+//I NEED TO ADD CHECK PASSWORD LENGTH HERE 
+
+    const tokenRes = await pool.query(
+      'SELECT user_id, expires FROM password_resets WHERE token = $1',
+      [token]
+    );
+//check token valid or no
+    if (tokenRes.rows.length === 0 || new Date() > tokenRes.rows[0].expires) {
+      return res.status(400).json({ message: 'Invalid or expired token' });
+    }
+
+    const userId = tokenRes.rows[0].user_id;
+    const hashedPassword = await bcrypt.hash(new_password, 10); //hash the new password
+    // //debug
+    console.log(" raw password:", new_password);
+    console.log(" hashed password:", hashedPassword);
+
+//update password in database
+    await pool.query(
+      'UPDATE users SET password = $1 WHERE id = $2',
+      [hashedPassword, userId]
+    );
+//remove the tokenn
+    await pool.query('DELETE FROM password_resets WHERE token = $1', [token]);
+
+    res.json({ message: 'pass reset successful yay!!' });
+
+  } catch (err) {
+    console.error('error in reset pass:', err.message);
+    res.status(500).send('Server Error');
+  }
+});
 
 //Create post
 app.post("/create_post", async (req, res) => {
@@ -142,7 +208,6 @@ app.post("/create_post", async (req, res) => {
     const { title } = req.body;
     const { data } = req.files.pic;
 
-    // ✅ Correct way to read jwt_token from headers
     const token = req.header("jwt_token");
     const decoded = jwt.verify(token, jwtSecret);
     const userId = decoded.userId;
