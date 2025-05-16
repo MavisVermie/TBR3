@@ -15,7 +15,6 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from 'react-toastify';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
-
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true); // track if verifying auth
@@ -89,6 +88,7 @@ const checkAuthenticated = async () => {
   <Route path="/product-description" element={<ProductDescriptionPage />} />
   <Route path="/forgot-password" element={<ForgotPassword />} />
 <Route path="/reset-password" element={<ResetPassword />} />
+
   <Route path="/*" element={<PageNotFound />} />
 </Routes>
         </Layout>

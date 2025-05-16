@@ -25,7 +25,7 @@ async function sendemail(to, resetlink) { // send email function
         to: to,
         subject: '[TBR3] Account Password Reset',
         html: `
-        <h6>Dear User,</h6>
+        <p>Dear User,</p>
         <p>We received a request to reset your password. Click the link below to reset it:</p>
         <a href="${resetlink}">Reset Password</a>`
     };
