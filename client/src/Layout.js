@@ -15,5 +15,4 @@ export default function Layout({ children, setAuth, isAuthenticated, checkAuthen
       <Footer />
     </div>
   );
-
 }
