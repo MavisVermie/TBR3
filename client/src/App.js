@@ -71,14 +71,13 @@ const checkAuthenticated = async () => {
     <div className="App">
       <ToastContainer 
         position="top-right"
-        autoClose={5000}
-        hideProgressBar={false}
+        autoClose={350}
+        hideProgressBar={true}
         newestOnTop={false}
         closeOnClick
         rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
+        pauseOnFocusLoss={false}
+        pauseOnHover={false}
       />
       <BrowserRouter>
         <Layout setAuth={setAuth} isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated}>
