@@ -43,10 +43,10 @@ export default function SignInPage({ setAuth }) {
 
   return (
     <section className="bg-bannerImg bg-no-repeat bg-cover w-full backdrop-blur-2xl min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-lg px-6 py-12 shadow-2xl bg-white rounded-2xl transition-all duration-500 ease-in-out">
+      <div className=" w-full max-w-md px-6 py-12 shadow-2xl bg-white/10 backdrop-blur-md rounded-2xl transition-all duration-500 ease ">
         <div className="flex flex-col items-center text-center gap-8">
-          {/* TBR3 Logo Image */}
-          <img src="/logoo2.png" alt="TBR3 Logo" className="w-1/2 h-29" />
+          {/* Logo Image */}
+          <img src="/logoo.png" alt="TBR3 Logo" className="w-1/2 h-29" />
 
           <form onSubmit={onSubmitForm} className="w-full text-left space-y-6">
             {/* Email Input */}
@@ -97,7 +97,7 @@ export default function SignInPage({ setAuth }) {
             <p className="text-sm text-center">
               <a
                 href="/forgot-password"
-                className="text-green-600 hover:underline transition duration-150"
+                className="text-white hover:underline transition duration-150"
               >
                 Forgot your password?
               </a>
@@ -110,6 +110,17 @@ export default function SignInPage({ setAuth }) {
             >
               Sign in
             </button>
+
+            {/* Register Link */}
+            <p className="text-sm text-center text-white">
+              Don't have an account?{" "}
+              <a
+                href="/authentication/registration"
+                className="text-green-600 hover:underline transition duration-150"
+              >
+                Register
+              </a>
+            </p>
           </form>
         </div>
       </div>
