@@ -4,17 +4,21 @@ import Layout from './Layout';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from './pages/HomePage';
 import AboutPage from './pages/AboutPage';
-import CreatePostPage from './pages/CreatePostPage';
-import SignInPage from './pages/SignInPage';
+import CreatePostPage from './pages/PostsPages/CreatePostPage';
+import SignInPage from './pages/LoginStuff/SignInPage';
 import ProductDescriptionPage from './pages/ProductDescriptionPage';
-import RegistrationPage from './pages/RegistrationPage';
+import RegistrationPage from './pages/LoginStuff/RegistrationPage';
 import PageNotFound from './pages/PageNotFound'
 import ProfilePage from './pages/ProfilePage';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from 'react-toastify';
-import ForgotPassword from './pages/ForgotPassword';
-import ResetPassword from './pages/ResetPassword';
+import ForgotPassword from './pages/LoginStuff/ForgotPassword';
+import ResetPassword from './pages/LoginStuff/ResetPassword';
+import MyPosts from './pages/PostsPages/MyPosts';
+import AdminPanel from './pages/AdminStuff/AdminPanel';
+import AdminPosts from './pages/AdminStuff/AdminPosts';
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true); // track if verifying auth
@@ -88,6 +92,9 @@ const checkAuthenticated = async () => {
   <Route path="/product-description" element={<ProductDescriptionPage />} />
   <Route path="/forgot-password" element={<ForgotPassword />} />
 <Route path="/reset-password" element={<ResetPassword />} />
+<Route path="/myposts" element={isAuthenticated ? <MyPosts /> : <SignInPage setAuth={setAuth} />} />
+<Route path="/admin" element={<AdminPanel />} />
+<Route path="/admin/posts" element={<AdminPosts />} />
 
   <Route path="/*" element={<PageNotFound />} />
 </Routes>

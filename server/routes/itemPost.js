@@ -5,7 +5,7 @@ const pool = require("../db");
 // Get user profile info (username, email, zip_code)
 router.get("/", authorize, async (req, res) => {   // ✅ Add authorize here
   try {
-    const userId = req.user;  // ✅ authorize middleware sets req.user
+    const userId = req.user.id;  // ✅ authorize middleware sets req.user.id
 
     const user = await pool.query(
       "SELECT username, email, zip_code FROM users WHERE id = $1",
@@ -34,7 +34,7 @@ router.post("/create-post", authorize, async (req, res) => {
 
     const newPost = await pool.query(
       "INSERT INTO posts (title, attached_photo, user_id) VALUES ($1, $2, $3) RETURNING *",
-      [title, imageData, req.user]
+      [title, imageData, req.user.id]
     );
 
     res.json(newPost.rows[0]);
@@ -53,7 +53,7 @@ router.put("/update-post/:id", authorize, async (req, res) => {
 
     const updatePost = await pool.query(
       "UPDATE posts SET title = $1 WHERE post_id = $2 AND user_id = $3 RETURNING *",
-      [title, id, req.user]
+      [title, id, req.user.id]
     );
 
     if (updatePost.rows.length === 0) {
@@ -74,7 +74,7 @@ router.delete("/delete-post/:id", authorize, async (req, res) => {
 
     const deletePost = await pool.query(
       "DELETE FROM posts WHERE post_id = $1 AND user_id = $2 RETURNING *",
-      [id, req.user]
+      [id, req.user.id]
     );
 
     if (deletePost.rows.length === 0) {
