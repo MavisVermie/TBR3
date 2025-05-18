@@ -85,8 +85,8 @@ export default function ProfilePage({ isAuthenticated, checkAuthenticated }) {
         <div className="flex flex-col md:flex-row md:items-start md:gap-10">
           {/* Profile Info */}
           <div className="flex flex-col items-center md:items-start text-center md:text-left w-full md:w-1/3">
-            <div className="w-32 h-32 bg-gray-200 rounded-full overflow-hidden mb-4 shadow-md">
-              <img src="logo.png" alt="Profile" className="w-full h-full object-cover" />
+            <div className="w-30 h-32 bg-green-700 rounded-full overflow-hidden mb-4 shadow-md">
+              <img src="profilepic.png" alt="Profile" className="w-full h-full object-cover" />
             </div>
             <h1 className="text-2xl font-bold text-gray-700">{username}</h1>
             <p className="text-gray-500">{email}</p>

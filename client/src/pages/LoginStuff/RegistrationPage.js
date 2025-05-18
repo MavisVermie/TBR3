@@ -18,15 +18,12 @@ export default function RegistrationPage({ setAuth }) {
   const onSubmitForm = async e => {
     e.preventDefault();
 
-    // ✅ Jordanian phone number validation
     const jordanPhoneRegex = /^(?:\+9627\d{8}|07\d{8})$/;
-
     if (!jordanPhoneRegex.test(phone_number)) {
       toast.error("Phone number must be in format +9627XXXXXXXX or 07XXXXXXXX");
       return;
     }
 
-    // ✅ Format to +9627 if it starts with 07
     const formattedPhone =
       phone_number.startsWith("07") ? "+962" + phone_number.slice(1) : phone_number;
 
@@ -72,84 +69,53 @@ export default function RegistrationPage({ setAuth }) {
   };
 
   return (
-    <div className="bg-grey-lighter min-h-screen flex flex-col">
-      <div className="container max-w-sm mx-auto flex-1 flex flex-col items-center justify-center px-4">
-        <div className="bg-white px-6 py-8 rounded shadow-md text-black w-full">
-          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-green-600">
-            Registration
-          </h2>
-
-          <div className="mt-10">
-            <form onSubmit={onSubmitForm}>
-              <input
-                type="text"
-                className="block border border-grey-light w-full p-3 rounded mb-4"
-                name="username"
-                value={username}
-                placeholder="Full Name"
-                onChange={onChange}
-                required
-              />
-
-              <input
-                type="email"
-                className="block border border-grey-light w-full p-3 rounded mb-4"
-                name="email"
-                value={email}
-                placeholder="Email"
-                onChange={onChange}
-                required
-              />
-
-              <input
-                type="password"
-                className="block border border-grey-light w-full p-3 rounded mb-4"
-                name="password"
-                value={password}
-                placeholder="Password"
-                onChange={onChange}
-                required
-              />
-
-              <input
-                type="text"
-                className="block border border-grey-light w-full p-3 rounded mb-4"
-                name="zip_code"
-                value={zip_code}
-                placeholder="Zip Code"
-                onChange={onChange}
-                required
-              />
-
-              <input
-                type="tel"
-                className="block border border-grey-light w-full p-3 rounded mb-4"
-                name="phone_number"
-                value={phone_number}
-                placeholder="e.g. +9627XXXXXXXX or 07XXXXXXXX"
-                onChange={onChange}
-                required
-              />
-
-              <button
-                type="submit"
-                className="mt-8 flex w-full justify-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
-              >
-                Create Account
-              </button>
-            </form>
-          </div>
-        </div>
-
-        <div className="text-green-600 mt-6">
-          Already have an account?{' '}
-          <a
-            className="no-underline border-b border-blue text-green"
-            href="/authentication/login"
+    <div className="flex min-h-screen">
+      {/* Left side (Form) */}
+      <div className="w-full md:w-2/3 flex flex-col items-center justify-center bg-gray-100 px-4 py-8 bg-gradient-to-br from-green-200 via-gray-100 to-green-100
+font-sans">
+        <h2 className="text-3xl font-bold text-green-600 mb-10 ">Registration</h2>
+        <form onSubmit={onSubmitForm} className="w-full max-w-md space-y-3">
+          {['username', 'email', 'password', 'phone_number', 'zip_code'].map((field, index) => (
+            <input
+              key={index}
+              type={field === 'email' ? 'email' : field === 'password' ? 'password' : field === 'phone_number' ? 'tel' : 'text'}
+              name={field}
+              value={inputs[field]}
+              onChange={onChange}
+              placeholder={
+                field === 'username' ? 'Full Name'
+                : field === 'phone_number' ? 'e.g. +9627XXXXXXXX or 07XXXXXXXX'
+                : field === 'zip_code' ? 'Zip Code'
+                : field.charAt(0).toUpperCase() + field.slice(1)
+              }
+              className="w-full px-4 py-2 border rounded-full transition duration-200 outline-none
+                focus:border-green-500 focus:ring-2 focus:ring-green-400
+                hover:ring-2 hover:ring-green-400"
+              required={field !== 'zip_code'}
+            />
+          ))}
+          <button
+            type="submit"
+            className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-full font-semibold transition duration-200"
           >
+            Create Account
+          </button>
+        </form>
+        <p className="text-sm text-center mt-3 text-gray-700">
+          Already have an account?{' '}
+          <a href="/authentication/login" className="underline font-medium text-green-600">
             Log in
           </a>
-        </div>
+        </p>
+      </div>
+
+      {/* Right side (Image) */}
+      <div className="hidden md:block md:w-1/3">
+        <img
+          src="/reg.jpg"
+          alt="Side"
+          className="w-full h-full object-cover"
+        />
       </div>
     </div>
   );

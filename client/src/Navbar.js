@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import logo from './assets/logoo.png';
-import freecyclelogo2 from './assets/logo2.png';
+import profile from './assets/profilepic.png' ;
 import React, { Fragment, useState, useEffect } from "react";
 import { toast } from 'react-toastify';
 
@@ -51,7 +51,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
     <Disclosure as="nav" className="bg-green-900 z-50">
       {({ open }) => (
         <>
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 font-sans">
             <div className="flex h-16 items-center justify-between">
               {/* Mobile menu button */}
               <div className="flex sm:hidden">
@@ -89,7 +89,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                     <Menu.Button className="flex items-center text-sm focus:outline-none">
                       <img
                         className="h-8 w-8 rounded-full border border-white"
-                        src={freecyclelogo2}
+                        src={profile}
                         alt="User Profile"
                       />
                     </Menu.Button>
