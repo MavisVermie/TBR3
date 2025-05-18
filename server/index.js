@@ -18,6 +18,7 @@ app.use(express.json());
 app.use(fileUpload());
 
 // ROUTES
+app.use("/admin", require("./routes/adminroutes"));
 app.use("/authentication", require("./routes/jwtAuth"));
 app.use("/Posting", require("./routes/itemPost"));
 // app.use("/images", require("./routes/imageRoutes"));
@@ -77,7 +78,7 @@ function generateJWTToken(userId) {
 app.put("/update-credentials", authorize, async (req, res) => {
   try {
     // Extracting the user ID added to the req by the 'authorize' middleware
-    const user_id = req.user; // This assumes that the authorize middleware adds the user object with 'id' to the req
+    const user_id = req.user.id; // This assumes that the authorize middleware adds the user object with 'id' to the req
     
     // Extract user details from request body
     const { username, email, zip_code } = req.body;
@@ -268,7 +269,7 @@ app.get('/posts', async (req, res) => {
 app.get('/posts/user', authorize, async (req, res) => {
   try {
     // Extracting the user ID from the JWT token added to the req by the 'authorize' middleware
-    const user_id = req.user; // Adjust this according to how your token payload is structured
+    const user_id = req.user.id; // Adjust this according to how your token payload is structured
     
     // Query the database to retrieve posts only for the logged-in user
     const result = await pool.query('SELECT * FROM posts WHERE user_id = $1', [user_id]);
@@ -292,7 +293,7 @@ app.get('/posts/user', authorize, async (req, res) => {
 app.delete('/posts/:postId', authorize, async (req, res) => {
   try {
     const { postId } = req.params;
-    const user_id = req.user;
+    const user_id = req.user.id;
 
     // Delete the post if it belongs to the user
     const deleteQuery = 'DELETE FROM posts WHERE post_id = $1 AND user_id = $2 RETURNING *';
@@ -308,6 +309,8 @@ app.delete('/posts/:postId', authorize, async (req, res) => {
     res.status(500).json({ message: 'Server Error' });
   }
 });
+
+
 
 setInterval(() => {
   pool.query('SELECT 1').catch(() => {});

@@ -9,7 +9,6 @@ require('dotenv').config();
 // Login
 router.post("/login", async (req, res) => {
   try {
-    console.log(req.body);
     const { email, password } = req.body;
 
     const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
@@ -17,15 +16,13 @@ router.post("/login", async (req, res) => {
     if (user.rows.length === 0) {
       return res.status(401).json("Invalid Credentials");
     }
-console.log("password entered:", password);
-console.log("hash from DB:", user.rows[0].password);
+
     const validPassword = await bcrypt.compare(password, user.rows[0].password);
     if (!validPassword) {
       return res.status(401).json("Invalid Credentials");
     }
 
-    // ✅ use jwtGenerator
-    const jwtToken = jwtGenerator(user.rows[0].id);
+    const jwtToken = jwtGenerator(user.rows[0].id, user.rows[0].is_admin);
 
     res.json({ jwtToken });
 
@@ -34,6 +31,7 @@ console.log("hash from DB:", user.rows[0].password);
     res.status(500).send("Server Error");
   }
 });
+
 
 // Verify route
 router.post("/verify", authorize, (req, res) => {
