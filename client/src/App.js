@@ -18,7 +18,7 @@ import ResetPassword from './pages/LoginStuff/ResetPassword';
 import MyPosts from './pages/PostsPages/MyPosts';
 import AdminPanel from './pages/AdminStuff/AdminPanel';
 import AdminPosts from './pages/AdminStuff/AdminPosts';
-
+import SinglePost from './pages/PostsPages/SinglePost';
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true); // track if verifying auth
@@ -86,8 +86,8 @@ const checkAuthenticated = async () => {
   <Route path="/" element={isAuthenticated ? <HomePage /> : <SignInPage setAuth={setAuth} />} />
   <Route path="/about" element={<AboutPage />} />
   <Route path="/create_post" element={isAuthenticated ? <CreatePostPage /> : <SignInPage setAuth={setAuth} />} />
-  <Route path="/profile" element={isAuthenticated ? <ProfilePage checkAuthenticated={checkAuthenticated} /> : <SignInPage setAuth={setAuth} />} />
-  <Route path="/authentication/login" element={isAuthenticated ? <Navigate to="/" /> : <SignInPage setAuth={setAuth} />} />
+<Route path="/profile"element={ isAuthenticated ? <ProfilePage isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated} /> : <SignInPage setAuth={setAuth} />}/> 
+ <Route path="/authentication/login" element={isAuthenticated ? <Navigate to="/" /> : <SignInPage setAuth={setAuth} />} />
   <Route path="/authentication/registration" element={isAuthenticated ? <Navigate to="/" /> : <RegistrationPage setAuth={setAuth} />} />
   <Route path="/product-description" element={<ProductDescriptionPage />} />
   <Route path="/forgot-password" element={<ForgotPassword />} />
@@ -95,6 +95,7 @@ const checkAuthenticated = async () => {
 <Route path="/myposts" element={isAuthenticated ? <MyPosts /> : <SignInPage setAuth={setAuth} />} />
 <Route path="/admin" element={<AdminPanel />} />
 <Route path="/admin/posts" element={<AdminPosts />} />
+<Route path="/posts/:id" element={<SinglePost />} />
 
   <Route path="/*" element={<PageNotFound />} />
 </Routes>

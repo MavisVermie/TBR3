@@ -6,129 +6,141 @@ export default function RegistrationPage({ setAuth }) {
     username: '',
     email: '',
     password: '',
-    zip_code: ''
+    zip_code: '',
+    phone_number: ''
   });
 
-  const { username, password, email, zip_code } = inputs;
+  const { username, email, password, zip_code, phone_number } = inputs;
 
   const onChange = e =>
     setInputs({ ...inputs, [e.target.name]: e.target.value });
 
-    const onSubmitForm = async e => {
-      e.preventDefault();
-      try {
-        const body = { username, password, email, zip_code };
-        const response = await fetch(
-          'http://localhost:5000/authentication/registration',
-          {
-            method: 'POST',
-            headers: {
-              'Content-type': 'application/json'
-            },
-            body: JSON.stringify(body)
-          }
-        );
-    
-        if (!response.ok) {
-          // If the response status is not in the 2xx range, handle the error
-          const errorMessage = await response.text();
-          throw new Error(errorMessage);
+  const onSubmitForm = async e => {
+    e.preventDefault();
+
+    // ✅ Jordanian phone number validation
+    const jordanPhoneRegex = /^(?:\+9627\d{8}|07\d{8})$/;
+
+    if (!jordanPhoneRegex.test(phone_number)) {
+      toast.error("Phone number must be in format +9627XXXXXXXX or 07XXXXXXXX");
+      return;
+    }
+
+    // ✅ Format to +9627 if it starts with 07
+    const formattedPhone =
+      phone_number.startsWith("07") ? "+962" + phone_number.slice(1) : phone_number;
+
+    try {
+      const body = {
+        username,
+        password,
+        email,
+        zip_code,
+        phone_number: formattedPhone
+      };
+
+      const response = await fetch(
+        'http://localhost:5000/authentication/registration',
+        {
+          method: 'POST',
+          headers: {
+            'Content-type': 'application/json'
+          },
+          body: JSON.stringify(body)
         }
-    
-        const parseRes = await response.json();
-    
-        if (parseRes.jwtToken) {
-          localStorage.setItem('token', parseRes.jwtToken);
-          setAuth(true);
-          toast.success('Registered Successfully');
-        } else {
-          setAuth(false);
-          toast.error('Error: Unable to register');
-        }
-      } catch (err) {
-        console.error('Error:', err.message);
-        // Handle error cases where the server returns a non-2xx status code or an error message
+      );
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage);
+      }
+
+      const parseRes = await response.json();
+
+      if (parseRes.jwtToken) {
+        localStorage.setItem('token', parseRes.jwtToken);
+        setAuth(true);
+        toast.success('Registered Successfully');
+      } else {
+        setAuth(false);
         toast.error('Error: Unable to register');
       }
-    };
-    
+    } catch (err) {
+      console.error('Error:', err.message);
+      toast.error('Error: Unable to register');
+    }
+  };
 
   return (
     <div className="bg-grey-lighter min-h-screen flex flex-col">
       <div className="container max-w-sm mx-auto flex-1 flex flex-col items-center justify-center px-4">
         <div className="bg-white px-6 py-8 rounded shadow-md text-black w-full">
-        <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-green-600">
+          <h2 className="mt-10 text-center text-2xl font-bold leading-9 tracking-tight text-green-600">
             Registration
           </h2>
+
           <div className="mt-10">
-           <form onSubmit={onSubmitForm}>
-            <input
-              type="text"
-              className="block border border-grey-light w-full p-3 rounded mb-4"
-              name="username"
-              value={username}
-              placeholder="Full Name"
-              onChange={e => onChange(e)}
-            />
+            <form onSubmit={onSubmitForm}>
+              <input
+                type="text"
+                className="block border border-grey-light w-full p-3 rounded mb-4"
+                name="username"
+                value={username}
+                placeholder="Full Name"
+                onChange={onChange}
+                required
+              />
 
-            <input
-              type="text"
-              className="block border border-grey-light w-full p-3 rounded mb-4"
-              name="email"
-              value={email}
-              placeholder="Email"
-              onChange={e => onChange(e)}
-            />
+              <input
+                type="email"
+                className="block border border-grey-light w-full p-3 rounded mb-4"
+                name="email"
+                value={email}
+                placeholder="Email"
+                onChange={onChange}
+                required
+              />
 
-            <input
-              type="password"
-              className="block border border-grey-light w-full p-3 rounded mb-4"
-              name="password"
-              value={password}
-              placeholder="Password"
-              onChange={e => onChange(e)}
-            />
-            <input
-              type="zip_code"
-              className="block border border-grey-light w-full p-3 rounded mb-4"
-              name="zip_code"
-              value={zip_code}
-              placeholder="Zip Code"
-              onChange={e => onChange(e)}
-            />
+              <input
+                type="password"
+                className="block border border-grey-light w-full p-3 rounded mb-4"
+                name="password"
+                value={password}
+                placeholder="Password"
+                onChange={onChange}
+                required
+              />
 
-            <button
+              <input
+                type="text"
+                className="block border border-grey-light w-full p-3 rounded mb-4"
+                name="zip_code"
+                value={zip_code}
+                placeholder="Zip Code"
+                onChange={onChange}
+                required
+              />
+
+              <input
+                type="tel"
+                className="block border border-grey-light w-full p-3 rounded mb-4"
+                name="phone_number"
+                value={phone_number}
+                placeholder="e.g. +9627XXXXXXXX or 07XXXXXXXX"
+                onChange={onChange}
+                required
+              />
+
+              <button
                 type="submit"
-                className="mt-8 flex w-full justify-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-600 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
+                className="mt-8 flex w-full justify-center rounded-md bg-green-600 px-3 py-1.5 text-sm font-semibold leading-6 text-white shadow-sm hover:bg-green-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600"
               >
                 Create Account
               </button>
-            {/* <button
-              type="submit"
-              className="block w-full text-center py-3 rounded bg-green text-black hover:bg-green-dark focus:outline-none my-1"
-            >
-              Create Account
-            </button> */}
-
-            {/* <div className="text-center text-sm text-grey-dark mt-4">
-              By signing up, you agree to the{' '}
-              <a
-                className="no-underline border-b border-grey-dark text-grey-dark"
-                href="#"
-              >
-                Terms of Service
-              </a>{' '}
-              and{' '}
-              <a
-                className="no-underline border-b border-grey-dark text-grey-dark"
-                href="#"
-              >
-                Privacy Policy
-              </a>
-            </div> */}
-          </form>
+            </form>
+          </div>
         </div>
-</div>
+
         <div className="text-green-600 mt-6">
           Already have an account?{' '}
           <a
