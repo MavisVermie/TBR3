@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react'
 import HomePage from './HomePage'
-import CreatePostPage from './CreatePostPage';
+import CreatePostPage from './PostsPages/CreatePostPage';
 import ListPost from './postlist/ListPost';
 import { toast } from 'react-toastify';
 
