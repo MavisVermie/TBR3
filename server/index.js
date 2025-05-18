@@ -109,13 +109,13 @@ app.put("/update-credentials", authorize, async (req, res) => {
 // Registration Route
 app.post("/authentication/registration", async (req, res) => {
   try {
-    const { username, password, email, zip_code } = req.body;
+    const { username, password, email, zip_code, phone_number } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const { rows } = await pool.query(
-      "INSERT INTO users (username, password, email, zip_code) VALUES ($1, $2, $3, $4) RETURNING id",
-      [username, hashedPassword, email, zip_code]
+      "INSERT INTO users (username, password, email, zip_code, phone_number) VALUES ($1, $2, $3, $4, $5) RETURNING id",
+      [username, hashedPassword, email, zip_code, phone_number]
     );
 
     const userId = rows[0].id;
@@ -200,32 +200,52 @@ app.post('/reset-password', async (req, res) => {
 //Create post
 app.post("/create_post", async (req, res) => {
   try {
-    console.log("Received request to create post:", req.body);
+    // Log incoming fields
+    console.log("Incoming request:", req.body, req.files);
 
-    if (!req.files || !req.files.pic || !req.body.title) {
-      return res.status(400).send("Title and Image are required.");
+    // Basic validation
+    if (!req.files || !req.files.primary || !req.body.title || !req.body.description) {
+      return res.status(400).send("Title, Description, and Primary Image are required.");
     }
 
-    const { title } = req.body;
-    const { data } = req.files.pic;
+    const { title, description } = req.body;
+    const primaryPhoto = req.files.primary.data;
 
+    // Handle extra images — may be one or many
+    const extraPhotos = req.files.extra
+      ? Array.isArray(req.files.extra)
+        ? req.files.extra
+        : [req.files.extra]
+      : [];
+
+    // Auth
     const token = req.header("jwt_token");
     const decoded = jwt.verify(token, jwtSecret);
     const userId = decoded.userId;
 
-    console.log("Extracted user_id:", userId);
-
+    // Insert the post
     const newPost = await pool.query(
-      "INSERT INTO posts (title, attached_photo, user_id) VALUES ($1, $2, $3) RETURNING *",
-      [title, data, userId]
+      "INSERT INTO posts (title, description, primary_photo, user_id) VALUES ($1, $2, $3, $4) RETURNING post_id",
+      [title, description, primaryPhoto, userId]
     );
 
-    res.json("Upload Success");
+    const postId = newPost.rows[0].post_id;
+
+    // Insert additional images into post_images table
+    for (const file of extraPhotos) {
+      await pool.query(
+        "INSERT INTO post_images (post_id, image) VALUES ($1, $2)",
+        [postId, file.data]
+      );
+    }
+
+    res.json({ message: "Post created successfully", postId });
   } catch (err) {
-    console.error(err.message);
+    console.error("Create post error:", err.message);
     res.status(500).send("Server Error");
   }
 });
+
 
 
 
@@ -235,7 +255,8 @@ app.get('/posts', async (req, res) => {
       SELECT 
         posts.post_id, 
         posts.title, 
-        posts.attached_photo, 
+        posts.attached_photo,
+        posts.primary_photo,
         posts.user_id,
         users.email,
         users.zip_code
@@ -247,21 +268,27 @@ app.get('/posts', async (req, res) => {
       return res.status(404).json({ message: 'No posts found' });
     }
 
-    const postsWithPhotos = result.rows.map(post => ({
-      post_id: post.post_id,
-      title: post.title,
-      email: post.email,
-      userId: post.user_id,
-      zip_code: post.zip_code, // ✅ Now zip_code will be correctly attached!
-      attached_photo: post.attached_photo.toString('base64')
-    }));
+    const postsWithPhotos = result.rows.map(post => {
+      const imageBuffer = post.primary_photo || post.attached_photo;
+      const imageBase64 = imageBuffer ? imageBuffer.toString('base64') : null;
+
+      return {
+        post_id: post.post_id,
+        title: post.title,
+        email: post.email,
+        userId: post.user_id,
+        zip_code: post.zip_code,
+        attached_photo: imageBase64
+      };
+    });
 
     res.json(postsWithPhotos);
   } catch (error) {
-    console.error('Error fetching posts:', error.message);
+    console.error('Error fetching posts:', error); // log full error object
     res.status(500).json({ message: 'Server Error' });
   }
 });
+
 
 
 
