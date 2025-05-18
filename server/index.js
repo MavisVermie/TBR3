@@ -200,10 +200,8 @@ app.post('/reset-password', async (req, res) => {
 //Create post
 app.post("/create_post", async (req, res) => {
   try {
-    // Log incoming fields
-    console.log("Incoming request:", req.body, req.files);
 
-    // Basic validation
+
     if (!req.files || !req.files.primary || !req.body.title || !req.body.description) {
       return res.status(400).send("Title, Description, and Primary Image are required.");
     }
@@ -211,19 +209,18 @@ app.post("/create_post", async (req, res) => {
     const { title, description } = req.body;
     const primaryPhoto = req.files.primary.data;
 
-    // Handle extra images — may be one or many
+    // handle extra images 
     const extraPhotos = req.files.extra
       ? Array.isArray(req.files.extra)
         ? req.files.extra
         : [req.files.extra]
       : [];
 
-    // Auth
     const token = req.header("jwt_token");
     const decoded = jwt.verify(token, jwtSecret);
     const userId = decoded.userId;
 
-    // Insert the post
+    // insert the post
     const newPost = await pool.query(
       "INSERT INTO posts (title, description, primary_photo, user_id) VALUES ($1, $2, $3, $4) RETURNING post_id",
       [title, description, primaryPhoto, userId]
@@ -231,7 +228,7 @@ app.post("/create_post", async (req, res) => {
 
     const postId = newPost.rows[0].post_id;
 
-    // Insert additional images into post_images table
+    // insert additional images into post_images table
     for (const file of extraPhotos) {
       await pool.query(
         "INSERT INTO post_images (post_id, image) VALUES ($1, $2)",
