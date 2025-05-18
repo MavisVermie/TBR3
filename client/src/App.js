@@ -71,7 +71,7 @@ const checkAuthenticated = async () => {
     <div className="App">
       <ToastContainer 
         position="top-right"
-        autoClose={350}
+        autoClose={500}
         hideProgressBar={true}
         newestOnTop={false}
         closeOnClick
