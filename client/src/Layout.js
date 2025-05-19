@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from './Navbar.js';
+import Navbar from './components/navbar/Navbar.js';
 import Footer from './Footer.js';
 
 export default function Layout({ children, setAuth, isAuthenticated, checkAuthenticated }) {

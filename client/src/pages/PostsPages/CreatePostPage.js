@@ -16,6 +16,7 @@ function CreatePostPage({ onPostCreated }) {
   const [phone, setPhone] = useState('');
   const [location, setLocation] = useState('');
   const [category, setCategory] = useState('');
+  const [features, setFeatures] = useState(['']);
 
   const categoryOptions = [
     "Furniture",
@@ -67,14 +68,12 @@ function CreatePostPage({ onPostCreated }) {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("features", JSON.stringify([category])); // ✅ sends as ["Furniture"]
-    formData.append("email", email);
-    formData.append("phone", phone);
-    formData.append("location", location);
-
-    images.forEach((image) => {
-      formData.append("images", image);
-    });
+    formData.append("features", JSON.stringify(features.filter(f => f.trim() !== '')));
+    
+    // إضافة الصور إلى النموذج
+    if (images.length > 0) {
+      formData.append("primary", images[0]); // الصورة الرئيسية
+    }
 
     setIsUploading(true);
     setUploadProgress(0);
@@ -91,25 +90,29 @@ function CreatePostPage({ onPostCreated }) {
       if (response.ok) {
         const data = await response.json();
         toast.success("Created Item Post Successfully");
-
+        
+        // إعادة تعيين النموذج
         setTitle("");
         setDescription("");
         setImages([]);
+        setFeatures(['']);
         setCategory("");
         setEmail("");
         setPhone("");
         setLocation("");
         setUploadProgress(0);
 
+        // التنقل إلى صفحة المنشور الجديد
         if (data.post_id) {
           navigate(`/posts/${data.post_id}`);
         } else {
-          navigate('/');
+          navigate('/'); // إذا لم يتم إرجاع معرف المنشور، انتقل إلى الصفحة الرئيسية
         }
 
         if (onPostCreated) onPostCreated();
       } else {
-        toast.error("Unable to create Item Post");
+        const errorData = await response.json();
+        toast.error(errorData.message || "Unable to create Item Post");
       }
     } catch (err) {
       console.error(err.message);
