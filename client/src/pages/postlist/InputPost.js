@@ -2,7 +2,6 @@ import React, { Fragment, useState } from "react";
 
 
 
-
 // CreatePostPage should do same thing so this isn't as needed
 
 
