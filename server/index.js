@@ -270,6 +270,7 @@ app.get('/posts', async (req, res) => {
         posts.user_id,
         posts.features,
         posts.created_at,
+        posts.location AS post_location,  -- ✅ Alias it to avoid conflict
         users.email,
         users.zip_code
       FROM posts
@@ -292,7 +293,8 @@ app.get('/posts', async (req, res) => {
         zip_code: post.zip_code,
         features: post.features || ["Other"],
         attached_photo: imageBase64,
-        created_at: post.created_at
+        created_at: post.created_at,
+        location: post.post_location || "Unknown" // ✅ Use aliased column
       };
     });
 
