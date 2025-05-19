@@ -60,7 +60,7 @@ router.get("/posts", async (req, res) => {
       SELECT 
         posts.post_id, 
         posts.title, 
-        posts.attached_photo,
+        posts.primary_photo,
         users.id AS user_id,
         users.username,
         users.email
@@ -70,7 +70,7 @@ router.get("/posts", async (req, res) => {
 
     const posts = result.rows.map(post => ({
       ...post,
-      attached_photo: post.attached_photo?.toString("base64"),
+      primary_photo: post.primary_photo?.toString("base64"),
     }));
 
     res.json(posts);

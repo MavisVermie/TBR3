@@ -95,9 +95,9 @@ export default function AdminPosts() {
               key={post.post_id}
               className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200"
             >
-              {post.attached_photo && (
+              {post.primary_photo && (
                 <img
-                  src={`data:image/jpeg;base64,${post.attached_photo}`}
+                  src={`data:image/jpeg;base64,${post.primary_photo}`}
                   alt="post"
                   className="w-full h-48 object-cover"
                 />
