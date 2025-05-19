@@ -9,7 +9,6 @@ require('dotenv').config();
 // Login
 router.post("/login", async (req, res) => {
   try {
-    console.log(req.body);
     const { email, password } = req.body;
 
     const user = await pool.query("SELECT * FROM users WHERE email = $1", [email]);
@@ -23,8 +22,7 @@ router.post("/login", async (req, res) => {
       return res.status(401).json("Invalid Credentials");
     }
 
-    // ✅ use jwtGenerator
-    const jwtToken = jwtGenerator(user.rows[0].id);
+    const jwtToken = jwtGenerator(user.rows[0].id, user.rows[0].is_admin);
 
     res.json({ jwtToken });
 
@@ -33,6 +31,7 @@ router.post("/login", async (req, res) => {
     res.status(500).send("Server Error");
   }
 });
+
 
 // Verify route
 router.post("/verify", authorize, (req, res) => {
