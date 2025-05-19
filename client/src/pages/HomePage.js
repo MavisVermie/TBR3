@@ -5,6 +5,7 @@ function HomePage() {
   const [userZipCode, setUserZipCode] = useState('');
   const [posts, setPosts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [sortOrder, setSortOrder] = useState('Newest');
 
   const categoryOptions = [
     'All',
@@ -21,7 +22,6 @@ function HomePage() {
     'Other',
   ];
 
-  // Fetch user's zip code
   const getProfile = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -41,7 +41,6 @@ function HomePage() {
     }
   };
 
-  // Fetch posts
   const fetchPosts = async () => {
     try {
       const response = await fetch(`http://localhost:5000/posts`);
@@ -63,37 +62,60 @@ function HomePage() {
     fetchPosts();
   }, []);
 
-  // Filter posts by category
-  //Browse Items {userZipCode ? `near ${userZipCode}` : ""}
-  const filteredPosts = posts.filter(post => {
-    const category = post.features?.[0] || "Other";
-    return selectedCategory === "All" || category === selectedCategory;
-  });
+  // ✅ Filter and sort
+  const filteredAndSortedPosts = posts
+    .filter(post => {
+      const category = post.features?.[0] || "Other";
+      return selectedCategory === "All" || category === selectedCategory;
+    })
+    
+    .sort((a, b) => {
+      const dateA = new Date(a.created_at);
+      const dateB = new Date(b.created_at);
+
+
+      if (isNaN(dateA) || isNaN(dateB)) return 0;
+
+      return sortOrder === 'Newest' ? dateB - dateA : dateA - dateB;
+    });
 
   return (
     <section className="min-h-screen bg-gray-100 py-12 px-4">
       <div className="max-w-6xl mx-auto text-center mb-8">
         <h1 className="text-3xl font-bold text-green-700">
-          Browsing ALL ITEMS        
+          Browsing All Items
         </h1>
 
-        <p className="text-sm text-gray-600 mt-2">
-          Filter by category
-        </p>
+        <div className="flex flex-wrap justify-center gap-4 mt-4">
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">Filter by Category:</label>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="border rounded px-3 py-1 shadow-sm"
+            >
+              {categoryOptions.map((cat, index) => (
+                <option key={index} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
 
-        <select
-          value={selectedCategory}
-          onChange={(e) => setSelectedCategory(e.target.value)}
-          className="mt-2 border rounded px-3 py-1 shadow-sm"
-        >
-          {categoryOptions.map((cat, index) => (
-            <option key={index} value={cat}>{cat}</option>
-          ))}
-        </select>
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">Sort by Time:</label>
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              className="border rounded px-3 py-1 shadow-sm"
+            >
+              <option value="Newest">Newest First</option>
+              <option value="Oldest">Oldest First</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-        {filteredPosts.map(post => (
+        {filteredAndSortedPosts.map(post => (
           <Link to={`/posts/${post.post_id}`} key={post.post_id}>
             <div className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition duration-300">
               {post.attached_photo ? (
@@ -110,7 +132,7 @@ function HomePage() {
               <div className="p-4">
                 <h3 className="text-lg font-semibold text-gray-800 truncate">{post.title}</h3>
                 <p className="text-sm text-gray-600 mt-1">
-                  Contact at: <button 
+                  Contact at: <button
                     onClick={(e) => {
                       e.preventDefault();
                       window.location.href = `mailto:${post.email}`;
@@ -122,6 +144,9 @@ function HomePage() {
                 </p>
                 <p className="text-xs text-gray-500 mt-1">
                   Category: {post.features?.[0] || "Other"}
+                </p>
+                <p className="text-xs text-gray-400">
+                  Posted: {new Date(post.created_at).toLocaleString()}
                 </p>
               </div>
             </div>

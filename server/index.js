@@ -269,6 +269,7 @@ app.get('/posts', async (req, res) => {
         posts.primary_photo,
         posts.user_id,
         posts.features,
+        posts.created_at,
         users.email,
         users.zip_code
       FROM posts
@@ -290,7 +291,8 @@ app.get('/posts', async (req, res) => {
         userId: post.user_id,
         zip_code: post.zip_code,
         features: post.features || ["Other"],
-        attached_photo: imageBase64
+        attached_photo: imageBase64,
+        created_at: post.created_at
       };
     });
 
