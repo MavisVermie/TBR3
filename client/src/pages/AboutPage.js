@@ -21,17 +21,17 @@ const people = [
   {
     name: 'Rama F Al-Odat',
     role: 'Back-End developer',
-    linkedinUrl: 'linkedin.com/in/rama-alodat-686aa932a',
+    linkedinUrl: 'https://www.linkedin.com/in/rama-alodat-686aa932a/',
   },
   {
     name: 'Bashar I Shaqour',
     role: 'Back-End Developer',
-    linkedinUrl: 'linkedin.com/in/bashar-shaqour-320b922a7',
+    linkedinUrl: 'https://www.linkedin.com/in/bashar-shaqour-320b922a7/',
   },
   {
     name: 'Mohammed O AL-Bzoor',
     role: 'Front-End Developer',
-    linkedinUrl: 'linkedin.com/in/mohammed-al-bzoor-774b12329',
+    linkedinUrl: 'https://www.linkedin.com/in/mohammed-al-bzoor-774b12329/',
   },
 ];
 
