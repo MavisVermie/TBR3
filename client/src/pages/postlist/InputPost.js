@@ -53,4 +53,4 @@ const InputPost = ({ setPostsChange }) => {
   );
 };
 
-export default InputTodo;
+export default InputPost;

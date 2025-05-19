@@ -76,7 +76,15 @@ function HomePage() {
               <div className="p-4">
                 <h3 className="text-lg font-semibold text-gray-800 truncate">{post.title}</h3>
                 <p className="text-sm text-gray-600 mt-1">
-                  Contact at: <a href={`mailto:${post.email}`} className="text-green-600 hover:underline">{post.email}</a>
+                  Contact at: <button 
+                    onClick={(e) => {
+                      e.preventDefault();
+                      window.location.href = `mailto:${post.email}`;
+                    }}
+                    className="text-green-600 hover:underline"
+                  >
+                    {post.email}
+                  </button>
                 </p>
               </div>
             </div>
