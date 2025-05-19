@@ -5,6 +5,7 @@ function HomePage() {
   const [userZipCode, setUserZipCode] = useState('');
   const [posts, setPosts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
+  const [selectedLocation, setSelectedLocation] = useState('All');
   const [sortOrder, setSortOrder] = useState('Newest');
 
   const categoryOptions = [
@@ -22,6 +23,12 @@ function HomePage() {
     'Other',
   ];
 
+  // Utility to extract city from location (before " - ")
+  const extractCity = (location) => {
+    return location?.split(' - ')[0]?.trim() || 'Unknown';
+  };
+
+  // Fetch user's zip code
   const getProfile = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -41,6 +48,7 @@ function HomePage() {
     }
   };
 
+  // Fetch all posts
   const fetchPosts = async () => {
     try {
       const response = await fetch(`http://localhost:5000/posts`);
@@ -62,20 +70,23 @@ function HomePage() {
     fetchPosts();
   }, []);
 
-  // ✅ Filter and sort
+  const locationOptions = ['All', ...Array.from(new Set(
+    posts.map(p => extractCity(p.location)).filter(Boolean)
+  ))];
+
   const filteredAndSortedPosts = posts
     .filter(post => {
       const category = post.features?.[0] || "Other";
       return selectedCategory === "All" || category === selectedCategory;
     })
-    
+    .filter(post => {
+      const city = extractCity(post.location);
+      return selectedLocation === "All" || city === selectedLocation;
+    })
     .sort((a, b) => {
       const dateA = new Date(a.created_at);
       const dateB = new Date(b.created_at);
-
-
       if (isNaN(dateA) || isNaN(dateB)) return 0;
-
       return sortOrder === 'Newest' ? dateB - dateA : dateA - dateB;
     });
 
@@ -88,7 +99,7 @@ function HomePage() {
 
         <div className="flex flex-wrap justify-center gap-4 mt-4">
           <div>
-            <label className="block text-sm text-gray-600 mb-1">Filter by Category:</label>
+            <label className="block text-sm text-gray-600 mb-1">Category:</label>
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
@@ -96,6 +107,19 @@ function HomePage() {
             >
               {categoryOptions.map((cat, index) => (
                 <option key={index} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">Location:</label>
+            <select
+              value={selectedLocation}
+              onChange={(e) => setSelectedLocation(e.target.value)}
+              className="border rounded px-3 py-1 shadow-sm"
+            >
+              {locationOptions.map((loc, index) => (
+                <option key={index} value={loc}>{loc}</option>
               ))}
             </select>
           </div>
@@ -145,6 +169,10 @@ function HomePage() {
                 <p className="text-xs text-gray-500 mt-1">
                   Category: {post.features?.[0] || "Other"}
                 </p>
+<p className="text-xs text-gray-400">
+  Location: {post.location?.split(" - ")[0] || "Unknown"}
+</p>
+
                 <p className="text-xs text-gray-400">
                   Posted: {new Date(post.created_at).toLocaleString()}
                 </p>
