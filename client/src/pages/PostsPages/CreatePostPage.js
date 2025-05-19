@@ -1,67 +1,63 @@
 import React, { useState, useCallback } from 'react';
 import { toast } from 'react-toastify';
-import { useDropzone } from 'react-dropzone'; // مكتبة لتحسين تجربة رفع الملفات
-import { useNavigate } from 'react-router-dom'; // إضافة useNavigate للتنقل
+import { useDropzone } from 'react-dropzone';
+import { useNavigate } from 'react-router-dom';
 import ContactInfo from '../../components/contactInfo/contactInfo';
+import LocationMap from '../../components/contactInfo/locationMap';
 
 function CreatePostPage({ onPostCreated }) {
-  const navigate = useNavigate(); // تهيئة useNavigate
-  // حالة النموذج
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [images, setImages] = useState([]); // مصفوفة لتخزين الصور المختارة
+  const [images, setImages] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0); // تتبع تقدم الرفع
-  const [features, setFeatures] = useState(['']); // مصفوفة لتخزين المواصفات
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [location, setLocation] = useState('');
+  const [category, setCategory] = useState('');
 
-  // إضافة مواصفة جديدة
-  const addFeature = () => {
-    setFeatures([...features, '']);
-  };
+  const categoryOptions = [
+    "Furniture",
+    "Electronics",
+    "Games",
+    "Clothing",
+    "Books",
+    "Appliances",
+    "Toys",
+    "Tools",
+    "Sports Equipment",
+    "Food",
+    "Other"
+  ];
 
-  // حذف مواصفة
-  const removeFeature = (index) => {
-    setFeatures(features.filter((_, i) => i !== index));
-  };
-
-  // تحديث قيمة مواصفة
-  const updateFeature = (index, value) => {
-    const newFeatures = [...features];
-    newFeatures[index] = value;
-    setFeatures(newFeatures);
-  };
-
-  // معالج سحب وإفلات الصور
   const onDrop = useCallback((acceptedFiles) => {
-    // التحقق من نوع وحجم الملفات
-    const validFiles = acceptedFiles.filter(file => 
-      file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024 // حد أقصى 5 ميجابايت
+    const validFiles = acceptedFiles.filter(file =>
+      file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024
     );
-
     if (validFiles.length !== acceptedFiles.length) {
       toast.warning("Some files were rejected. Only images under 5MB are allowed.");
     }
-
     setImages(prev => [...prev, ...validFiles]);
   }, []);
 
-  // إعداد منطقة السحب والإفلات
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
-      'image/*': ['.jpeg', '.jpg', '.png', '.gif'] // أنواع الملفات المسموح بها
-    },
-    maxSize: 5 * 1024 * 1024 // 5 ميجابايت
+    accept: { 'image/*': ['.jpeg', '.jpg', '.png', '.gif'] },
+    maxSize: 5 * 1024 * 1024
   });
 
-  // حذف صورة من المصفوفة
   const removeImage = (index) => {
     setImages(prev => prev.filter((_, i) => i !== index));
   };
 
-  // معالج إرسال النموذج
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!category) {
+      toast.error("Please select a category");
+      return;
+    }
 
     if (images.length === 0) {
       toast.error("Please upload at least one image");
@@ -71,10 +67,12 @@ function CreatePostPage({ onPostCreated }) {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("features", JSON.stringify(features.filter(f => f.trim() !== ''))); // إضافة المواصفات
-    
-    // إضافة جميع الصور إلى النموذج
-    images.forEach((image, index) => {
+    formData.append("features", JSON.stringify([category])); // ✅ sends as ["Furniture"]
+    formData.append("email", email);
+    formData.append("phone", phone);
+    formData.append("location", location);
+
+    images.forEach((image) => {
       formData.append("images", image);
     });
 
@@ -93,19 +91,20 @@ function CreatePostPage({ onPostCreated }) {
       if (response.ok) {
         const data = await response.json();
         toast.success("Created Item Post Successfully");
-        
-        // إعادة تعيين النموذج
+
         setTitle("");
         setDescription("");
         setImages([]);
-        setFeatures(['']);
+        setCategory("");
+        setEmail("");
+        setPhone("");
+        setLocation("");
         setUploadProgress(0);
 
-        // التنقل إلى صفحة المنشور الجديد
         if (data.post_id) {
           navigate(`/posts/${data.post_id}`);
         } else {
-          navigate('/'); // إذا لم يتم إرجاع معرف المنشور، انتقل إلى الصفحة الرئيسية
+          navigate('/');
         }
 
         if (onPostCreated) onPostCreated();
@@ -125,12 +124,11 @@ function CreatePostPage({ onPostCreated }) {
       <div className="container mx-auto p-6 max-w-2xl bg-white shadow-md rounded-lg mt-12">
         <h1 className="text-2xl font-bold text-center mb-6">Create a New Post</h1>
 
-        {/* شريط تقدم الرفع */}
         {isUploading && (
           <div className="mb-4">
             <div className="w-full bg-gray-200 rounded-full h-2.5">
-              <div 
-                className="bg-green-600 h-2.5 rounded-full" 
+              <div
+                className="bg-green-600 h-2.5 rounded-full"
                 style={{ width: `${uploadProgress}%` }}
               ></div>
             </div>
@@ -139,7 +137,6 @@ function CreatePostPage({ onPostCreated }) {
         )}
 
         <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
-          {/* حقل العنوان */}
           <div>
             <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title:</label>
             <input
@@ -152,7 +149,6 @@ function CreatePostPage({ onPostCreated }) {
             />
           </div>
 
-          {/* حقل الوصف */}
           <div>
             <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description:</label>
             <textarea
@@ -165,7 +161,24 @@ function CreatePostPage({ onPostCreated }) {
             />
           </div>
 
-          {/* منطقة رفع الصور */}
+          <div>
+            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
+              Category
+            </label>
+            <select
+              id="category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              required
+              className="block w-full border rounded-md py-2 px-3 shadow-sm focus:border-green-500 focus:ring-green-500"
+            >
+              <option value="" disabled>-- Select a Category --</option>
+              {categoryOptions.map((option, index) => (
+                <option key={index} value={option}>{option}</option>
+              ))}
+            </select>
+          </div>
+
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Images:</label>
             <div
@@ -185,7 +198,6 @@ function CreatePostPage({ onPostCreated }) {
             </div>
           </div>
 
-          {/* معاينة الصور */}
           {images.length > 0 && (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
               {images.map((image, index) => (
@@ -207,38 +219,13 @@ function CreatePostPage({ onPostCreated }) {
             </div>
           )}
 
-          {/* حقل المواصفات */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Features:</label>
-            {features.map((feature, index) => (
-              <div key={index} className="flex gap-2 mb-2">
-                <input
-                  type="text"
-                  value={feature}
-                  onChange={(e) => updateFeature(index, e.target.value)}
-                  placeholder="Enter a feature"
-                  className="flex-1 rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
-                />
-                <button
-                  type="button"
-                  onClick={() => removeFeature(index)}
-                  className="px-3 py-2 text-red-600 hover:text-red-800"
-                >
-                  Remove
-                </button>
-              </div>
-            ))}
-            <button
-              type="button"
-              onClick={addFeature}
-              className="mt-2 text-sm text-green-600 hover:text-green-800"
-            >
-              + Add Feature
-            </button>
-          </div>
-          {/*  ادخل على ال component --> contactInfo --> */}
-          <ContactInfo/>
-          {/* زر الإرسال */}
+          <LocationMap onLocationSelect={setLocation} />
+          {location && (
+            <p className="text-sm text-gray-600">Selected Location: {location}</p>
+          )}
+
+          <ContactInfo email={email} setEmail={setEmail} phone={phone} setPhone={setPhone} />
+
           <button
             type="submit"
             disabled={isUploading || images.length === 0}
