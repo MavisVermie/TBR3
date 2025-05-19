@@ -19,41 +19,49 @@ import MyPosts from './pages/PostsPages/MyPosts';
 import AdminPanel from './pages/AdminStuff/AdminPanel';
 import AdminPosts from './pages/AdminStuff/AdminPosts';
 import SinglePost from './pages/PostsPages/SinglePost';
+
+import { cssTransition } from "react-toastify";
+
+const SlowFade = cssTransition({
+  enter: 'fadeIn',
+  exit: 'fadeOut',
+  duration: [300, 100], 
+});
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(true); // track if verifying auth
+  const [loading, setLoading] = useState(true);
 
-const checkAuthenticated = async () => {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      setIsAuthenticated(false);
-      setLoading(false); // <- you forgot this
-      return;
-    }
-
-    const res = await fetch("http://localhost:5000/authentication/verify", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`
+  const checkAuthenticated = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        setIsAuthenticated(false);
+        setLoading(false);
+        return;
       }
-    });
 
-    const parseRes = await res.json();
+      const res = await fetch("http://localhost:5000/authentication/verify", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
 
-    if (parseRes === true) {
-      setIsAuthenticated(true);
-    } else {
+      const parseRes = await res.json();
+
+      if (parseRes === true) {
+        setIsAuthenticated(true);
+      } else {
+        setIsAuthenticated(false);
+      }
+      setLoading(false);
+    } catch (err) {
+      console.error("checkAuthenticated error:", err.message);
       setIsAuthenticated(false);
+      setLoading(false);
     }
-    setLoading(false); // <- important
-  } catch (err) {
-    console.error("checkAuthenticated error:", err.message);
-    setIsAuthenticated(false);
-    setLoading(false); // <- important
-  }
-};
-
+  };
 
   useEffect(() => {
     checkAuthenticated();
@@ -71,33 +79,32 @@ const checkAuthenticated = async () => {
     <div className="App">
       <ToastContainer 
         position="top-right"
-        autoClose={500}
+        autoClose={2000}
         hideProgressBar={true}
-        newestOnTop={false}
         closeOnClick
         rtl={false}
         pauseOnFocusLoss={false}
         pauseOnHover={false}
+        transition={SlowFade}
       />
       <BrowserRouter>
         <Layout setAuth={setAuth} isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated}>
-        <Routes>
-  <Route path="/" element={isAuthenticated ? <HomePage /> : <SignInPage setAuth={setAuth} />} />
-  <Route path="/about" element={<AboutPage />} />
-  <Route path="/create_post" element={isAuthenticated ? <CreatePostPage /> : <SignInPage setAuth={setAuth} />} />
-<Route path="/profile"element={ isAuthenticated ? <ProfilePage isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated} /> : <SignInPage setAuth={setAuth} />}/> 
- <Route path="/authentication/login" element={isAuthenticated ? <Navigate to="/" /> : <SignInPage setAuth={setAuth} />} />
-  <Route path="/authentication/registration" element={isAuthenticated ? <Navigate to="/" /> : <RegistrationPage setAuth={setAuth} />} />
-  <Route path="/product-description" element={<ProductDescriptionPage />} />
-  <Route path="/forgot-password" element={<ForgotPassword />} />
-<Route path="/reset-password" element={<ResetPassword />} />
-<Route path="/myposts" element={isAuthenticated ? <MyPosts /> : <SignInPage setAuth={setAuth} />} />
-<Route path="/admin" element={<AdminPanel />} />
-<Route path="/admin/posts" element={<AdminPosts />} />
-<Route path="/posts/:id" element={<SinglePost />} />
-
-  <Route path="/*" element={<PageNotFound />} />
-</Routes>
+          <Routes>
+            <Route path="/" element={isAuthenticated ? <HomePage /> : <SignInPage setAuth={setAuth} />} />
+            <Route path="/about" element={<AboutPage />} />
+            <Route path="/create_post" element={isAuthenticated ? <CreatePostPage /> : <SignInPage setAuth={setAuth} />} />
+            <Route path="/profile" element={isAuthenticated ? <ProfilePage isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated} /> : <SignInPage setAuth={setAuth} />} />
+            <Route path="/authentication/login" element={isAuthenticated ? <Navigate to="/" /> : <SignInPage setAuth={setAuth} />} />
+            <Route path="/authentication/registration" element={isAuthenticated ? <Navigate to="/" /> : <RegistrationPage setAuth={setAuth} />} />
+            <Route path="/product-description" element={<ProductDescriptionPage />} />
+            <Route path="/forgot-password" element={<ForgotPassword />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
+            <Route path="/myposts" element={isAuthenticated ? <MyPosts /> : <SignInPage setAuth={setAuth} />} />
+            <Route path="/admin" element={<AdminPanel />} />
+            <Route path="/admin/posts" element={<AdminPosts />} />
+            <Route path="/posts/:id" element={<SinglePost />} />
+            <Route path="/*" element={<PageNotFound />} />
+          </Routes>
         </Layout>
       </BrowserRouter>
     </div>
