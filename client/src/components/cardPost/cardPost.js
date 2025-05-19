@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import {useState, useEffect} from 'react';
 import { Link } from 'react-router-dom';
+import './cardPost.css';
 
-function HomePage() {
+export default function CardPost(){
   const [userZipCode, setUserZipCode] = useState('');
   const [posts, setPosts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -184,5 +185,3 @@ function HomePage() {
     </section>
   );
 }
-
-export default HomePage;

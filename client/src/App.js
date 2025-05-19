@@ -2,7 +2,7 @@ import './App.css';
 import React, { useState, useEffect } from "react";
 import Layout from './Layout';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import HomePage from './pages/HomePage';
+import HomePage from './pages/myFeed';
 import AboutPage from './pages/AboutPage';
 import CreatePostPage from './pages/PostsPages/CreatePostPage';
 import SignInPage from './components/LoginStuff/SignInPage';
@@ -18,7 +18,7 @@ import ResetPassword from './components/LoginStuff/ResetPassword';
 import MyPosts from './pages/PostsPages/MyPosts';
 import AdminPanel from './pages/AdminStuff/AdminPanel';
 import AdminPosts from './pages/AdminStuff/AdminPosts';
-import SinglePost from './pages/PostsPages/SinglePost';
+import SinglePost from './pages/PostsPages/showDataProduct';
 
 import { cssTransition } from "react-toastify";
 
