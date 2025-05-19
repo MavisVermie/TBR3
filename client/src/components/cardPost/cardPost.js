@@ -1,13 +1,14 @@
-import {useState, useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import './cardPost.css';
 
-export default function CardPost(){
+export default function CardPost() {
   const [userZipCode, setUserZipCode] = useState('');
   const [posts, setPosts] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [selectedLocation, setSelectedLocation] = useState('All');
   const [sortOrder, setSortOrder] = useState('Newest');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const categoryOptions = [
     'All',
@@ -24,12 +25,10 @@ export default function CardPost(){
     'Other',
   ];
 
-  // Utility to extract city from location (before " - ")
   const extractCity = (location) => {
     return location?.split(' - ')[0]?.trim() || 'Unknown';
   };
 
-  // Fetch user's zip code
   const getProfile = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -49,7 +48,6 @@ export default function CardPost(){
     }
   };
 
-  // Fetch all posts
   const fetchPosts = async () => {
     try {
       const response = await fetch(`http://localhost:5000/posts`);
@@ -84,6 +82,9 @@ export default function CardPost(){
       const city = extractCity(post.location);
       return selectedLocation === "All" || city === selectedLocation;
     })
+    .filter(post =>
+      post.title?.toLowerCase().includes(searchQuery.toLowerCase())
+    )
     .sort((a, b) => {
       const dateA = new Date(a.created_at);
       const dateB = new Date(b.created_at);
@@ -136,6 +137,17 @@ export default function CardPost(){
               <option value="Oldest">Oldest First</option>
             </select>
           </div>
+
+          <div>
+            <label className="block text-sm text-gray-600 mb-1">Search Title:</label>
+            <input
+              type="text"
+              placeholder="e.g. chair"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="border rounded px-3 py-1 shadow-sm"
+            />
+          </div>
         </div>
       </div>
 
@@ -170,10 +182,9 @@ export default function CardPost(){
                 <p className="text-xs text-gray-500 mt-1">
                   Category: {post.features?.[0] || "Other"}
                 </p>
-<p className="text-xs text-gray-400">
-  Location: {post.location?.split(" - ")[0] || "Unknown"}
-</p>
-
+                <p className="text-xs text-gray-400">
+                  Location: {post.location?.split(" - ")[0] || "Unknown"}
+                </p>
                 <p className="text-xs text-gray-400">
                   Posted: {new Date(post.created_at).toLocaleString()}
                 </p>
