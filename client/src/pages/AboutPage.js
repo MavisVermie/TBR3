@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../index.css';
-import tbr3logo from '../assets/logoo.png';
+import tbr3logo from '../assets/abtus logo.png';
 
 const people = [
   {
