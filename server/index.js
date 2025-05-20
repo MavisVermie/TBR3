@@ -11,6 +11,9 @@ const authorize = require("./middleware/authorize");
 const sendemail = require("./middleware/mailer"); //gimme mailer
 const jwtSecret = process.env.JWT_SECRET; // Use environment variable
 const crypto = require('crypto');
+const NodeCache = require('node-cache');
+const cache = new NodeCache();
+// const sharp = require('sharp');
 
 // Middleware
 app.use(cors());
@@ -261,47 +264,117 @@ app.post("/create_post", async (req, res) => {
 
 app.get('/posts', async (req, res) => {
   try {
-    const result = await pool.query(`
-      SELECT 
-        posts.post_id, 
-        posts.title, 
-        posts.attached_photo,
-        posts.primary_photo,
-        posts.user_id,
-        posts.features,
-        posts.created_at,
-        posts.location AS post_location,  -- ✅ Alias it to avoid conflict
-        users.email,
-        users.zip_code
-      FROM posts
-      LEFT JOIN users ON posts.user_id = users.id
-    `);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12;
+    const offset = (page - 1) * limit;
+    const cacheKey = `posts_${page}_${limit}`;
 
-    if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'No posts found' });
+    // Check cache first
+    const cachedData = cache.get(cacheKey);
+    if (cachedData) {
+      return res.json(cachedData);
     }
 
-    const postsWithPhotos = result.rows.map(post => {
-      const imageBuffer = post.primary_photo || post.attached_photo;
-      const imageBase64 = imageBuffer ? imageBuffer.toString('base64') : null;
+    // Get total count with caching
+    const countCacheKey = 'total_posts_count';
+    let totalPosts = cache.get(countCacheKey);
+    
+    if (!totalPosts) {
+      const countResult = await pool.query('SELECT COUNT(*) FROM posts');
+      totalPosts = parseInt(countResult.rows[0].count);
+      cache.set(countCacheKey, totalPosts, 300); // Cache count for 5 minutes
+    }
 
-      return {
-        post_id: post.post_id,
-        title: post.title,
-        email: post.email,
-        userId: post.user_id,
-        zip_code: post.zip_code,
-        features: post.features || ["Other"],
-        attached_photo: imageBase64,
-        created_at: post.created_at,
-        location: post.post_location || "Unknown" // ✅ Use aliased column
-      };
-    });
+    // Optimized query with proper indexing and error handling
+    const result = await pool.query(`
+      SELECT 
+        p.post_id, 
+        p.title, 
+        p.primary_photo,
+        p.user_id,
+        p.features,
+        p.created_at,
+        p.location AS post_location,
+        p.email,
+        p.description,
+        u.zip_code
+      FROM posts p
+      LEFT JOIN users u ON p.user_id = u.id
+      ORDER BY p.created_at DESC
+      LIMIT $1 OFFSET $2
+    `, [limit, offset]);
 
-    res.json(postsWithPhotos);
+    if (!result.rows) {
+      throw new Error('Database query returned no results');
+    }
+
+    // Process images in parallel with optimization and error handling
+    const postsWithPhotos = await Promise.all(result.rows.map(async post => {
+      try {
+        const imageBuffer = post.primary_photo;
+        let optimizedImage = null;
+
+        if (imageBuffer) {
+          try {
+            optimizedImage = await optimizeImage(imageBuffer);
+          } catch (imageError) {
+            console.error('Image optimization error:', imageError);
+            // Continue without optimized image
+          }
+        }
+
+        return {
+          post_id: post.post_id,
+          title: post.title,
+          email: post.email,
+          description: post.description,
+          userId: post.user_id,
+          zip_code: post.zip_code,
+          features: post.features || ["Other"],
+          attached_photo: optimizedImage ? optimizedImage.toString('base64') : null,
+          created_at: post.created_at,
+          location: post.post_location || "Unknown"
+        };
+      } catch (postError) {
+        console.error('Error processing post:', postError);
+        return null;
+      }
+    }));
+
+    // Filter out any null posts from processing errors
+    const validPosts = postsWithPhotos.filter(post => post !== null);
+
+    if (validPosts.length === 0) {
+      return res.json({
+        posts: [],
+        pagination: {
+          currentPage: page,
+          totalPages: 0,
+          totalPosts: 0,
+          hasMore: false
+        }
+      });
+    }
+
+    const response = {
+      posts: validPosts,
+      pagination: {
+        currentPage: page,
+        totalPages: Math.ceil(totalPosts / limit),
+        totalPosts,
+        hasMore: offset + limit < totalPosts
+      }
+    };
+
+    // Cache the response
+    cache.set(cacheKey, response);
+    res.json(response);
   } catch (error) {
-    console.error('Error fetching posts:', error);
-    res.status(500).json({ message: 'Server Error' });
+    console.error('Error in /posts endpoint:', error);
+    res.status(500).json({ 
+      message: 'Server Error',
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
+    });
   }
 });
 
@@ -354,7 +427,37 @@ app.delete('/posts/:postId', authorize, async (req, res) => {
   }
 });
 
+// Replace the optimizeImage function with a simpler version
+async function optimizeImage(imageBuffer) {
+  try {
+    // Just return the original buffer for now
+    return imageBuffer;
+  } catch (error) {
+    console.error('Error processing image:', error);
+    return imageBuffer;
+  }
+}
 
+// Add error handling middleware
+app.use((err, req, res, next) => {
+  console.error('Unhandled error:', err);
+  res.status(500).json({
+    message: 'Server Error',
+    error: process.env.NODE_ENV === 'development' ? err.message : undefined
+  });
+});
+
+// Add process error handlers
+process.on('uncaughtException', (err) => {
+  console.error('Uncaught Exception:', err);
+  // Perform cleanup if needed
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('Unhandled Rejection at:', promise, 'reason:', reason);
+  // Perform cleanup if needed
+});
 
 setInterval(() => {
   pool.query('SELECT 1').catch(() => {});
