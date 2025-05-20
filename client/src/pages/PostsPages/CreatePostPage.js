@@ -59,11 +59,14 @@ function CreatePostPage({ onPostCreated }) {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("features", JSON.stringify(features.filter(f => f.trim() !== '')));
+   // formData.append("features", JSON.stringify(features.filter(f => f.trim() !== '')));
     formData.append("email", email);
     formData.append("phone", phone);
     formData.append("location", location);
-    formData.append("category", category);
+   // formData.append("category", category);
+   const filteredFeatures = features.filter(f => f.trim() !== '');
+const allFeatures = [category, ...filteredFeatures];
+formData.append("features", JSON.stringify(allFeatures));
 
     images.forEach((img) => {
       formData.append("images", img);
