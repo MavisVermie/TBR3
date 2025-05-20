@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
-export default function LocationMap({ onLocationSelect }) {
+export default function LocationMap({ onLocationSelect, initialLocation = '' }) {
   const [selectedRegion, setSelectedRegion] = useState('');
   const [subLocation, setSubLocation] = useState('');
 
@@ -19,25 +19,35 @@ export default function LocationMap({ onLocationSelect }) {
     mafraq: { name: 'Mafraq' }
   };
 
-  const handleRegionChange = (e) => {
-    const regionId = e.target.value;
-    setSelectedRegion(regionId);
-    setSubLocation(""); // reset sub-location
-
-    if (regionId && onLocationSelect) {
-      const region = jordanRegions[regionId];
-      onLocationSelect(region.name);
+  useEffect(() => {
+    if (initialLocation) {
+      const [regionName, subLoc = ''] = initialLocation.split(" - ");
+      const regionId = Object.keys(jordanRegions).find(
+        key => jordanRegions[key].name.toLowerCase() === regionName.toLowerCase()
+      );
+      if (regionId) {
+        setSelectedRegion(regionId);
+        setSubLocation(subLoc);
+      }
     }
+  }, [initialLocation]);
+
+  useEffect(() => {
+    if (selectedRegion !== '' && subLocation !== '') {
+      const fullLocation = `${jordanRegions[selectedRegion].name} - ${subLocation}`;
+      onLocationSelect(fullLocation);
+    } else if (selectedRegion !== '') {
+      onLocationSelect(jordanRegions[selectedRegion].name);
+    }
+  }, [selectedRegion, subLocation]);
+
+  const handleRegionChange = (e) => {
+    setSelectedRegion(e.target.value);
+    setSubLocation('');
   };
 
   const handleSubLocationChange = (e) => {
-    const value = e.target.value;
-    setSubLocation(value);
-
-    if (selectedRegion && value && onLocationSelect) {
-      const fullLocation = `${jordanRegions[selectedRegion].name} - ${value}`;
-      onLocationSelect(fullLocation);
-    }
+    setSubLocation(e.target.value);
   };
 
   return (

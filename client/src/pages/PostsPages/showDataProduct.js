@@ -9,12 +9,10 @@ import "./showDataProduct.css";
  * It includes features like image gallery with navigation, keyboard controls, and contact seller functionality.
  */
 
-// ثوابت للتحكم في إعادة المحاولات
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 const IMAGE_LOAD_TIMEOUT = 5000;
 
-// دالة محسنة لتحميل الصور
 const loadImage = (base64String) => {
   return new Promise((resolve, reject) => {
     if (!base64String) {
@@ -46,7 +44,6 @@ const loadImage = (base64String) => {
   });
 };
 
-// دالة محسنة لجلب البيانات مع إعادة المحاولة
 const fetchWithRetry = async (url, options = {}, retries = MAX_RETRIES) => {
   try {
     const token = localStorage.getItem('token');
@@ -102,7 +99,6 @@ export default function ShowDataProduct() {
   const imageLoadQueue = useRef([]);
   const isProcessingQueue = useRef(false);
 
-  // دالة لمعالجة قائمة انتظار تحميل الصور
   const processImageQueue = useCallback(async () => {
     if (isProcessingQueue.current || imageLoadQueue.current.length === 0) return;
 
@@ -117,14 +113,12 @@ export default function ShowDataProduct() {
       }));
     } catch (error) {
       console.error('Error loading image:', error);
-      // لا نقوم بإعادة الصورة إلى قائمة الانتظار لتجنب التكرار
     }
 
     isProcessingQueue.current = false;
     processImageQueue();
   }, []);
 
-  // دالة محسنة لجلب بيانات المنشور
   const fetchPost = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -153,7 +147,6 @@ export default function ShowDataProduct() {
       
       setPost(data);
 
-      // تحميل الصور بشكل تدريجي
       if (data.primary_photo) {
         imageLoadQueue.current.push({
           id: 'primary',
@@ -199,7 +192,6 @@ export default function ShowDataProduct() {
     fetchPost();
   }, [fetchPost]);
 
-  // تحسين معالجة الصور
   const allImages = useMemo(() => {
     if (!post) return [];
     return [
@@ -208,7 +200,6 @@ export default function ShowDataProduct() {
     ].filter(Boolean);
   }, [post]);
 
-  // تحسين التنقل بين الصور
   const handleImageClick = useCallback((index) => {
     setCurrentImageIndex(index);
   }, []);
@@ -221,7 +212,6 @@ export default function ShowDataProduct() {
     setCurrentImageIndex(prev => (prev - 1 + allImages.length) % allImages.length);
   }, [allImages.length]);
 
-  // تحسين التنقل باستخدام لوحة المفاتيح
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowRight') {
