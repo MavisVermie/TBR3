@@ -3,7 +3,7 @@ const Home=()=>{
     return (
         <div style={StyleSheet.container}>
            <h1 style={StyleSheet.title}>Welcome to TBR3</h1>
-           <p style={StyleSheet.text}>We are glad to have you on our site</p>
+           <p style={text}>We are glad to have you on our site</p>
         </div>
     );
 };
