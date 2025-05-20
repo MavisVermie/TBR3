@@ -203,7 +203,7 @@ app.post('/reset-password', async (req, res) => {
 app.post("/create_post", async (req, res) => {
   try {
     const token = req.header("jwt_token");
-if (!token) return res.status(401).json({ message: "No token provided" });
+    if (!token) return res.status(401).json({ message: "No token provided" });
 
     const decoded = jwt.verify(token, jwtSecret);
     const userId = decoded.userId;
@@ -250,13 +250,19 @@ if (!token) return res.status(401).json({ message: "No token provided" });
       );
     }
 
+    // ✅ Invalidate relevant cache keys after successful post creation
+    cache.keys().forEach(key => {
+      if (key.startsWith('posts_') || key === 'total_posts_count') {
+        cache.del(key);
+      }
+    });
+
     res.json({ message: "Post created successfully", post_id: postId });
   } catch (err) {
     console.error("Create post error:", err);
-res.status(500).json({ message: "Server Error" });
+    res.status(500).json({ message: "Server Error" });
   }
 });
-
 
 
 
@@ -268,24 +274,23 @@ app.get('/posts', async (req, res) => {
     const limit = parseInt(req.query.limit) || 12;
     const offset = (page - 1) * limit;
     const cacheKey = `posts_${page}_${limit}`;
+    const countCacheKey = 'total_posts_count';
 
-    // Check cache first
+    // ✅ Check cache first
     const cachedData = cache.get(cacheKey);
     if (cachedData) {
       return res.json(cachedData);
     }
 
-    // Get total count with caching
-    const countCacheKey = 'total_posts_count';
+    // ✅ Get total count (cached)
     let totalPosts = cache.get(countCacheKey);
-    
     if (!totalPosts) {
       const countResult = await pool.query('SELECT COUNT(*) FROM posts');
       totalPosts = parseInt(countResult.rows[0].count);
-      cache.set(countCacheKey, totalPosts, 300); // Cache count for 5 minutes
+      cache.set(countCacheKey, totalPosts, 60); // Cache for 60 seconds
     }
 
-    // Optimized query with proper indexing and error handling
+    // ✅ Fetch paginated posts with user info
     const result = await pool.query(`
       SELECT 
         p.post_id, 
@@ -295,7 +300,7 @@ app.get('/posts', async (req, res) => {
         p.features,
         p.created_at,
         p.location AS post_location,
-        p.email,
+        u.email,
         p.description,
         u.zip_code
       FROM posts p
@@ -308,7 +313,7 @@ app.get('/posts', async (req, res) => {
       throw new Error('Database query returned no results');
     }
 
-    // Process images in parallel with optimization and error handling
+    // ✅ Process images in parallel
     const postsWithPhotos = await Promise.all(result.rows.map(async post => {
       try {
         const imageBuffer = post.primary_photo;
@@ -319,7 +324,6 @@ app.get('/posts', async (req, res) => {
             optimizedImage = await optimizeImage(imageBuffer);
           } catch (imageError) {
             console.error('Image optimization error:', imageError);
-            // Continue without optimized image
           }
         }
 
@@ -341,7 +345,6 @@ app.get('/posts', async (req, res) => {
       }
     }));
 
-    // Filter out any null posts from processing errors
     const validPosts = postsWithPhotos.filter(post => post !== null);
 
     if (validPosts.length === 0) {
@@ -366,8 +369,8 @@ app.get('/posts', async (req, res) => {
       }
     };
 
-    // Cache the response
-    cache.set(cacheKey, response);
+    // ✅ Cache the response for 60 seconds
+    cache.set(cacheKey, response, 60);
     res.json(response);
   } catch (error) {
     console.error('Error in /posts endpoint:', error);
@@ -377,6 +380,7 @@ app.get('/posts', async (req, res) => {
     });
   }
 });
+
 
 
 
