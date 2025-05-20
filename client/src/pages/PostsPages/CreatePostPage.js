@@ -120,9 +120,9 @@ function CreatePostPage({ onPostCreated }) {
   };
 
  return (
-  <div className="min-h-screen bg-gray-100 flex flex-col ">
-    <div className="w-full bg-white shadow-md py-6 px-4 md:px-12 lg:px-24 xl:px-40 rounded-none">
-      <h1 className="text-3xl font-semibold text-black text-center ">
+  <div className="min-h-screen bg-gray-100 flex flex-col font-sans ">
+    <div className="w-full  py-6 px-4 md:px-12 lg:px-24 xl:px-40 mt-3 ">
+      <h1 className="text-4xl font-bold text-red-700 text-center ">
         Create a New Post
       </h1>
 
@@ -156,7 +156,7 @@ function CreatePostPage({ onPostCreated }) {
               onChange={(e) => setTitle(e.target.value)}
               required
               placeholder="Enter item title"
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-green-500"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 "
             />
           </div>
 
@@ -169,7 +169,7 @@ function CreatePostPage({ onPostCreated }) {
               rows={5}
               required
               placeholder="Write a detailed description"
-              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-green-500"
+              className="w-full border border-gray-300 rounded-md px-4 py-2   resize-none" 
             />
           </div>
 
@@ -241,12 +241,8 @@ function CreatePostPage({ onPostCreated }) {
           )}
 
           {/* Location Picker */}
-          <LocationMap onLocationSelect={setLocation} />
-          {location && (
-            <p className="text-sm text-green-800 mt-1">
-              📍 Selected Location: {location}
-            </p>
-          )}
+         <LocationMap onLocationSelect={setLocation} />
+            {location && <p className="text-sm text-green-800 mt-1">{location}</p>}
         </div>
 
   
@@ -254,7 +250,7 @@ function CreatePostPage({ onPostCreated }) {
           <button
             type="submit"
             disabled={isUploading || images.length === 0}
-            className="w-full bg-green-600 text-white py-3 px-4 rounded-lg text-lg font-semibold hover:bg-green-700 disabled:opacity-50"
+            className="w-full bg-red-700  text-white py-3 px-4 rounded-lg text-lg font-semibold hover:bg-green-700 disabled:opacity-50"
           >
             {isUploading ? 'Uploading...' : 'Create Post'}
           </button>
