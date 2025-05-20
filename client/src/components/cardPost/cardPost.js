@@ -1,11 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import './cardPost.css';
 
 // ثوابت للتحكم في إعادة المحاولات
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
-const TIMEOUT_DURATION = 10000; // 10 ثواني للوقت الأقصى للطلب
+const POSTS_PER_PAGE = 12;
 
 // دالة محسنة لجلب البيانات مع إعادة المحاولة
 const fetchWithRetry = async (url, options = {}, retries = MAX_RETRIES) => {
@@ -25,12 +25,7 @@ const fetchWithRetry = async (url, options = {}, retries = MAX_RETRIES) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    if (error.name === 'AbortError') {
-      throw error;
-    }
-    
     if (retries > 0) {
-      console.log(`Retrying request... (${retries} attempts left)`);
       await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
       return fetchWithRetry(url, options, retries - 1);
     }
@@ -46,8 +41,8 @@ export default function CardPost() {
   const [sortOrder, setSortOrder] = useState('Newest');
   const [searchQuery, setSearchQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [error, setError] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const categoryOptions = [
     'All',
@@ -68,16 +63,74 @@ export default function CardPost() {
     return location?.split(' - ')[0]?.trim() || 'Unknown';
   };
 
+  // دالة محسنة لجلب بيانات الملف الشخصي
+  const getProfile = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.log('No token found');
+        return;
+      }
+
+      const response = await fetch("http://localhost:5000/Posting/", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json"
+        }
+      });
+
+      if (response.status === 401) {
+        console.log('Token expired or invalid');
+        localStorage.removeItem('token');
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const profileData = await response.json();
+      if (Array.isArray(profileData) && profileData.length > 0) {
+        setUserZipCode(profileData[0].zip_code);
+      }
+    } catch (err) {
+      console.error('Error fetching profile:', err.message);
+    }
+  };
+
   // دالة محسنة لجلب المنشورات
   const fetchPosts = async () => {
     try {
       setIsLoading(true);
       setError(null);
       
-      const response = await fetchWithRetry(`http://localhost:5000/posts`);
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json'
+      };
+
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
       
-      if (response.posts && Array.isArray(response.posts)) {
-        setPosts(response.posts);
+      const response = await fetch(`http://localhost:5000/posts`, {
+        headers
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.posts && Array.isArray(data.posts)) {
+        const processedPosts = data.posts.map(post => ({
+          ...post,
+          image: post.attached_photo || null
+        }));
+        
+        setPosts(processedPosts);
       } else {
         throw new Error('Invalid response format');
       }
@@ -90,27 +143,6 @@ export default function CardPost() {
     }
   };
 
-  // دالة محسنة لجلب بيانات الملف الشخصي
-  const getProfile = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) return;
-
-      const profileData = await fetchWithRetry("http://localhost:5000/Posting/", {
-        method: "GET",
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-
-      if (Array.isArray(profileData) && profileData.length > 0) {
-        setUserZipCode(profileData[0].zip_code);
-      }
-    } catch (err) {
-      console.error('Error fetching profile:', err.message);
-      setError('Failed to load profile data');
-    }
-  };
-
-  // تحسين useEffect للتعامل مع تحميل البيانات
   useEffect(() => {
     let isMounted = true;
     
@@ -134,45 +166,71 @@ export default function CardPost() {
     };
   }, []);
 
-  const locationOptions = ['All', ...Array.from(new Set(
-    posts.map(p => extractCity(p.location)).filter(Boolean)
-  ))];
+  // تحسين الأداء باستخدام useMemo
+  const locationOptions = useMemo(() => 
+    ['All', ...Array.from(new Set(
+      posts.map(p => extractCity(p.location)).filter(Boolean)
+    ))], [posts]);
 
-  const filteredAndSortedPosts = posts
-    .filter(post => {
-      const category = post.features?.[0] || "Other";
-      return selectedCategory === "All" || category === selectedCategory;
-    })
-    .filter(post => {
-      const city = extractCity(post.location);
-      return selectedLocation === "All" || city === selectedLocation;
-    })
-    .filter(post =>
-      post.title?.toLowerCase().includes(searchQuery.toLowerCase())
-    )
-    .sort((a, b) => {
-      const dateA = new Date(a.created_at);
-      const dateB = new Date(b.created_at);
-      if (isNaN(dateA) || isNaN(dateB)) return 0;
-      return sortOrder === 'Newest' ? dateB - dateA : dateA - dateB;
-    });
+  const filteredAndSortedPosts = useMemo(() => 
+    posts
+      .filter(post => {
+        const category = post.features?.[0] || "Other";
+        return selectedCategory === "All" || category === selectedCategory;
+      })
+      .filter(post => {
+        const city = extractCity(post.location);
+        return selectedLocation === "All" || city === selectedLocation;
+      })
+      .filter(post =>
+        post.title?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .sort((a, b) => {
+        const dateA = new Date(a.created_at);
+        const dateB = new Date(b.created_at);
+        if (isNaN(dateA) || isNaN(dateB)) return 0;
+        return sortOrder === 'Newest' ? dateB - dateA : dateA - dateB;
+      }), [posts, selectedCategory, selectedLocation, searchQuery, sortOrder]);
+
+  const paginatedPosts = useMemo(() => 
+    filteredAndSortedPosts.slice(0, currentPage * POSTS_PER_PAGE),
+    [filteredAndSortedPosts, currentPage]);
 
   const LoadingSkeleton = () => (
     <div className="animate-pulse">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
         {[...Array(6)].map((_, index) => (
           <div key={index} className="bg-white shadow-md rounded-lg overflow-hidden">
-            <div className="w-full h-48 bg-gray-200"></div>
-            <div className="p-4 space-y-3">
-              <div className="h-4 bg-gray-200 rounded w-3/4"></div>
-              <div className="h-3 bg-gray-200 rounded w-1/2"></div>
-              <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+            <div className="relative">
+              <div className="w-full h-48 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 animate-shimmer"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shine"></div>
+            </div>
+            
+            <div className="p-5 space-y-4">
+              <div className="space-y-2">
+                <div className="h-5 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded animate-shimmer w-3/4"></div>
+                <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded animate-shimmer w-1/2"></div>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded animate-shimmer w-2/3"></div>
+                <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded animate-shimmer w-1/2"></div>
+              </div>
+              
+              <div className="space-y-2">
+                <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded animate-shimmer w-1/3"></div>
+                <div className="h-4 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 rounded animate-shimmer w-1/4"></div>
+              </div>
             </div>
           </div>
         ))}
       </div>
     </div>
   );
+
+  const handleLoadMore = () => {
+    setCurrentPage(prev => prev + 1);
+  };
 
   return (
     <section className="min-h-screen bg-gray-100 py-12 px-4">
@@ -251,55 +309,73 @@ export default function CardPost() {
       {isLoading ? (
         <LoadingSkeleton />
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
-          {filteredAndSortedPosts.map(post => (
-            <Link to={`/posts/${post.post_id}`} key={post.post_id}>
-              <div className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition duration-300">
-                {post.attached_photo ? (
-                  <div className="relative w-full h-48">
-                    <img
-                      src={`data:image/jpeg;base64,${post.attached_photo}`}
-                      alt={post.title}
-                      className="w-full h-48 object-cover transition-opacity duration-300"
-                      onLoad={(e) => e.target.classList.add('opacity-100')}
-                      onError={(e) => {
-                        e.target.onerror = null;
-                        e.target.src = '/placeholder-image.png';
-                      }}
-                    />
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            {paginatedPosts.map(post => (
+              <Link to={`/posts/${post.post_id}`} key={post.post_id}>
+                <div className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition duration-300 transform hover:-translate-y-1">
+                  <div className="card-image-container">
+                    {post.image ? (
+                      <img
+                        src={`data:image/jpeg;base64,${post.image}`}
+                        alt={post.title}
+                        className="card-image"
+                        loading="lazy"
+                        onLoad={(e) => e.target.classList.add('opacity-100')}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = '/placeholder-image.png';
+                        }}
+                      />
+                    ) : (
+                      <div className="no-image-placeholder">
+                        <svg className="no-image-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                    )}
                   </div>
-                ) : (
-                  <div className="w-full h-48 bg-gray-200 flex items-center justify-center text-gray-500">
-                    No Image Available
+                  <div className="p-5">
+                    <h3 className="text-lg font-semibold text-gray-800 truncate mb-2">{post.title}</h3>
+                    <div className="space-y-2">
+                      <p className="text-sm text-gray-600">
+                        Contact: <button
+                          onClick={(e) => {
+                            e.preventDefault();
+                            window.location.href = `mailto:${post.email}`;
+                          }}
+                          className="text-green-600 hover:text-green-700 hover:underline transition-colors duration-200"
+                        >
+                          {post.email}
+                        </button>
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        <span className="font-medium">Category:</span> {post.features?.[0] || "Other"}
+                      </p>
+                      <p className="text-sm text-gray-500">
+                        <span className="font-medium">Location:</span> {post.location?.split(" - ")[0] || "Unknown"}
+                      </p>
+                      <p className="text-sm text-gray-400">
+                        <span className="font-medium">Posted:</span> {new Date(post.created_at).toLocaleString()}
+                      </p>
+                    </div>
                   </div>
-                )}
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-800 truncate">{post.title}</h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    Contact at: <button
-                      onClick={(e) => {
-                        e.preventDefault();
-                        window.location.href = `mailto:${post.email}`;
-                      }}
-                      className="text-green-600 hover:underline"
-                    >
-                      {post.email}
-                    </button>
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Category: {post.features?.[0] || "Other"}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    Location: {post.location?.split(" - ")[0] || "Unknown"}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    Posted: {new Date(post.created_at).toLocaleString()}
-                  </p>
                 </div>
-              </div>
-            </Link>
-          ))}
-        </div>
+              </Link>
+            ))}
+          </div>
+
+          {paginatedPosts.length < filteredAndSortedPosts.length && (
+            <div className="text-center mt-8">
+              <button
+                onClick={handleLoadMore}
+                className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
+              >
+                Load More
+              </button>
+            </div>
+          )}
+        </>
       )}
 
       {!isLoading && filteredAndSortedPosts.length === 0 && !error && (
@@ -310,3 +386,36 @@ export default function CardPost() {
     </section>
   );
 }
+
+const styles = `
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+.animate-shine {
+  animation: shine 1.5s infinite;
+}
+`;
+
+const styleSheet = document.createElement("style");
+styleSheet.textContent = styles;
+document.head.appendChild(styleSheet);
