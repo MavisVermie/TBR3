@@ -16,19 +16,11 @@ function CreatePostPage({ onPostCreated }) {
   const [phone, setPhone] = useState('');
   const [location, setLocation] = useState('');
   const [category, setCategory] = useState('');
+  const [features, setFeatures] = useState(['']);
 
   const categoryOptions = [
-    "Furniture",
-    "Electronics",
-    "Games",
-    "Clothing",
-    "Books",
-    "Appliances",
-    "Toys",
-    "Tools",
-    "Sports Equipment",
-    "Food",
-    "Other"
+    "Furniture", "Electronics", "Games", "Clothing", "Books",
+    "Appliances", "Toys", "Tools", "Sports Equipment", "Food", "Other"
   ];
 
   const onDrop = useCallback((acceptedFiles) => {
@@ -67,13 +59,14 @@ function CreatePostPage({ onPostCreated }) {
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
-    formData.append("features", JSON.stringify([category])); // ✅ sends as ["Furniture"]
+    formData.append("features", JSON.stringify(features.filter(f => f.trim() !== '')));
     formData.append("email", email);
     formData.append("phone", phone);
     formData.append("location", location);
+    formData.append("category", category);
 
-    images.forEach((image) => {
-      formData.append("images", image);
+    images.forEach((img) => {
+      formData.append("images", img);
     });
 
     setIsUploading(true);
@@ -95,6 +88,7 @@ function CreatePostPage({ onPostCreated }) {
         setTitle("");
         setDescription("");
         setImages([]);
+        setFeatures(['']);
         setCategory("");
         setEmail("");
         setPhone("");
@@ -109,11 +103,17 @@ function CreatePostPage({ onPostCreated }) {
 
         if (onPostCreated) onPostCreated();
       } else {
-        toast.error("Unable to create Item Post");
+        const errorText = await response.text();
+        try {
+          const errorData = JSON.parse(errorText);
+          toast.error(errorData.message || "Unable to create Item Post");
+        } catch {
+          toast.error(errorText || "Unable to create Item Post");
+        }
       }
     } catch (err) {
-      console.error(err.message);
-      toast.error("An error occurred");
+      console.error("Submit Error:", err);
+      toast.error("An error occurred while creating the post.");
     } finally {
       setIsUploading(false);
     }

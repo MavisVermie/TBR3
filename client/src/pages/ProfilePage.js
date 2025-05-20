@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import HomePage from './HomePage';
+import HomePage from './myFeed';
 import { toast } from 'react-toastify';
 
 export default function ProfilePage({ isAuthenticated, checkAuthenticated }) {
@@ -155,4 +155,4 @@ export default function ProfilePage({ isAuthenticated, checkAuthenticated }) {
   ) : (
     <HomePage />
   );
-}
+} 

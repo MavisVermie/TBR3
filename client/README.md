@@ -73,4 +73,4 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 WE NEED 
 NPM INSTALL NODEMAILER
 NPM INSTALL JWT_DECODE
-
+npm install react-dropzone
