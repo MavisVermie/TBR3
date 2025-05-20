@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback, useRef } from "react"
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./showDataProduct.css";
+import { jwtDecode } from 'jwt-decode';
 
 /**
  * SinglePost Component
@@ -98,7 +99,21 @@ export default function ShowDataProduct() {
   const [cache, setCache] = useState({});
   const imageLoadQueue = useRef([]);
   const isProcessingQueue = useRef(false);
-
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+    useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        console.log("Decoded token:", decoded)
+        setCurrentUserId(decoded.userId); // Adjust this field if needed
+        setIsAdmin(decoded.isAdmin);
+      } catch (e) {
+        console.error("Failed to decode token", e);
+      }
+    }
+  }, []);
   const processImageQueue = useCallback(async () => {
     if (isProcessingQueue.current || imageLoadQueue.current.length === 0) return;
 
@@ -224,6 +239,9 @@ export default function ShowDataProduct() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleNextImage, handlePrevImage]);
+const showEditButton = post && (
+  String(currentUserId) === String(post.user_id) 
+);
 
   // Show loading state while fetching data
   if (error) {
@@ -331,6 +349,7 @@ export default function ShowDataProduct() {
               Location: <span className="font-semibold text-gray-800">{post.location}</span>
             </p>
           </div>
+          
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -432,7 +451,16 @@ export default function ShowDataProduct() {
           {/* Right Column - Product Details */}
           <div className="lg:col-span-1">
             <div className="bg-white p-6 rounded-xl shadow-lg mb-8">
+              {showEditButton && (
+  <button
+    onClick={() => navigate(`/edit_post/${post.post_id}`)}
+    className="w-full bg-yellow-500 text-white px-8 py-4 rounded-lg hover:bg-yellow-600 transition text-lg font-semibold shadow-md mt-4"
+  >
+    Edit Post
+  </button>
+)}
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">Product Details</h2>
+  
               <div className="space-y-6">
                 {/* Product Description */}
                 <div>

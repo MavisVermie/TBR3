@@ -151,20 +151,21 @@ router.get("/posts/:id", async (req, res) => {
 
     // Fetch main post details including features and location
     const postResult = await pool.query(`
-      SELECT 
-        posts.post_id,
-        posts.title,
-        posts.description,
-        posts.primary_photo,
-        posts.location,
-        posts.features,
-          posts.user_id,
-        users.username,
-        users.email,
-        users.phone_number
-      FROM posts
-      LEFT JOIN users ON posts.user_id = users.id
-      WHERE posts.post_id = $1
+      SELECT  
+  posts.post_id,
+  posts.title,
+  posts.description,
+  posts.primary_photo,
+  posts.location,
+  posts.features,
+  posts.user_id,              -- ✅ post owner ID remains as is
+  users.username,
+  users.email,
+  users.phone_number
+FROM posts
+LEFT JOIN users ON posts.user_id = users.id
+WHERE posts.post_id = $1
+
     `, [id]);
 
     if (postResult.rows.length === 0) {
@@ -201,19 +202,20 @@ router.get("/posts/:id", async (req, res) => {
     );
 
     // ✅ Final response
-    res.json({
-      post_id: post.post_id,
-      title: post.title,
-      description: post.description,
-      primary_photo: post.primary_photo?.toString("base64") || null,
-      extra_images: extraImages,
-      username: post.username,
-      email: post.email,
-      phone_number: post.phone_number,
-      location: post.location || '',
-      features: parsedFeatures,
-      user_id: post.user_id
-    });
+res.json({
+  post_id: post.post_id,
+  title: post.title,
+  description: post.description,
+  primary_photo: post.primary_photo?.toString("base64") || null,
+  extra_images: extraImages,
+  username: post.username,
+  email: post.email,
+  phone_number: post.phone_number,
+  location: post.location || '',
+  features: parsedFeatures,
+  user_id: post.user_id  // ✅ still the owner ID
+});
+
 
   } catch (err) {
     console.error("Error fetching post by ID:", err.message);
