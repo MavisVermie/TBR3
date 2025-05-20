@@ -197,51 +197,64 @@ app.post('/reset-password', async (req, res) => {
   }
 });
 
-//Create post
 app.post("/create_post", async (req, res) => {
   try {
-
-
-    if (!req.files || !req.files.primary || !req.body.title || !req.body.description) {
-      return res.status(400).send("Title, Description, and Primary Image are required.");
-    }
-
-    const { title, description } = req.body;
-    const primaryPhoto = req.files.primary.data;
-
-    // handle extra images 
-    const extraPhotos = req.files.extra
-      ? Array.isArray(req.files.extra)
-        ? req.files.extra
-        : [req.files.extra]
-      : [];
-
     const token = req.header("jwt_token");
+    if (!token) return res.status(401).send("No token provided");
+
     const decoded = jwt.verify(token, jwtSecret);
     const userId = decoded.userId;
 
-    // insert the post
-    const newPost = await pool.query(
-      "INSERT INTO posts (title, description, primary_photo, user_id) VALUES ($1, $2, $3, $4) RETURNING post_id",
-      [title, description, primaryPhoto, userId]
+    if (!req.files || !req.files.images || !req.body.title || !req.body.description) {
+      return res.status(400).send("Title, description, and at least one image are required.");
+    }
+
+    const { title, description, features, email, phone, location } = req.body;
+
+    const imageFiles = Array.isArray(req.files.images) ? req.files.images : [req.files.images];
+    const primaryPhoto = imageFiles[0].data;
+    const extraImages = imageFiles.slice(1);
+
+    let parsedFeatures = [];
+    try {
+      parsedFeatures = features ? JSON.parse(features) : [];
+    } catch (err) {
+      console.warn("Failed to parse features:", err.message);
+    }
+
+    const postInsert = await pool.query(
+      `INSERT INTO posts (title, description, primary_photo, user_id, email, phone, features, location)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+       RETURNING post_id`,
+      [
+        title,
+        description,
+        primaryPhoto,
+        userId,
+        email || null,
+        phone || null,
+        parsedFeatures.length ? parsedFeatures : null,
+        location || null
+      ]
     );
 
-    const postId = newPost.rows[0].post_id;
+    const postId = postInsert.rows[0].post_id;
 
-    // insert additional images into post_images table
-    for (const file of extraPhotos) {
+    for (const file of extraImages) {
       await pool.query(
         "INSERT INTO post_images (post_id, image) VALUES ($1, $2)",
         [postId, file.data]
       );
     }
 
-    res.json({ message: "Post created successfully", postId });
+    res.json({ message: "Post created successfully", post_id: postId });
   } catch (err) {
-    console.error("Create post error:", err.message);
+    console.error("Create post error:", err);
     res.status(500).send("Server Error");
   }
 });
+
+
 
 
 
@@ -255,6 +268,9 @@ app.get('/posts', async (req, res) => {
         posts.attached_photo,
         posts.primary_photo,
         posts.user_id,
+        posts.features,
+        posts.created_at,
+        posts.location AS post_location,  -- ✅ Alias it to avoid conflict
         users.email,
         users.zip_code
       FROM posts
@@ -275,16 +291,20 @@ app.get('/posts', async (req, res) => {
         email: post.email,
         userId: post.user_id,
         zip_code: post.zip_code,
-        attached_photo: imageBase64
+        features: post.features || ["Other"],
+        attached_photo: imageBase64,
+        created_at: post.created_at,
+        location: post.post_location || "Unknown" // ✅ Use aliased column
       };
     });
 
     res.json(postsWithPhotos);
   } catch (error) {
-    console.error('Error fetching posts:', error); // log full error object
+    console.error('Error fetching posts:', error);
     res.status(500).json({ message: 'Server Error' });
   }
 });
+
 
 
 

@@ -2,24 +2,30 @@ import './App.css';
 import React, { useState, useEffect } from "react";
 import Layout from './Layout';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import HomePage from './pages/HomePage';
+import HomePage from './pages/myFeed';
 import AboutPage from './pages/AboutPage';
 import CreatePostPage from './pages/PostsPages/CreatePostPage';
-import SignInPage from './pages/LoginStuff/SignInPage';
+import SignInPage from './components/LoginStuff/SignInPage';
 import ProductDescriptionPage from './pages/ProductDescriptionPage';
-import RegistrationPage from './pages/LoginStuff/RegistrationPage';
-import PageNotFound from './pages/PageNotFound';
+import RegistrationPage from './components/LoginStuff/RegistrationPage';
+import PageNotFound from './pages/PageNotFound'
 import ProfilePage from './pages/ProfilePage';
-import ForgotPassword from './pages/LoginStuff/ForgotPassword';
-import ResetPassword from './pages/LoginStuff/ResetPassword';
+import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from 'react-toastify';
+import ForgotPassword from './components/LoginStuff/ForgotPassword';
+import ResetPassword from './components/LoginStuff/ResetPassword';
 import MyPosts from './pages/PostsPages/MyPosts';
 import AdminPanel from './pages/AdminStuff/AdminPanel';
 import AdminPosts from './pages/AdminStuff/AdminPosts';
+<<<<<<< HEAD
 import SinglePost from './pages/PostsPages/SinglePost';
 import NewHome from './pages2/Home';
+=======
+import SinglePost from './pages/PostsPages/showDataProduct';
+>>>>>>> main
 
-import { toast, ToastContainer, cssTransition } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { cssTransition } from "react-toastify";
 
 const SlowFade = cssTransition({
   enter: 'fadeIn',
