@@ -1,9 +1,13 @@
-const MissionSection=()=>{
-    return(
-        <section>
-            <h2>Our message</h2>
-            <p>To support those in need from all over the world</p>
-        </section>
-    );
+
+import './MissionSection.css';
+
+const MissionSection = () => {
+  return (
+    <section className="mission-section">
+      <h2>Who we are?</h2>
+      <p></p>
+    </section>
+  );
 };
+
 export default MissionSection;

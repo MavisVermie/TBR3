@@ -1,6 +1,6 @@
 const Footer=()=>{
     return(
-        <footer><p>Syntax Squad</p></footer>
+        <footer><p></p></footer>
     );
 };
 export default Footer;

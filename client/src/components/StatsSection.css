@@ -1,0 +1,45 @@
+.stats-section {
+  background-color: #e0f7f1; /* نعنع فاتح */
+  padding: 80px 20px;
+  text-align: center;
+}
+
+.stats-section h2 {
+  font-size: 2.5rem;
+  color: #004d40; /* أخضر غامق */
+  margin-bottom: 40px;
+  font-family: 'Cairo', sans-serif;
+}
+
+.stats-cards {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 30px;
+}
+
+.stats-card {
+  background-color: #ffffff;
+  padding: 30px 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  min-width: 220px;
+  max-width: 300px;
+  flex: 1 1 200px;
+  transition: transform 0.3s ease;
+  border: 2px solid #b2dfdb;
+}
+
+.stats-card:hover {
+  transform: translateY(-5px);
+  background-color: #f0fffa;
+}
+
+.stats-card p {
+  font-size: 1.2rem;
+  color: #00695c;
+  margin: 0;
+  font-weight: bold;
+  font-family: 'Cairo', sans-serif;
+}
+

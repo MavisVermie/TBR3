@@ -1,9 +1,15 @@
-const HeroSection=()=>{
-    return(
-        <section className="bg-green-600 text-white py-20 px-6 text-center">
-<h1>Help us spread goodness</h1>
-<p>Your donation makes a difference</p>
+import './HeroSection.css';
+
+const HeroSection = () => {
+    return (
+        <section className="hero-section">
+            <div className="hero-content">
+                <h1 className="hero-title">Help us help others</h1>
+                <p className="hero-subtitle"></p>
+                <button className="hero-button">Donate now</button>
+            </div>
         </section>
     );
 };
+
 export default HeroSection;

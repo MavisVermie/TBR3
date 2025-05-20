@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@600&display=swap');
+
+.mission-section {
+  background: linear-gradient(to right, #d0f5ec, #a2e6d4); /* درجات نعناع */
+  padding: 80px 20px;
+  text-align: center;
+  direction: rtl;
+  font-family: 'Cairo', sans-serif;
+  color: #004d40;
+}
+
+.mission-section h2 {
+  font-size: 2.8rem;
+  font-weight: 900;
+  color: #004d40;
+  margin-bottom: 25px;
+  border-bottom: 4px solid #80cbc4;
+  display: inline-block;
+  padding-bottom: 10px;
+}
+
+.mission-section p {
+  font-size: 1.4rem;
+  line-height: 2.2;
+  max-width: 700px;
+  margin: 0 auto;
+  color: #00695c;
+}
+
+
