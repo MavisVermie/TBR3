@@ -22,7 +22,6 @@ export default function AdminPosts() {
       }
 
       const data = await res.json();
-      console.log("Fetched posts:", data);
 
       if (Array.isArray(data)) {
         setPosts(data);
