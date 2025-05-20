@@ -1,26 +1,16 @@
 import React from 'react';
+import HeroSection from '../components/HeroSection';
+import MissionSection from '../components/MissionSection';
+import StatsSection from '../components/StatsSection';
+import Footer from '../components/Footer';
 const Home=()=>{
     return (
-        <div style={StyleSheet.container}>
-           <h1 style={StyleSheet.title}>Welcome to TBR3</h1>
-           <p style={text}>We are glad to have you on our site</p>
+        <div>
+           <HeroSection />
+           <MissionSection />
+           <StatsSection />
+           <Footer />
         </div>
     );
 };
-const styles={
-    container:{
-padding:'2rem',
-
-
-    },
-title:{
-    fontSize:'2rem',
-    color:'#333'
-},
-text:{
-    fontSize:'1.2rem',
-    color:'#555',
-},
-
-}
 export default Home;
