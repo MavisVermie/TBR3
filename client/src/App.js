@@ -18,12 +18,8 @@ import ResetPassword from './components/LoginStuff/ResetPassword';
 import MyPosts from './pages/PostsPages/MyPosts';
 import AdminPanel from './pages/AdminStuff/AdminPanel';
 import AdminPosts from './pages/AdminStuff/AdminPosts';
-<<<<<<< HEAD
-import SinglePost from './pages/PostsPages/SinglePost';
 import NewHome from './pages2/Home';
-=======
 import SinglePost from './pages/PostsPages/showDataProduct';
->>>>>>> main
 
 import { cssTransition } from "react-toastify";
 
