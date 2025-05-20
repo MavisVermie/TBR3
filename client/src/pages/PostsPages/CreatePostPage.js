@@ -119,87 +119,108 @@ function CreatePostPage({ onPostCreated }) {
     }
   };
 
-  return (
-    <div className="flex justify-center items-start min-h-screen bg-gray-100 pt-20">
-      <div className="container mx-auto p-6 max-w-2xl bg-white shadow-md rounded-lg mt-12">
-        <h1 className="text-2xl font-bold text-center mb-6">Create a New Post</h1>
+ return (
+  <div className="min-h-screen bg-gray-100 flex flex-col ">
+    <div className="w-full bg-white shadow-md py-6 px-4 md:px-12 lg:px-24 xl:px-40 rounded-none">
+      <h1 className="text-3xl font-semibold text-black text-center ">
+        Create a New Post
+      </h1>
 
-        {isUploading && (
-          <div className="mb-4">
-            <div className="w-full bg-gray-200 rounded-full h-2.5">
-              <div
-                className="bg-green-600 h-2.5 rounded-full"
-                style={{ width: `${uploadProgress}%` }}
-              ></div>
-            </div>
-            <p className="text-center text-sm text-gray-600 mt-2">Uploading... {uploadProgress}%</p>
+      {isUploading && (
+        <div className="mb-6">
+          <div className="w-full bg-gray-200 rounded-full h-3">
+            <div
+              className="bg-green-600 h-3 rounded-full transition-all duration-300"
+              style={{ width: `${uploadProgress}%` }}
+            />
           </div>
-        )}
+          <p className="text-center text-sm text-green-800 mt-2">
+            Uploading... {uploadProgress}%
+          </p>
+        </div>
+      )}
 
-        <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
+      <form
+        onSubmit={handleSubmit}
+        encType="multipart/form-data"
+        className="grid grid-cols-1 md:grid-cols-2 gap-6"
+      >
+        {/* Left Column */}
+        <div className="space-y-6">
+          {/* Title */}
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title:</label>
+            <label className="block text-lg font-semibold text-green-800 mb-1">Title</label>
             <input
               type="text"
-              id="title"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
-              className="mt-1 block w-full border rounded-md py-2 px-3 shadow-sm"
+              placeholder="Enter item title"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-green-500"
             />
           </div>
 
+          {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700">Description:</label>
+            <label className="block text-lg font-semibold text-green-800 mb-1">Description</label>
             <textarea
-              id="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
+              rows={5}
               required
-              rows={4}
-              className="mt-1 block w-full border rounded-md py-2 px-3 shadow-sm"
+              placeholder="Write a detailed description"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-green-500"
             />
           </div>
 
+          {/* Category */}
           <div>
-            <label htmlFor="category" className="block text-sm font-medium text-gray-700 mb-1">
-              Category
-            </label>
+            <label className="block text-lg font-semibold text-green-800 mb-1">Category</label>
             <select
-              id="category"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               required
-              className="block w-full border rounded-md py-2 px-3 shadow-sm focus:border-green-500 focus:ring-green-500"
+              className="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-green-500"
             >
-              <option value="" disabled>-- Select a Category --</option>
+              <option value="">-- Select a Category --</option>
               {categoryOptions.map((option, index) => (
-                <option key={index} value={option}>{option}</option>
+                <option key={index} value={option}>
+                  {option}
+                </option>
               ))}
             </select>
           </div>
 
+          {/* Contact Info */}
+          <ContactInfo email={email} setEmail={setEmail} phone={phone} setPhone={setPhone} />
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-6">
+          {/* Image Upload */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Images:</label>
+            <label className="block text-lg font-semibold text-green-800 mb-2">Images</label>
             <div
               {...getRootProps()}
-              className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors
-                ${isDragActive ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-green-500'}`}
+              className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition ${
+                isDragActive ? 'border-green-500 bg-green-50' : 'border-gray-300 hover:border-green-400'
+              }`}
             >
               <input {...getInputProps()} />
-              {isDragActive ? (
-                <p className="text-green-600">Drop the images here...</p>
-              ) : (
-                <div>
-                  <p className="text-gray-600">Drag & drop images here, or click to select files</p>
-                  <p className="text-sm text-gray-500 mt-1">Supported formats: JPEG, PNG, GIF (max 5MB each)</p>
-                </div>
-              )}
+              <p className="text-gray-600">
+                {isDragActive
+                  ? 'Drop the images here...'
+                  : 'Drag & drop images or click to select files'}
+              </p>
+              <p className="text-sm text-gray-500 mt-1">
+                JPEG, PNG, GIF (max 5MB each)
+              </p>
             </div>
           </div>
 
+          {/* Image Previews */}
           {images.length > 0 && (
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mt-4">
+            <div className="grid grid-cols-2 gap-4">
               {images.map((image, index) => (
                 <div key={index} className="relative group">
                   <img
@@ -210,7 +231,7 @@ function CreatePostPage({ onPostCreated }) {
                   <button
                     type="button"
                     onClick={() => removeImage(index)}
-                    className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                    className="absolute top-1 right-1 bg-red-600 text-white text-xs rounded-full px-2 py-1 opacity-0 group-hover:opacity-100 transition"
                   >
                     ×
                   </button>
@@ -219,24 +240,29 @@ function CreatePostPage({ onPostCreated }) {
             </div>
           )}
 
+          {/* Location Picker */}
           <LocationMap onLocationSelect={setLocation} />
           {location && (
-            <p className="text-sm text-gray-600">Selected Location: {location}</p>
+            <p className="text-sm text-green-800 mt-1">
+              📍 Selected Location: {location}
+            </p>
           )}
+        </div>
 
-          <ContactInfo email={email} setEmail={setEmail} phone={phone} setPhone={setPhone} />
-
+  
+        <div className="col-span-1 md:col-span-2">
           <button
             type="submit"
             disabled={isUploading || images.length === 0}
-            className="w-full bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full bg-green-600 text-white py-3 px-4 rounded-lg text-lg font-semibold hover:bg-green-700 disabled:opacity-50"
           >
             {isUploading ? 'Uploading...' : 'Create Post'}
           </button>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
-  );
-}
+  </div>
+);
 
+}
 export default CreatePostPage;
