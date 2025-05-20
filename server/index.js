@@ -200,7 +200,7 @@ app.post('/reset-password', async (req, res) => {
 app.post("/create_post", async (req, res) => {
   try {
     const token = req.header("jwt_token");
-    if (!token) return res.status(401).send("No token provided");
+if (!token) return res.status(401).json({ message: "No token provided" });
 
     const decoded = jwt.verify(token, jwtSecret);
     const userId = decoded.userId;
@@ -250,7 +250,7 @@ app.post("/create_post", async (req, res) => {
     res.json({ message: "Post created successfully", post_id: postId });
   } catch (err) {
     console.error("Create post error:", err);
-    res.status(500).send("Server Error");
+res.status(500).json({ message: "Server Error" });
   }
 });
 
