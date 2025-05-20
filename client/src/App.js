@@ -1,6 +1,4 @@
 import './App.css';
-import React from 'react';
-import { BrowserRouter as router, Routes, Route, Router } from 'react-router-dom';
 import React, { useState, useEffect } from "react";
 import Layout from './Layout';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -18,20 +16,11 @@ import MyPosts from './pages/PostsPages/MyPosts';
 import AdminPanel from './pages/AdminStuff/AdminPanel';
 import AdminPosts from './pages/AdminStuff/AdminPosts';
 import SinglePost from './pages/PostsPages/SinglePost';
+import NewHome from './pages2/Home';
 
 import { toast, ToastContainer, cssTransition } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import Home from './pages 2/Home';
-function App(){
-  return (
-    <Router>
-      <Routes>
-        {}
-        <Route path="/" element={<Home/>}/>
-      </Routes>
-    </Router>
-  );
-}
+
 const SlowFade = cssTransition({
   enter: 'fadeIn',
   exit: 'fadeOut',
@@ -114,6 +103,8 @@ function App() {
             <Route path="/admin/posts" element={<AdminPosts />} />
             <Route path="/posts/:id" element={<SinglePost />} />
             <Route path="/*" element={<PageNotFound />} />
+                        <Route path="/Home" element={<NewHome />} />
+
           </Routes>
         </Layout>
       </BrowserRouter>
