@@ -1,4 +1,6 @@
 import './App.css';
+import React from 'react';
+import { BrowserRouter as router, Routes, Route, Router } from 'react-router-dom';
 import React, { useState, useEffect } from "react";
 import Layout from './Layout';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -19,7 +21,17 @@ import SinglePost from './pages/PostsPages/SinglePost';
 
 import { toast, ToastContainer, cssTransition } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-
+import Home from './pages 2/Home';
+function App(){
+  return (
+    <Router>
+      <Routes>
+        {}
+        <Route path="/" element={<Home/>}/>
+      </Routes>
+    </Router>
+  );
+}
 const SlowFade = cssTransition({
   enter: 'fadeIn',
   exit: 'fadeOut',
