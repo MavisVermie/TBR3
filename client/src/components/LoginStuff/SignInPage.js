@@ -1,5 +1,7 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import logo from "../../assets/logoo2.png";
 
 export default function SignInPage({ setAuth }) {
   const [inputs, setInputs] = useState({
@@ -46,7 +48,7 @@ export default function SignInPage({ setAuth }) {
       <div className=" w-full max-w-md px-6 py-12 shadow-2xl bg-white/10 backdrop-blur-md rounded-2xl transition-all duration-500 ease ">
         <div className="flex flex-col items-center text-center gap-8">
           {/* Logo Image */}
-          <img src="/logoo.png" alt="TBR3 Logo" className="w-1/2 h-29" />
+          <img src={logo} alt="TBR3 Logo" className="w-1/2 h-29" />
 
           <form onSubmit={onSubmitForm} className="w-full text-left space-y-6">
             {/* Email Input */}

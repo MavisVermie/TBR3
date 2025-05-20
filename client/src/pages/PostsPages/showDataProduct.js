@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./showDataProduct.css";
 
@@ -8,30 +8,220 @@ import "./showDataProduct.css";
  * This component displays a single product post with its details, images, and contact information.
  * It includes features like image gallery with navigation, keyboard controls, and contact seller functionality.
  */
+
+// ثوابت للتحكم في إعادة المحاولات
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000;
+const IMAGE_LOAD_TIMEOUT = 5000;
+
+// دالة محسنة لتحميل الصور
+const loadImage = (base64String) => {
+  return new Promise((resolve, reject) => {
+    if (!base64String) {
+      reject(new Error('Invalid image data'));
+      return;
+    }
+
+    const img = new Image();
+    const timeoutId = setTimeout(() => {
+      reject(new Error('Image load timeout'));
+    }, IMAGE_LOAD_TIMEOUT);
+
+    img.onload = () => {
+      clearTimeout(timeoutId);
+      resolve(img);
+    };
+
+    img.onerror = () => {
+      clearTimeout(timeoutId);
+      reject(new Error('Failed to load image'));
+    };
+
+    try {
+      img.src = `data:image/jpeg;base64,${base64String}`;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      reject(new Error('Invalid image format'));
+    }
+  });
+};
+
+// دالة محسنة لجلب البيانات مع إعادة المحاولة
+const fetchWithRetry = async (url, options = {}, retries = MAX_RETRIES) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios({
+      url,
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+        ...options.headers
+      },
+      validateStatus: function (status) {
+        return status >= 200 && status < 500;
+      }
+    });
+
+    if (response.status === 401) {
+      throw new Error('Unauthorized access');
+    }
+
+    if (response.status === 404) {
+      throw new Error('Post not found');
+    }
+
+    if (response.status >= 500) {
+      throw new Error('Server error');
+    }
+
+    return response.data;
+  } catch (error) {
+    if (retries > 0 && error.message !== 'Unauthorized access') {
+      await new Promise(resolve => setTimeout(resolve, RETRY_DELAY));
+      return fetchWithRetry(url, options, retries - 1);
+    }
+    throw error;
+  }
+};
+
 export default function ShowDataProduct() {
   // Get the post ID from URL parameters
   const { id } = useParams();
+  const navigate = useNavigate();
   
   // State management
   const [post, setPost] = useState(null); // Stores the post data
   const [showContact, setShowContact] = useState(false); // Controls contact popup visibility
   const [selectedImage, setSelectedImage] = useState(null); // Currently selected image for full view
   const [currentImageIndex, setCurrentImageIndex] = useState(0); // Index of currently displayed image
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [loadedImages, setLoadedImages] = useState({});
+  const [cache, setCache] = useState({});
+  const imageLoadQueue = useRef([]);
+  const isProcessingQueue = useRef(false);
 
-  // Fetch post data when component mounts
-  useEffect(() => {
-    const fetchPost = async () => {
-      try {
-        const res = await axios.get(`http://localhost:5000/Posting/posts/${id}`);
-        setPost(res.data);
-      } catch (error) {
-        console.error("Error fetching post:", error);
+  // دالة لمعالجة قائمة انتظار تحميل الصور
+  const processImageQueue = useCallback(async () => {
+    if (isProcessingQueue.current || imageLoadQueue.current.length === 0) return;
+
+    isProcessingQueue.current = true;
+    const imageToLoad = imageLoadQueue.current.shift();
+
+    try {
+      await loadImage(imageToLoad.base64);
+      setLoadedImages(prev => ({
+        ...prev,
+        [imageToLoad.id]: true
+      }));
+    } catch (error) {
+      console.error('Error loading image:', error);
+      // لا نقوم بإعادة الصورة إلى قائمة الانتظار لتجنب التكرار
+    }
+
+    isProcessingQueue.current = false;
+    processImageQueue();
+  }, []);
+
+  // دالة محسنة لجلب بيانات المنشور
+  const fetchPost = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      if (!id) {
+        throw new Error('Invalid post ID');
       }
-    };
-    fetchPost();
-  }, [id]);
 
-  // Add keyboard navigation for images
+      if (cache[id]) {
+        setPost(cache[id]);
+        setIsLoading(false);
+        return;
+      }
+
+      const data = await fetchWithRetry(`http://localhost:5000/Posting/posts/${id}`);
+      
+      if (!data || typeof data !== 'object') {
+        throw new Error('Invalid response format');
+      }
+
+      setCache(prev => ({
+        ...prev,
+        [id]: data
+      }));
+      
+      setPost(data);
+
+      // تحميل الصور بشكل تدريجي
+      if (data.primary_photo) {
+        imageLoadQueue.current.push({
+          id: 'primary',
+          base64: data.primary_photo
+        });
+      }
+
+      if (data.extra_images?.length) {
+        data.extra_images.forEach((img, index) => {
+          if (img) {
+            imageLoadQueue.current.push({
+              id: `extra_${index}`,
+              base64: img
+            });
+          }
+        });
+      }
+
+      processImageQueue();
+    } catch (error) {
+      console.error("Error fetching post:", error);
+      let errorMessage = "Failed to load post. ";
+      
+      if (error.message === 'Unauthorized access') {
+        errorMessage += "Please log in to view this post.";
+        navigate('/login');
+      } else if (error.message === 'Post not found') {
+        errorMessage += "The post you're looking for doesn't exist.";
+        navigate('/');
+      } else if (error.message === 'Server error') {
+        errorMessage += "Server is currently unavailable. Please try again later.";
+      } else {
+        errorMessage += "Please try again.";
+      }
+      
+      setError(errorMessage);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [id, cache, processImageQueue, navigate]);
+
+  useEffect(() => {
+    fetchPost();
+  }, [fetchPost]);
+
+  // تحسين معالجة الصور
+  const allImages = useMemo(() => {
+    if (!post) return [];
+    return [
+      post.primary_photo,
+      ...(post.extra_images || [])
+    ].filter(Boolean);
+  }, [post]);
+
+  // تحسين التنقل بين الصور
+  const handleImageClick = useCallback((index) => {
+    setCurrentImageIndex(index);
+  }, []);
+
+  const handleNextImage = useCallback(() => {
+    setCurrentImageIndex(prev => (prev + 1) % allImages.length);
+  }, [allImages.length]);
+
+  const handlePrevImage = useCallback(() => {
+    setCurrentImageIndex(prev => (prev - 1 + allImages.length) % allImages.length);
+  }, [allImages.length]);
+
+  // تحسين التنقل باستخدام لوحة المفاتيح
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowRight') {
@@ -43,31 +233,99 @@ export default function ShowDataProduct() {
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentImageIndex]);
-
-  // Combine primary and extra images into a single array
-  const allImages = post ? [
-    post.primary_photo,
-    ...(post.extra_images || [])
-  ].filter(Boolean) : [];
-
-  // Image navigation handlers
-  const handleImageClick = (index) => {
-    setCurrentImageIndex(index);
-  };
-
-  const handleNextImage = () => {
-    const nextIndex = (currentImageIndex + 1) % allImages.length;
-    setCurrentImageIndex(nextIndex);
-  };
-
-  const handlePrevImage = () => {
-    const prevIndex = (currentImageIndex - 1 + allImages.length) % allImages.length;
-    setCurrentImageIndex(prevIndex);
-  };
+  }, [handleNextImage, handlePrevImage]);
 
   // Show loading state while fetching data
-  if (!post) return <div className="text-center mt-10">Loading post...</div>;
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-100 py-10 px-4 flex items-center justify-center">
+        <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-md">
+          <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Post</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <div className="space-y-4">
+            <button
+              onClick={fetchPost}
+              className="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
+            >
+              Try Again
+            </button>
+            <button
+              onClick={() => navigate('/')}
+              className="w-full px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors duration-200"
+            >
+              Go to Home
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!post) return (
+    <div className="min-h-screen bg-gray-100 py-10 px-4">
+      <div className="max-w-7xl mx-auto">
+        {/* Header Skeleton */}
+        <div className="bg-white p-8 rounded-xl shadow-lg mb-8 animate-pulse">
+          <div className="h-8 bg-gray-200 rounded w-3/4 mb-3"></div>
+          <div className="flex items-center justify-between">
+            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+            <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column Skeleton */}
+          <div className="lg:col-span-2">
+            <div className="bg-white p-6 rounded-xl shadow-lg">
+              <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
+              <div className="bg-gray-200 rounded-xl h-[500px] mb-4"></div>
+              <div className="grid grid-cols-5 gap-3">
+                {[...Array(5)].map((_, i) => (
+                  <div key={i} className="bg-gray-200 rounded-lg h-[120px]"></div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column Skeleton */}
+          <div className="lg:col-span-1">
+            <div className="bg-white p-6 rounded-xl shadow-lg mb-8">
+              <div className="h-6 bg-gray-200 rounded w-1/2 mb-4"></div>
+              <div className="space-y-6">
+                <div>
+                  <div className="h-5 bg-gray-200 rounded w-1/4 mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                </div>
+                <div>
+                  <div className="h-5 bg-gray-200 rounded w-1/3 mb-3"></div>
+                  <div className="space-y-3">
+                    {[...Array(3)].map((_, i) => (
+                      <div key={i} className="h-4 bg-gray-200 rounded w-full"></div>
+                    ))}
+                  </div>
+                </div>
+                <div className="border-t pt-6">
+                  <div className="h-5 bg-gray-200 rounded w-1/3 mb-3"></div>
+                  <div className="space-y-4">
+                    {[...Array(3)].map((_, i) => (
+                      <div key={i} className="space-y-2">
+                        <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+                        <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div className="pt-4">
+                  <div className="h-12 bg-gray-200 rounded-lg w-full"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4">
@@ -107,11 +365,22 @@ export default function ShowDataProduct() {
 
                   {/* Main Image Display */}
                   <div className="flex items-center justify-center p-4">
-                    <img
-                      src={`data:image/jpeg;base64,${allImages[currentImageIndex]}`}
-                      alt="Main"
-                      className="max-w-full max-h-[500px] w-auto h-auto object-contain rounded-xl shadow-md"
-                    />
+                    {allImages[currentImageIndex] && (
+                      <img
+                        src={`data:image/jpeg;base64,${allImages[currentImageIndex]}`}
+                        alt="Main"
+                        className={`max-w-full max-h-[500px] w-auto h-auto object-contain rounded-xl shadow-md transition-opacity duration-300 ${
+                          loadedImages[`extra_${currentImageIndex}`] ? 'opacity-100' : 'opacity-0'
+                        }`}
+                        loading="lazy"
+                        onLoad={(e) => {
+                          setLoadedImages(prev => ({
+                            ...prev,
+                            [`extra_${currentImageIndex}`]: true
+                          }));
+                        }}
+                      />
+                    )}
                   </div>
 
                   {/* Next Image Button */}
@@ -140,7 +409,16 @@ export default function ShowDataProduct() {
                           <img
                             src={`data:image/jpeg;base64,${img}`}
                             alt={`Thumbnail ${idx + 1}`}
-                            className="max-w-full max-h-full w-auto h-auto object-contain transition-transform duration-300 hover:scale-110"
+                            className={`max-w-full max-h-full w-auto h-auto object-contain transition-all duration-300 ${
+                              loadedImages[`extra_${idx}`] ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+                            }`}
+                            loading="lazy"
+                            onLoad={(e) => {
+                              setLoadedImages(prev => ({
+                                ...prev,
+                                [`extra_${idx}`]: true
+                              }));
+                            }}
                           />
                           {/* Selected Image Indicator */}
                           {currentImageIndex === idx && (

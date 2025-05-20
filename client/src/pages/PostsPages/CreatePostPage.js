@@ -19,17 +19,8 @@ function CreatePostPage({ onPostCreated }) {
   const [features, setFeatures] = useState(['']);
 
   const categoryOptions = [
-    "Furniture",
-    "Electronics",
-    "Games",
-    "Clothing",
-    "Books",
-    "Appliances",
-    "Toys",
-    "Tools",
-    "Sports Equipment",
-    "Food",
-    "Other"
+    "Furniture", "Electronics", "Games", "Clothing", "Books",
+    "Appliances", "Toys", "Tools", "Sports Equipment", "Food", "Other"
   ];
 
   const onDrop = useCallback((acceptedFiles) => {
@@ -69,11 +60,14 @@ function CreatePostPage({ onPostCreated }) {
     formData.append("title", title);
     formData.append("description", description);
     formData.append("features", JSON.stringify(features.filter(f => f.trim() !== '')));
-    
-    // إضافة الصور إلى النموذج
-    if (images.length > 0) {
-      formData.append("primary", images[0]); // الصورة الرئيسية
-    }
+    formData.append("email", email);
+    formData.append("phone", phone);
+    formData.append("location", location);
+    formData.append("category", category);
+
+    images.forEach((img) => {
+      formData.append("images", img);
+    });
 
     setIsUploading(true);
     setUploadProgress(0);
@@ -90,8 +84,7 @@ function CreatePostPage({ onPostCreated }) {
       if (response.ok) {
         const data = await response.json();
         toast.success("Created Item Post Successfully");
-        
-        // إعادة تعيين النموذج
+
         setTitle("");
         setDescription("");
         setImages([]);
@@ -102,21 +95,25 @@ function CreatePostPage({ onPostCreated }) {
         setLocation("");
         setUploadProgress(0);
 
-        // التنقل إلى صفحة المنشور الجديد
         if (data.post_id) {
           navigate(`/posts/${data.post_id}`);
         } else {
-          navigate('/'); // إذا لم يتم إرجاع معرف المنشور، انتقل إلى الصفحة الرئيسية
+          navigate('/');
         }
 
         if (onPostCreated) onPostCreated();
       } else {
-        const errorData = await response.json();
-        toast.error(errorData.message || "Unable to create Item Post");
+        const errorText = await response.text();
+        try {
+          const errorData = JSON.parse(errorText);
+          toast.error(errorData.message || "Unable to create Item Post");
+        } catch {
+          toast.error(errorText || "Unable to create Item Post");
+        }
       }
     } catch (err) {
-      console.error(err.message);
-      toast.error("An error occurred");
+      console.error("Submit Error:", err);
+      toast.error("An error occurred while creating the post.");
     } finally {
       setIsUploading(false);
     }
