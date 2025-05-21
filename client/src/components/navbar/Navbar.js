@@ -10,6 +10,8 @@ const navigation = [
   { name: 'My Feed', href: '/' },
   { name: 'Create Post', href: '/create_post' },
   { name: 'About Us', href: '/about' },
+  { name: 'My Posts', href: '/my-posts' },
+
 ];
 
 function classNames(...classes) {
