@@ -1,16 +1,20 @@
 import React from 'react';
 import HeroSection from '../components/HeroSection';
-import MissionSection from '../components/MissionSection';
+import WelcomeSection from '../components/WelcomeSection';
 import StatsSection from '../components/StatsSection';
+import ProcessSection from '../components/ProcessSection';
 import Footer from '../components/Footer';
-const Home=()=>{
-    return (
-        <div>
-           <HeroSection />
-           <MissionSection />
-           <StatsSection />
-           <Footer />
-        </div>
-    );
+
+const Home = () => {
+  return (
+    <>
+      <HeroSection />
+      <WelcomeSection />
+      <StatsSection />
+      <ProcessSection />
+      <Footer />
+    </>
+  );
 };
+
 export default Home;

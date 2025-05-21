@@ -1,57 +1,67 @@
 @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@600&display=swap');
 
 .hero-section {
-    background: linear-gradient(to right, #e0f7f1, #b2dfdb); /* درجات النعنع */
-    color: #00332e;
-    padding: 80px 20px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    direction: rtl;
-    font-family: 'Cairo', sans-serif;
+  background: url('../assets/hero-bg.jpg') center/cover no-repeat;
+  height: 100vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  direction: rtl;
+  font-family: 'Cairo', sans-serif;
+  color: white;
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5); /* تغطية لتوضيح النص */
+  z-index: 0;
 }
 
 .hero-content {
-    max-width: 700px;
-    background-color: rgba(255, 255, 255, 0.4);
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 0 25px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  max-width: 700px;
 }
 
 .hero-title {
-    font-size: 3rem;
-    margin-bottom: 20px;
-    color: #004d40;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
-    letter-spacing: 1px;
+  font-size: 3rem;
+  margin-bottom: 20px;
+  font-weight: 800;
+  text-shadow: 2px 2px 5px black;
 }
 
 .hero-subtitle {
-    font-size: 1.4rem;
-    margin-bottom: 30px;
-    color: #004d40;
-    line-height: 2;
+  font-size: 1.3rem;
+  margin-bottom: 30px;
+  color: #eeeeee;
 }
 
-.hero-button {
-    padding: 14px 28px;
-    font-size: 1.1rem;
-    background-color: #a7ffeb;
-    color: #004d40;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: bold;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+.hero-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
 }
 
-.hero-button:hover {
-    background-color: #64ffda;
-    transform: scale(1.05);
-    color: #002921;
+.btn {
+  padding: 12px 24px;
+  font-size: 1rem;
+  border-radius: 8px;
+  font-weight: bold;
+  cursor: pointer;
+  border: none;
+}
+
+.primary {
+  background-color: #e60000; 
+  color: white;
+}
+
+.secondary {
+  background-color: white;
+  color: black;
 }

@@ -1,21 +1,25 @@
+import React from 'react';
 import './StatsSection.css';
+
+const stats = [
+  { number: 29, label: 'شركات شريكة' },
+  { number: 874, label: 'عدد الموظفين' },
+  { number: '169k', label: 'عملاء' },
+  { number: 265, label: 'نمو الموظفين' },
+];
 
 const StatsSection = () => {
   return (
     <section className="stats-section">
-      <h2>Who we are?</h2>
-      <div className="stats-cards">
-        <div className="stats-card card-black">
-          <p>Jordan</p>
+      {stats.map((stat, index) => (
+        <div className="stat-box" key={index}>
+          <div className="stat-number">{stat.number}</div>
+          <div className="stat-label">{stat.label}</div>
         </div>
-        <div className="stats-card card-red">
-          <p>Al al-Bayt University</p>
-        </div>
-        <div className="stats-card card-green">
-          <p>College of Technology</p>
-        </div>
-      </div>
+      ))}
     </section>
   );
 };
+
 export default StatsSection;
+
