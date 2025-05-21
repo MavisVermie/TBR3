@@ -170,10 +170,9 @@ const decoded = jwtDecode(token);
   const isOwner = currentUserId === postOwnerId;
 
   return (
-    <div className="flex justify-center items-start min-h-screen bg-gray-100 pt-20">
-      <div className="container mx-auto p-6 max-w-2xl bg-white shadow-md rounded-lg mt-12">
-        <h1 className="text-2xl font-bold text-center mb-6">Edit Your Post</h1>
-
+    <div className="w-full min-h-screen bg-gray-100 pt-5">
+      <div className="container mx-auto bg-white p-6  w-2/3 shadow-md rounded-lg mt-5">
+        <h1 className="text-4xl  text-red-700 font-semibold text-center mb-6">Edit Your Post</h1>
         {loadingData ? (
           <p>Loading post data...</p>
         ) : !isOwner /* && !isAdmin */ ? ( // <-- Uncomment `&& !isAdmin` if you want admins to bypass
@@ -181,10 +180,10 @@ const decoded = jwtDecode(token);
             ❌ You are not authorized to edit this post.
           </p>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required className="w-full border p-2 rounded" placeholder="Title" />
+          <form onSubmit={handleSubmit} className="space-y-4 ">
+            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required className="w-full border p-2 rounded " placeholder="Title" />
 
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={5} required className="w-full border p-2 rounded" placeholder="Description" />
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={5} required className="w-full border p-2 rounded resize-none " placeholder="Description"  />
 
             <select value={category} onChange={(e) => setCategory(e.target.value)} required className="w-full border p-2 rounded">
               <option value="" disabled>-- Select a Category --</option>
@@ -193,7 +192,7 @@ const decoded = jwtDecode(token);
               ))}
             </select>
 
-            <div {...getRootProps()} className="border-dashed border-2 p-4 text-center rounded cursor-pointer">
+            <div {...getRootProps()} className="border-dashed border-2 p-4 text-center rounded cursor-pointer text-slate-600">
               <input {...getInputProps()} />
               {isDragActive ? <p>Drop the images here...</p> : <p>Click or drag images to upload (5MB max each)</p>}
             </div>
@@ -229,7 +228,7 @@ const decoded = jwtDecode(token);
 
             <ContactInfo email={email} setEmail={setEmail} phone={phone} setPhone={setPhone} />
 
-            <button type="submit" disabled={isUploading} className="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+            <button type="submit" disabled={isUploading} className="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-red-700">
               {isUploading ? "Updating..." : "Update Post"}
             </button>
           </form>

@@ -336,11 +336,11 @@ const showEditButton = post && (
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-4">
+    <div className="min-h-screen bg-gray-100 py-10 px-4 font-mono">
       <div className="max-w-full mx-auto">
         {/* Header Section - Title and Basic Info */}
-        <div className="bg-white/70 p-8 rounded-xl shadow-md mb-8">
-          <h1 className="text-4xl font-semibold text-green-700 font-sans">{post.title}</h1>
+        <div className="bg-white/90 p-8 rounded-xl shadow-md mb-8">
+          <h1 className="text-4xl font-semibold text-green-600 font-sans">{post.title}</h1>
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">
               Posted by <span className="font-semibold text-gray-800">{post.username}</span>
@@ -348,16 +348,22 @@ const showEditButton = post && (
             <p className="text-sm text-gray-500">
               Location: <span className="font-semibold text-gray-800">{post.location}</span>
             </p>
+           
           </div>
-          
+           <div className="w-1/6">
+                {showEditButton && (<button
+                onClick={() => navigate(`/edit_post/${post.post_id}`)}
+                className="w-full bg-red-600 text-white px-8 py-4 rounded-lg hover:bg-red-800
+              transition text-lg font-semibold shadow-md mt-4"> Edit Post  </button>)}
+        </div>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Left Column - Image Gallery */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-l shadow-lg">              
+            <div className="bg-white rounded-lg shadow-lg">              
               <div className="image-gallery">
                 {/* Main Image Container with Navigation Arrows */}
-                <div className="main-image-container mb-5 bg-gray-100 rounded-l relative">
+                <div className="main-image-container mb-5 bg-white  rounded-lg  relative">
                   {/* Previous Image Button */}
                   <button
                     className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-10"
@@ -374,7 +380,7 @@ const showEditButton = post && (
                       <img
                         src={`data:image/jpeg;base64,${allImages[currentImageIndex]}`}
                         alt="Main"
-                        className={`max-w-full max-h-[500px] w-auto h-auto object-contain rounded-xl shadow-md transition-opacity duration-300 ${
+                        className={`max-w-full max-h-[500px] w-auto h-auto object-contain rounded-sm transition-opacity duration-300 ${
                           loadedImages[`extra_${currentImageIndex}`] ? 'opacity-100' : 'opacity-0'
                         }`}
                         loading="lazy"
@@ -401,7 +407,7 @@ const showEditButton = post && (
 
                 {/* Thumbnail Gallery - Shows all available images */}
                 {allImages.length > 1 && (
-                  <div className="thumbnail-gallery mt-4">
+                  <div className="thumbnail-gallery mt-4 p-5">
                     <div className="grid grid-cols-5 gap-3">
                       {allImages.map((img, idx) => (
                         <div
@@ -446,16 +452,9 @@ const showEditButton = post && (
 
           {/* Right Column - Product Details */}
           <div className="lg:col-span-1">
-            <div className="bg-white p-6 rounded-xl shadow-lg mb-8">
-              {showEditButton && (
-  <button
-    onClick={() => navigate(`/edit_post/${post.post_id}`)}
-    className="w-full bg-yellow-500 text-white px-8 py-4 rounded-lg hover:bg-yellow-600 transition text-lg font-semibold shadow-md mt-4"
-  >
-    Edit Post
-  </button>
-)}
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Product Details</h2>
+            <div className="bg-white p-6 rounded-l shadow-lg mb-8">
+    
+              <h2 className="text-xl font-semibold text-green-700 mb-4">Product Details</h2>
   
               <div className="space-y-6">
                 {/* Product Description */}
@@ -483,7 +482,7 @@ const showEditButton = post && (
 
                 {/* Contact Information */}
                 <div className="border-t pt-6">
-                  <h3 className="text-lg font-medium text-gray-800 mb-3">Contact Information</h3>
+                  <h3 className="text-lg  font-semibold text-red-600 mb-3">Contact Information</h3>
                   <div className="space-y-4">
                     <div>
                       <p className="text-sm text-gray-500">Email</p>
