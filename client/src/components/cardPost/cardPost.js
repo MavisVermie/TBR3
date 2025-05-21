@@ -179,7 +179,7 @@ export default function CardPost() {
 
       {isLoading ? <LoadingSkeleton /> : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-14 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-14  mx-auto">
             {paginatedPosts.map(post => (
               <Link to={`/posts/${post.post_id}`} key={post.post_id}>
                 <div

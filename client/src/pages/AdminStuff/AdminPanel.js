@@ -77,10 +77,10 @@ export default function AdminPanel() {
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4">
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-3xl font-bold text-green-700">Admin Panel – Manage Users</h2>
+        <h2 className="text-3xl font-semibold text-red-600 text-center"> Admin Panel – Manage Users</h2>
         <button
           onClick={() => navigate("/admin/posts")}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-2 rounded-md text-sm font-semibold"
+          className="bg-black hover:bg-blue-700 text-white px-5 py-2 rounded-md text-sm font-semibold"
         >
           Manage Posts
         </button>
@@ -88,7 +88,7 @@ export default function AdminPanel() {
 
       {loading ? (
         <div className="flex justify-center items-center h-32">
-          <div className="w-10 h-10 border-4 border-green-500 border-dashed rounded-full animate-spin"></div>
+          <div className="w-10 h-10 border-4 border-green-900 border-dashed rounded-full animate-spin"></div>
         </div>
       ) : !Array.isArray(users) ? (
         <p className="text-center text-red-500">Something went wrong loading users.</p>
@@ -96,11 +96,11 @@ export default function AdminPanel() {
         <p className="text-center text-gray-600">No users found.</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-full bg-white shadow-md rounded-xl overflow-hidden">
+          <table className="min-w-full bg-white shadow-md rounded-md overflow-hidden">
             <thead>
-              <tr className="bg-green-600 text-white">
-                <th className="py-3 px-4 text-left">Username</th>
-                <th className="py-3 px-4 text-left">Email</th>
+              <tr className="bg-green-900 text-white font-semibold font-serif">
+                <th className="py-3 px-4 text-center">Username</th>
+                <th className="py-3 px-4 text-center">Email</th>
                 <th className="py-3 px-4 text-center">Admin</th>
                 <th className="py-3 px-4 text-center">Actions</th>
               </tr>
@@ -120,7 +120,7 @@ export default function AdminPanel() {
                   <td className="py-3 px-4 text-center space-x-2">
                     <button
                       onClick={() => toggleAdmin(user.id)}
-                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded-md text-sm"
+                      className="bg-blue-600 hover:bg-purple-500 text-white px-3 py-1 rounded-md text-sm"
                     >
                       {user.is_admin ? "Demote" : "Promote"}
                     </button>
