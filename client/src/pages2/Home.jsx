@@ -1,17 +1,17 @@
 import React from 'react';
 import HeroSection from '../components/HeroSection';
-import WelcomeSection from '../components/WelcomeSection';
-import StatsSection from '../components/StatsSection';
-import ProcessSection from '../components/ProcessSection';
+import AboutSection from '../components/AboutSection';
+import CausesSection from '../components/CausesSection';
+import DonateSection from '../components/DonateSection';
 import Footer from '../components/Footer';
 
 const Home = () => {
   return (
     <>
       <HeroSection />
-      <WelcomeSection />
-      <StatsSection />
-      <ProcessSection />
+      <AboutSection />
+      <CausesSection />
+      <DonateSection />
       <Footer />
     </>
   );
