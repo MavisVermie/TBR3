@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import '../index.css';
 import tbr3logo from '../assets/tbr3.png';
-
 const people = [
   {
     name: 'Mohammad I Al-Majali',

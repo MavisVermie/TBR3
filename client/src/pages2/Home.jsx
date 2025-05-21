@@ -1,106 +1,58 @@
 import React from "react";
-import { Button } from "../components/ui/button";
-import { Card, CardContent } from "../components/ui/card";
-import { Leaf, Shirt, Recycle, Sparkles } from "lucide-react";
 
-export default function HomePage() {
+const Homepage = () => {
   return (
-    <div className="font-sans">
-      {/* Header */}
-      <header className="flex items-center justify-between p-6 bg-white shadow-md">
-        <div className="text-xl font-bold text-green-700">ClothCare</div>
-        <nav className="space-x-6 text-sm text-gray-700">
-          <a href="#">الرئيسية</a>
-          <a href="#">عن المبادرة</a>
-          <a href="#">كيف تتبرع؟</a>
-          <a href="#">المعرض</a>
-          <a href="#">تواصل معنا</a>
-          <Button className="bg-green-600 text-white px-4 py-2 rounded-xl">تبرع الآن</Button>
-        </nav>
-      </header>
+    <div className="min-h-screen bg-[#f3fffb] text-[#065f46] font-sans">
 
-      {/* Hero Section */}
-      <section className="relative bg-green-50 text-center py-20 px-4">
-   
-        <div className="relative z-10 max-w-3xl mx-auto">
-          <h1 className="text-4xl md:text-5xl font-bold text-green-800 mb-4">
-            تبرع بملابسك
+      <section className="relative w-full h-[450px] overflow-hidden rounded-b-3xl shadow-lg">
+        <img
+          src="/images/recycle2.jpg"
+          alt="تبرع"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center text-white text-center px-4">
+          <h1 className="text-5xl md:text-6xl font-bold mb-6 drop-shadow-lg">
+            Be influential and donate
           </h1>
-          <p className="text-lg text-gray-700 mb-6">
-            دع لقطعة الملابس قصة جديدة مع من يحتاجها
+          <p className="text-lg md:text-xl mb-8 max-w-2xl">
+            Help those in need with a simple donation
           </p>
-          <Button className="bg-black text-white px-6 py-3 rounded-xl text-lg">
-            تعرف أكثر
-          </Button>
+          <button className="bg-[#10b981] hover:bg-[#34d399] text-white font-bold py-3 px-8 rounded-full text-lg transition shadow-lg">
+        Donate now
+          </button>
         </div>
       </section>
 
-      {/* Statistics */}
-      <section className="py-16 text-center">
-        <h2 className="text-4xl text-green-700 font-bold">50000+</h2>
-        <p className="text-gray-600 mt-2">أشخاص ساهموا بالتبرع</p>
-      </section>
+      <section className="flex flex-col md:flex-row items-center bg-[#e0fff2] p-10 mt-20 rounded-3xl shadow-lg mx-4 gap-10">
+        <div className="md:w-1/2">
+          <img src="/images/ddd1.jpg" alt="أهمية التبرع" className="rounded-3xl shadow-lg w-full h-[400px] object-cover" />
+        </div>
+        <div className="md:w-1/2">
+          <h2 className="text-4xl font-bold text-[#10b981] mb-4 text-center md:text-left">The importance of reuse</h2>
+          <p className="text-lg text-[#065f46] leading-relaxed text-center md:text-left">
 
-      {/* Services */}
-      <section className="grid grid-cols-1 md:grid-cols-4 gap-6 px-8 py-12 bg-white">
-        <Card className="text-center p-6 bg-green-100">
-          <CardContent>
-            <Recycle size={40} className="mx-auto text-green-700 mb-4" />
-            <h3 className="text-lg font-bold">إعادة التدوير</h3>
-            <p className="text-sm text-gray-600 mt-2">
-              نحافظ على البيئة من خلال تدوير الملابس
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="text-center p-6 bg-green-100">
-          <CardContent>
-            <Shirt size={40} className="mx-auto text-green-700 mb-4" />
-            <h3 className="text-lg font-bold">توزيع عادل</h3>
-            <p className="text-sm text-gray-600 mt-2">
-              نوصل التبرعات للأسر المحتاجة
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="text-center p-6 bg-green-100">
-          <CardContent>
-            <Sparkles size={40} className="mx-auto text-green-700 mb-4" />
-            <h3 className="text-lg font-bold">تنظيف وتعقيم</h3>
-            <p className="text-sm text-gray-600 mt-2">
-              نعالج الملابس قبل توزيعها
-            </p>
-          </CardContent>
-        </Card>
-        <Card className="text-center p-6 bg-green-100">
-          <CardContent>
-            <Leaf size={40} className="mx-auto text-green-700 mb-4" />
-            <h3 className="text-lg font-bold">شراكات خيرية</h3>
-            <p className="text-sm text-gray-600 mt-2">
-              بالتعاون مع الجمعيات المحلية
-            </p>
-          </CardContent>
-        </Card>
-      </section>
+Reusing is important not only because it saves resources and protects the environment, but also because it helps spread kindness among people. When we reuse items we no longer need and donate them, we give those things a new chance to benefit others instead of throwing them away as waste. This act strengthens the spirit of giving and solidarity in the community and supports those in need of items we might consider simple. In doing so, we contribute to building a more cooperative society and preserving a clean and healthy planet for future generations.
 
-      {/* Call to Action */}
-      <section className="flex flex-col md:flex-row items-center justify-between bg-black text-white py-12 px-6">
-      
-        <div className="md:ml-10 mt-6 md:mt-0">
-          <h2 className="text-3xl font-bold mb-4">
-            شارك في حملتنا وساهم بتغيير حياة إنسان
-          </h2>
-          <p className="text-gray-300 mb-6">
-            تبرع بقطعة، وامنح أملاً.
           </p>
-          <div className="space-x-4 rtl:space-x-reverse">
-            <Button className="bg-green-600 text-white px-6 py-2 rounded-xl">
-              تبرع الآن
-            </Button>
-            <Button className="bg-white text-black px-6 py-2 rounded-xl">
-              عرض التفاصيل
-            </Button>
-          </div>
         </div>
       </section>
+
+      <section className="flex flex-col md:flex-row-reverse items-center bg-[#dffef3] p-10 mt-20 rounded-3xl shadow-lg mx-4 mb-10 gap-10">
+        <div className="md:w-1/2">
+          <img src="/images/uni.jpg" alt="Who we are" className="rounded-3xl shadow-lg w-full h-[400px] object-cover" />
+        </div>
+        <div className="md:w-1/2">
+          <h2 className="text-4xl font-bold text-[#10b981] mb-4 text-center md:text-left">Who we are?</h2>
+          <p className="text-lg text-[#065f46] leading-relaxed text-center md:text-left">
+             We are six students from the College of Technology at Al al-Bayt University, from different majors but united by one goal: to help people and protect our environment. We created a website to encourage recycling and donating items we no longer need, giving them a new chance to benefit others and keep the Earth clean. We believe every small action makes a big difference, and we work together to make a real impact.
+
+
+          </p>
+        </div>
+      </section>
+
     </div>
   );
-}
+};
+
+export default Homepage;
