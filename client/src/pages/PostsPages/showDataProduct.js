@@ -2,6 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback, useRef } from "react"
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./showDataProduct.css";
+import { jwtDecode } from 'jwt-decode';
 
 /**
  * SinglePost Component
@@ -9,12 +10,10 @@ import "./showDataProduct.css";
  * It includes features like image gallery with navigation, keyboard controls, and contact seller functionality.
  */
 
-// ثوابت للتحكم في إعادة المحاولات
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 const IMAGE_LOAD_TIMEOUT = 5000;
 
-// دالة محسنة لتحميل الصور
 const loadImage = (base64String) => {
   return new Promise((resolve, reject) => {
     if (!base64String) {
@@ -46,7 +45,6 @@ const loadImage = (base64String) => {
   });
 };
 
-// دالة محسنة لجلب البيانات مع إعادة المحاولة
 const fetchWithRetry = async (url, options = {}, retries = MAX_RETRIES) => {
   try {
     const token = localStorage.getItem('token');
@@ -101,8 +99,21 @@ export default function ShowDataProduct() {
   const [cache, setCache] = useState({});
   const imageLoadQueue = useRef([]);
   const isProcessingQueue = useRef(false);
-
-  // دالة لمعالجة قائمة انتظار تحميل الصور
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+    useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        console.log("Decoded token:", decoded)
+        setCurrentUserId(decoded.userId); // Adjust this field if needed
+        setIsAdmin(decoded.isAdmin);
+      } catch (e) {
+        console.error("Failed to decode token", e);
+      }
+    }
+  }, []);
   const processImageQueue = useCallback(async () => {
     if (isProcessingQueue.current || imageLoadQueue.current.length === 0) return;
 
@@ -117,14 +128,12 @@ export default function ShowDataProduct() {
       }));
     } catch (error) {
       console.error('Error loading image:', error);
-      // لا نقوم بإعادة الصورة إلى قائمة الانتظار لتجنب التكرار
     }
 
     isProcessingQueue.current = false;
     processImageQueue();
   }, []);
 
-  // دالة محسنة لجلب بيانات المنشور
   const fetchPost = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -153,7 +162,6 @@ export default function ShowDataProduct() {
       
       setPost(data);
 
-      // تحميل الصور بشكل تدريجي
       if (data.primary_photo) {
         imageLoadQueue.current.push({
           id: 'primary',
@@ -199,7 +207,6 @@ export default function ShowDataProduct() {
     fetchPost();
   }, [fetchPost]);
 
-  // تحسين معالجة الصور
   const allImages = useMemo(() => {
     if (!post) return [];
     return [
@@ -208,7 +215,6 @@ export default function ShowDataProduct() {
     ].filter(Boolean);
   }, [post]);
 
-  // تحسين التنقل بين الصور
   const handleImageClick = useCallback((index) => {
     setCurrentImageIndex(index);
   }, []);
@@ -221,7 +227,6 @@ export default function ShowDataProduct() {
     setCurrentImageIndex(prev => (prev - 1 + allImages.length) % allImages.length);
   }, [allImages.length]);
 
-  // تحسين التنقل باستخدام لوحة المفاتيح
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowRight') {
@@ -234,6 +239,9 @@ export default function ShowDataProduct() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleNextImage, handlePrevImage]);
+const showEditButton = post && (
+  String(currentUserId) === String(post.user_id) 
+);
 
   // Show loading state while fetching data
   if (error) {
@@ -341,6 +349,7 @@ export default function ShowDataProduct() {
               Location: <span className="font-semibold text-gray-800">{post.location}</span>
             </p>
           </div>
+          
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Left Column - Image Gallery */}
@@ -438,7 +447,16 @@ export default function ShowDataProduct() {
           {/* Right Column - Product Details */}
           <div className="lg:col-span-1">
             <div className="bg-white p-6 rounded-xl shadow-lg mb-8">
+              {showEditButton && (
+  <button
+    onClick={() => navigate(`/edit_post/${post.post_id}`)}
+    className="w-full bg-yellow-500 text-white px-8 py-4 rounded-lg hover:bg-yellow-600 transition text-lg font-semibold shadow-md mt-4"
+  >
+    Edit Post
+  </button>
+)}
               <h2 className="text-2xl font-semibold text-gray-800 mb-4">Product Details</h2>
+  
               <div className="space-y-6">
                 {/* Product Description */}
                 <div>
