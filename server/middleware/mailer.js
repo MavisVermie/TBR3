@@ -37,5 +37,22 @@ async function sendemail(to, resetlink) { // send email function
         console.error('there was a problem sending email:', error);
     }
 }
+async function SendeCustomEmail(to,htmlmsg)
+{
+    const mailOptions = {
+        from: process.env.GMAIL_USER,
+        to: to,
+        subject: '[TBR3] Account Password Reset',
+        html: htmlmsg
+    };
 
-module.exports = sendemail; // export the function to use in other files!!
+    try {
+        await transporter.sendMail(mailOptions);
+        console.log('customer email sentt');
+    } catch (error) {
+        console.error('there was a problem sending customer email:', error);
+    }
+}
+
+
+module.exports = {sendemail , SendeCustomEmail}; // export the function to use in other files!!

@@ -20,6 +20,7 @@ import AdminPanel from './pages/AdminStuff/AdminPanel';
 import AdminPosts from './pages/AdminStuff/AdminPosts';
 import NewHome from './pages2/Home';
 import SinglePost from './pages/PostsPages/showDataProduct';
+import EditPostPage from './pages/PostsPages/EditPostPage';
 
 import { cssTransition } from "react-toastify";
 
@@ -101,6 +102,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/myposts" element={isAuthenticated ? <MyPosts /> : <SignInPage setAuth={setAuth} />} />
+           <Route path="/edit_post/:id" element={isAuthenticated ? <EditPostPage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/admin" element={<AdminPanel />} />
             <Route path="/admin/posts" element={<AdminPosts />} />
             <Route path="/posts/:id" element={<SinglePost />} />

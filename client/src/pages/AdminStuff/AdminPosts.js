@@ -22,7 +22,6 @@ export default function AdminPosts() {
       }
 
       const data = await res.json();
-      console.log("Fetched posts:", data);
 
       if (Array.isArray(data)) {
         setPosts(data);
@@ -78,7 +77,7 @@ export default function AdminPosts() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <h2 className="text-3xl font-bold text-center text-green-700 mb-8">
+      <h2 className="text-3xl font-semibold text-center text-red-700 mb-8">
         Admin Panel – Manage Posts
       </h2>
 
@@ -89,11 +88,11 @@ export default function AdminPosts() {
       ) : posts.length === 0 ? (
         <p className="text-center text-gray-600 text-lg">No posts found.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-11">
           {posts.map((post) => (
             <div
               key={post.post_id}
-              className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200"
+              className="bg-white shadow-lg rounded-l overflow-hidden border border-gray-200"
             >
               {post.primary_photo && (
                 <img
