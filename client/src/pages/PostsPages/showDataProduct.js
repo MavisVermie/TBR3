@@ -329,10 +329,10 @@ export default function ShowDataProduct() {
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-full mx-auto">
         {/* Header Section - Title and Basic Info */}
-        <div className="bg-white p-8 rounded-xl shadow-lg mb-8">
-          <h1 className="text-4xl font-bold text-green-700 mb-3">{post.title}</h1>
+        <div className="bg-white/70 p-8 rounded-xl shadow-md mb-8">
+          <h1 className="text-4xl font-semibold text-green-700 font-sans">{post.title}</h1>
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">
               Posted by <span className="font-semibold text-gray-800">{post.username}</span>
@@ -342,17 +342,13 @@ export default function ShowDataProduct() {
             </p>
           </div>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Left Column - Image Gallery */}
           <div className="lg:col-span-2">
-            <div className="bg-white p-6 rounded-xl shadow-lg">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Product Images</h2>
-              
-              {/* Main Image Gallery with Navigation */}
+            <div className="bg-white rounded-l shadow-lg">              
               <div className="image-gallery">
                 {/* Main Image Container with Navigation Arrows */}
-                <div className="main-image-container mb-4 bg-gray-100 rounded-xl relative">
+                <div className="main-image-container mb-5 bg-gray-100 rounded-l relative">
                   {/* Previous Image Button */}
                   <button
                     className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-10"
