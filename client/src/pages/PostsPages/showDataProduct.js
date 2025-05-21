@@ -186,15 +186,15 @@ export default function ShowDataProduct() {
       let errorMessage = "Failed to load post. ";
       
       if (error.message === 'Unauthorized access') {
-        errorMessage += "Please log in to view this post.";
+        errorMessage += "الرجاء تسجيل الدخول لعرض هذا المنشور.";
         navigate('/login');
       } else if (error.message === 'Post not found') {
-        errorMessage += "The post you're looking for doesn't exist.";
+        errorMessage += "المنشور الذي تبحث عنه غير موجود.";
         navigate('/');
       } else if (error.message === 'Server error') {
-        errorMessage += "Server is currently unavailable. Please try again later.";
+        errorMessage += "الخادم غير متاح حالياً. الرجاء المحاولة لاحقاً.";
       } else {
-        errorMessage += "Please try again.";
+        errorMessage += "الرجاء المحاولة مرة أخرى.";
       }
       
       setError(errorMessage);
@@ -248,20 +248,20 @@ const showEditButton = post && (
     return (
       <div className="min-h-screen bg-gray-100 py-10 px-4 flex items-center justify-center">
         <div className="bg-white p-8 rounded-xl shadow-lg text-center max-w-md">
-          <h2 className="text-2xl font-bold text-red-600 mb-4">Error Loading Post</h2>
+          <h2 className="text-2xl font-bold text-red-600 mb-4">خطأ في تحميل المنشور</h2>
           <p className="text-gray-600 mb-6">{error}</p>
           <div className="space-y-4">
             <button
               onClick={fetchPost}
               className="w-full px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-200"
             >
-              Try Again
+              حاول مرة أخرى
             </button>
             <button
               onClick={() => navigate('/')}
               className="w-full px-6 py-3 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition-colors duration-200"
             >
-              Go to Home
+              العودة للرئيسية
             </button>
           </div>
         </div>
@@ -343,18 +343,17 @@ const showEditButton = post && (
           <h1 className="text-4xl font-semibold text-green-600 font-sans">{post.title}</h1>
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">
-              Posted by <span className="font-semibold text-gray-800">{post.username}</span>
+              تم النشر بواسطة <span className="font-semibold text-gray-800">{post.username}</span>
             </p>
             <p className="text-sm text-gray-500">
-              Location: <span className="font-semibold text-gray-800">{post.location}</span>
+              الموقع: <span className="font-semibold text-gray-800">{post.location}</span>
             </p>
-           
           </div>
            <div className="w-1/6">
                 {showEditButton && (<button
                 onClick={() => navigate(`/edit_post/${post.post_id}`)}
                 className="w-full bg-red-600 text-white px-8 py-4 rounded-lg hover:bg-red-800
-              transition text-lg font-semibold shadow-md mt-4"> Edit Post  </button>)}
+              transition text-lg font-semibold shadow-md mt-4">تعديل المنشور</button>)}
         </div>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -454,19 +453,19 @@ const showEditButton = post && (
           <div className="lg:col-span-1">
             <div className="bg-white p-6 rounded-l shadow-lg mb-8">
     
-              <h2 className="text-xl font-semibold text-green-700 mb-4">Product Details</h2>
+              <h2 className="text-xl font-semibold text-green-700 mb-4">تفاصيل المنتج</h2>
   
               <div className="space-y-6">
                 {/* Product Description */}
                 <div>
-                  <h3 className="text-lg font-medium text-gray-800 mb-2">Description</h3>
+                  <h3 className="text-lg font-medium text-gray-800 mb-2">الوصف</h3>
                   <p className="text-gray-700 leading-relaxed">{post.description}</p>
                 </div>
 
                 {/* Product Features */}
                 {post.features && post.features.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-medium text-gray-800 mb-3">Features</h3>
+                    <h3 className="text-lg font-medium text-gray-800 mb-3">المميزات</h3>
                     <ul className="space-y-3">
                       {post.features.map((feature, index) => (
                         <li key={index} className="flex items-start text-gray-700">
@@ -482,20 +481,20 @@ const showEditButton = post && (
 
                 {/* Contact Information */}
                 <div className="border-t pt-6">
-                  <h3 className="text-lg  font-semibold text-red-600 mb-3">Contact Information</h3>
+                  <h3 className="text-lg font-semibold text-red-600 mb-3">معلومات الاتصال</h3>
                   <div className="space-y-4">
                     <div>
-                      <p className="text-sm text-gray-500">Email</p>
+                      <p className="text-sm text-gray-500">البريد الإلكتروني</p>
                       <p className="text-gray-800 font-medium">{post.email}</p>
                     </div>
                     {post.phone_number && (
                       <div>
-                        <p className="text-sm text-gray-500">Phone Number</p>
+                        <p className="text-sm text-gray-500">رقم الهاتف</p>
                         <p className="text-gray-800 font-medium">{post.phone_number}</p>
                       </div>
                     )}
                     <div>
-                      <p className="text-sm text-gray-500">Location</p>
+                      <p className="text-sm text-gray-500">الموقع</p>
                       <p className="text-gray-800 font-medium">{post.location}</p>
                     </div>
                   </div>
@@ -507,7 +506,7 @@ const showEditButton = post && (
                     onClick={() => setShowContact(true)}
                     className="w-full bg-green-600 text-white px-8 py-4 rounded-lg hover:bg-green-700 transition text-lg font-semibold shadow-md"
                   >
-                    Contact Seller
+                    تواصل مع البائع
                   </button>
                 </div>
               </div>
@@ -519,11 +518,11 @@ const showEditButton = post && (
         {showContact && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white p-8 rounded-xl shadow-xl text-center w-96">
-              <h2 className="text-2xl font-bold text-green-700 mb-6">Contact Information</h2>
+              <h2 className="text-2xl font-bold text-green-700 mb-6">معلومات الاتصال</h2>
 
               {/* Email Section */}
               <div className="mb-6">
-                <p className="text-gray-800 font-medium mb-2">Email:</p>
+                <p className="text-gray-800 font-medium mb-2">البريد الإلكتروني:</p>
                 <a
                   href={`mailto:${post.email}`}
                   className="text-blue-600 underline break-words hover:text-blue-800"
@@ -534,8 +533,8 @@ const showEditButton = post && (
 
               {/* Phone Number Section */}
               <div className="mb-6">
-                <p className="text-gray-800 font-medium mb-2">Phone Number:</p>
-                <p className="text-gray-700 mb-3">{post.phone_number || "Not provided"}</p>
+                <p className="text-gray-800 font-medium mb-2">رقم الهاتف:</p>
+                <p className="text-gray-700 mb-3">{post.phone_number || "لم يتم توفيره"}</p>
 
                 {/* WhatsApp Button */}
                 {post.phone_number && (

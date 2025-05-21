@@ -38,19 +38,19 @@ export default function ResetPassword() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 font-sans">
       <div className="backdrop-blur-md bg-white/60 shadow-xl rounded-2xl p-8 w-full max-w-md">
         <h1 className="text-3xl font-semibold text-center text-green-700 mb-6">
-         Set Your New Password
+          تعيين كلمة المرور الجديدة
         </h1>
 
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
             <label htmlFor="password" className="sr-only">
-              New Password
+              كلمة المرور الجديدة
             </label>
             <input
               id="password"
               name="password"
               type="password"
-              placeholder="Enter new password"
+              placeholder="أدخل كلمة المرور الجديدة"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -62,7 +62,7 @@ export default function ResetPassword() {
             type="submit"
             className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md shadow-md transition duration-200"
           >
-            Reset Password
+            إعادة تعيين كلمة المرور
           </button>
         </form>
       </div>

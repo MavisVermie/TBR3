@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="bg-gray-800">
       <div className="mx-auto w-full max-w-screen-md p-4 flex items-center justify-center space-x-6 text-sm font-medium text-gray-500 dark:text-gray-400">
         <a href="/about" className="hover:underline">
-          About Us
+          من نحن
         </a>
         <a
           href="https://github.com/williamjsobczak/FREEcycle"

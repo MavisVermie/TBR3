@@ -56,14 +56,14 @@ const MyPosts = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 px-4 py-10">
-      <h2 className="text-3xl font-bold text-center mb-8 text-green-700">My Posts</h2>
+      <h2 className="text-3xl font-bold text-center mb-8 text-green-700">منشوراتي</h2>
 
       {loading ? (
         <div className="flex justify-center items-center h-48">
           <div className="w-12 h-12 border-4 border-green-500 border-dashed rounded-full animate-spin"></div>
         </div>
       ) : posts.length === 0 ? (
-        <p className="text-center text-gray-600">No posts yet.</p>
+        <p className="text-center text-gray-600">لا توجد منشورات حتى الآن.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {posts.map((post) => (
@@ -90,7 +90,7 @@ const MyPosts = () => {
                     onClick={() => deletePost(post.post_id)}
                     className="bg-red-600 text-white text-sm px-4 py-2 rounded-lg shadow hover:bg-red-700 transition"
                   >
-                    Delete
+                    حذف
                   </button>
                 </div>
               </div>

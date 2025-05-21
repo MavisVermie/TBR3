@@ -38,11 +38,11 @@ export default function CardPost() {
   const [currentPage, setCurrentPage] = useState(1);
 
   const categoryOptions = [
-    'All', 'Furniture', 'Electronics', 'Games', 'Clothing', 'Books',
-    'Appliances', 'Toys', 'Tools', 'Sports Equipment', 'Food', 'Other'
+    'الكل', 'أثاث', 'إلكترونيات', 'ألعاب', 'ملابس', 'كتب',
+    'أجهزة منزلية', 'ألعاب', 'أدوات', 'معدات رياضية', 'طعام', 'أخرى'
   ];
 
-  const extractCity = (location) => location?.split(' - ')[0]?.trim() || 'Unknown';
+  const extractCity = (location) => location?.split(' - ')[0]?.trim() || 'غير معروف';
 
   const getProfile = async () => {
     try {
@@ -146,20 +146,20 @@ export default function CardPost() {
   return (
     <section className="min-h-screen bg-gray-100 py-12 px-4">
       <div className="max-w-6xl mx-auto text-center mb-8">
-        <h1 className="text-4xl font-semibold text-red-700">Browsing All Items</h1>
+        <h1 className="text-4xl font-semibold text-red-700">تصفح جميع المنتجات</h1>
 
         <div className="flex flex-wrap justify-center gap-6 mt-6">
-          <Select label="Category" value={selectedCategory} onChange={setSelectedCategory} options={categoryOptions} />
-          <Select label="Location" value={selectedLocation} onChange={setSelectedLocation} options={locationOptions} />
-          <Select label="Sort by Time" value={sortOrder} onChange={setSortOrder} options={['Newest', 'Oldest']} />
+          <Select label="الفئة" value={selectedCategory} onChange={setSelectedCategory} options={categoryOptions} />
+          <Select label="الموقع" value={selectedLocation} onChange={setSelectedLocation} options={locationOptions} />
+          <Select label="ترتيب حسب الوقت" value={sortOrder} onChange={setSortOrder} options={['الأحدث', 'الأقدم']} />
           <div>
-            <label className="block text-sm text-green-900 mb-1">Search Title:</label>
+            <label className="block text-sm text-green-900 mb-1">البحث في العنوان:</label>
             <input
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
               className="border px-3 py-1 rounded shadow-sm w-40"
-              placeholder="e.g. chair"
+              placeholder="مثال: كرسي"
             />
           </div>
         </div>
@@ -172,7 +172,7 @@ export default function CardPost() {
             onClick={() => { setError(null); fetchPosts(); }}
             className="mt-2 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
           >
-            Try Again
+            حاول مرة أخرى
           </button>
         </div>
       )}
@@ -205,8 +205,8 @@ export default function CardPost() {
                   </div>
                   <div className="p-4">
                     <h3 className="text-lg font-semibold text-black truncate ">{post.title}</h3>
-                    <p className="text-sm text-zinc-600"><span className="font-medium ">Location:</span> {extractCity(post.location)}</p>
-                    <p className="text-sm text-gray-400"><span className="font-medium">Posted:</span> {new Date(post.created_at).toLocaleString()}</p>
+                    <p className="text-sm text-zinc-600"><span className="font-medium ">الموقع:</span> {extractCity(post.location)}</p>
+                    <p className="text-sm text-gray-400"><span className="font-medium">تاريخ النشر:</span> {new Date(post.created_at).toLocaleString()}</p>
                   </div>
                 </div>
               </Link>
@@ -219,7 +219,7 @@ export default function CardPost() {
                 onClick={handleLoadMore}
                 className="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition "
               >
-                Load More
+                عرض المزيد
               </button>
             </div>
           )}
@@ -228,7 +228,7 @@ export default function CardPost() {
 
       {!isLoading && filteredAndSortedPosts.length === 0 && !error && (
         <div className="text-center py-8 text-gray-600">
-          No posts found matching your criteria.
+          لم يتم العثور على منشورات تطابق معايير البحث.
         </div>
       )}
     </section>
@@ -238,14 +238,16 @@ export default function CardPost() {
 function Select({ label, value, onChange, options }) {
   return (
     <div>
-      <label className="block text-sm text-green-900 mb-1">{label}:</label>
+      <label className="block text-sm text-green-900 mb-1">{label}</label>
       <select
         value={value}
         onChange={e => onChange(e.target.value)}
-        className="border rounded px-3 py-1 shadow-sm"
+        className="border px-3 py-1 rounded shadow-sm w-40"
       >
-        {options.map(opt => (
-          <option key={opt} value={opt}>{opt}</option>
+        {options.map(option => (
+          <option key={option} value={option}>
+            {option === 'All' ? 'الكل' : option}
+          </option>
         ))}
       </select>
     </div>

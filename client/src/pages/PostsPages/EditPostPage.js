@@ -31,8 +31,8 @@ function EditPostPage() {
   const [isAdmin, setIsAdmin] = useState(false);
 
   const categoryOptions = [
-    "Furniture", "Electronics", "Games", "Clothing", "Books",
-    "Appliances", "Toys", "Tools", "Sports Equipment", "Food", "Other"
+    "أثاث", "إلكترونيات", "ألعاب", "ملابس", "كتب",
+    "أجهزة منزلية", "ألعاب", "أدوات", "معدات رياضية", "طعام", "أخرى"
   ];
 
   // 🔐 Decode user info from token
@@ -102,7 +102,7 @@ const decoded = jwtDecode(token);
       file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024
     );
     if (validFiles.length !== acceptedFiles.length) {
-      toast.warning("Some files were rejected. Only images under 5MB are allowed.");
+      toast.warning("تم رفض بعض الملفات. يُسمح فقط بالصور التي لا تتجاوز 5 ميجابايت.");
     }
     setImages(prev => [...prev, ...validFiles]);
   }, []);
@@ -121,7 +121,7 @@ const decoded = jwtDecode(token);
     e.preventDefault();
 
     if (!category) {
-      toast.error("Please select a category");
+      toast.error("الرجاء اختيار فئة");
       return;
     }
 
@@ -153,15 +153,15 @@ const decoded = jwtDecode(token);
       });
 
       if (response.ok) {
-        toast.success("Post updated successfully");
+        toast.success("تم تحديث المنشور بنجاح");
         navigate(`/posts/${id}`);
       } else {
         const errorText = await response.text();
-        toast.error(errorText || "Failed to update post");
+        toast.error(errorText || "فشل تحديث المنشور");
       }
     } catch (err) {
       console.error("Submit Error:", err);
-      toast.error("An error occurred while updating the post.");
+      toast.error("حدث خطأ أثناء تحديث المنشور.");
     } finally {
       setIsUploading(false);
     }
@@ -172,21 +172,21 @@ const decoded = jwtDecode(token);
   return (
     <div className="w-full min-h-screen bg-gray-100 pt-5">
       <div className="container mx-auto bg-white p-6  w-2/3 shadow-md rounded-lg mt-5">
-        <h1 className="text-4xl  text-red-700 font-semibold text-center mb-6">Edit Your Post</h1>
+        <h1 className="text-4xl  text-red-700 font-semibold text-center mb-6">تعديل المنشور</h1>
         {loadingData ? (
-          <p>Loading post data...</p>
+          <p>جاري تحميل بيانات المنشور...</p>
         ) : !isOwner /* && !isAdmin */ ? ( // <-- Uncomment `&& !isAdmin` if you want admins to bypass
           <p className="text-red-600 text-center font-semibold">
-            ❌ You are not authorized to edit this post.
+            ❌ غير مصرح لك بتعديل هذا المنشور.
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4 ">
-            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required className="w-full border p-2 rounded " placeholder="Title" />
+            <input type="text" value={title} onChange={(e) => setTitle(e.target.value)} required className="w-full border p-2 rounded " placeholder="العنوان" />
 
-            <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={5} required className="w-full border p-2 rounded resize-none " placeholder="Description"  />
+            <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={5} required className="w-full border p-2 rounded resize-none " placeholder="الوصف"  />
 
             <select value={category} onChange={(e) => setCategory(e.target.value)} required className="w-full border p-2 rounded">
-              <option value="" disabled>-- Select a Category --</option>
+              <option value="" disabled>-- اختر فئة --</option>
               {categoryOptions.map((opt, i) => (
                 <option key={i} value={opt}>{opt}</option>
               ))}
@@ -194,7 +194,7 @@ const decoded = jwtDecode(token);
 
             <div {...getRootProps()} className="border-dashed border-2 p-4 text-center rounded cursor-pointer text-slate-600">
               <input {...getInputProps()} />
-              {isDragActive ? <p>Drop the images here...</p> : <p>Click or drag images to upload (5MB max each)</p>}
+              {isDragActive ? <p>اسحب الصور هنا...</p> : <p>انقر أو اسحب الصور للرفع (الحد الأقصى 5 ميجابايت لكل صورة)</p>}
             </div>
 
             {(existingImages.length > 0 || images.length > 0) && (
@@ -224,12 +224,12 @@ const decoded = jwtDecode(token);
             )}
 
             <LocationMap onLocationSelect={setLocation} initialLocation={initialLocation} />
-            {location && <p className="text-sm text-gray-600">Selected Location: {location}</p>}
+            {location && <p className="text-sm text-gray-600">الموقع المحدد: {location}</p>}
 
             <ContactInfo email={email} setEmail={setEmail} phone={phone} setPhone={setPhone} />
 
             <button type="submit" disabled={isUploading} className="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-red-700">
-              {isUploading ? "Updating..." : "Update Post"}
+              {isUploading ? "جاري التحديث..." : "تحديث المنشور"}
             </button>
           </form>
         )}

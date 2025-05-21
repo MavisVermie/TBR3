@@ -19,8 +19,8 @@ function CreatePostPage({ onPostCreated }) {
   const [features, setFeatures] = useState(['']);
 
   const categoryOptions = [
-    "Furniture", "Electronics", "Games", "Clothing", "Books",
-    "Appliances", "Toys", "Tools", "Sports Equipment", "Food", "Other"
+    "أثاث", "إلكترونيات", "ألعاب", "ملابس", "كتب",
+    "أجهزة منزلية", "ألعاب", "أدوات", "معدات رياضية", "طعام", "أخرى"
   ];
 
   const onDrop = useCallback((acceptedFiles) => {
@@ -126,7 +126,7 @@ formData.append("features", JSON.stringify(allFeatures));
   <div className="min-h-screen bg-gray-100 flex flex-col font-sans ">
     <div className="w-full  py-6 px-4 md:px-12 lg:px-24 xl:px-40 mt-3 ">
       <h1 className="text-4xl font-bold text-red-700 text-center ">
-        Create a New Post
+        إنشاء منشور جديد
       </h1>
 
       {isUploading && (
@@ -138,7 +138,7 @@ formData.append("features", JSON.stringify(allFeatures));
             />
           </div>
           <p className="text-center text-sm text-green-800 mt-2">
-            Uploading... {uploadProgress}%
+            جاري الرفع... {uploadProgress}%
           </p>
         </div>
       )}
@@ -152,40 +152,40 @@ formData.append("features", JSON.stringify(allFeatures));
         <div className="space-y-6">
           {/* Title */}
           <div>
-            <label className="block text-lg font-semibold text-green-800 mb-1">Title</label>
+            <label className="block text-lg font-semibold text-green-800 mb-1">العنوان</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               required
-              placeholder="Enter item title"
+              placeholder="أدخل عنوان العنصر"
               className="w-full border border-gray-300 rounded-md px-4 py-2 "
             />
           </div>
 
           {/* Description */}
           <div>
-            <label className="block text-lg font-semibold text-green-800 mb-1">Description</label>
+            <label className="block text-lg font-semibold text-green-800 mb-1">الوصف</label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={5}
               required
-              placeholder="Write a detailed description"
+              placeholder="اكتب وصفاً مفصلاً"
               className="w-full border border-gray-300 rounded-md px-4 py-2   resize-none" 
             />
           </div>
 
           {/* Category */}
           <div>
-            <label className="block text-lg font-semibold text-green-800 mb-1">Category</label>
+            <label className="block text-lg font-semibold text-green-800 mb-1">الفئة</label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
               required
               className="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-green-500"
             >
-              <option value="">-- Select a Category --</option>
+              <option value="">-- اختر فئة --</option>
               {categoryOptions.map((option, index) => (
                 <option key={index} value={option}>
                   {option}
@@ -202,7 +202,7 @@ formData.append("features", JSON.stringify(allFeatures));
         <div className="space-y-6">
           {/* Image Upload */}
           <div>
-            <label className="block text-lg font-semibold text-green-800 mb-2">Images</label>
+            <label className="block text-lg font-semibold text-green-800 mb-2">الصور</label>
             <div
               {...getRootProps()}
               className={`border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition ${
@@ -212,11 +212,11 @@ formData.append("features", JSON.stringify(allFeatures));
               <input {...getInputProps()} />
               <p className="text-gray-600">
                 {isDragActive
-                  ? 'Drop the images here...'
-                  : 'Drag & drop images or click to select files'}
+                  ? 'اسحب الصور هنا...'
+                  : 'اسحب وأفلت الصور أو انقر لاختيار الملفات'}
               </p>
               <p className="text-sm text-gray-500 mt-1">
-                JPEG, PNG, GIF (max 5MB each)
+                JPEG, PNG, GIF (الحد الأقصى 5 ميجابايت لكل صورة)
               </p>
             </div>
           </div>

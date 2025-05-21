@@ -77,7 +77,7 @@ export default function ProfilePage({ isAuthenticated, checkAuthenticated }) {
     init();
   }, []);
 
-  if (loading) return <div className="text-center text-gray-500 mt-20">Loading...</div>;
+  if (loading) return <div className="text-center text-gray-500 mt-20">جاري التحميل...</div>;
 
   return isAuthenticated ? (
     <section className="bg-gray-50 min-h-screen py-10 px-4 sm:px-10">
@@ -94,10 +94,10 @@ export default function ProfilePage({ isAuthenticated, checkAuthenticated }) {
 
           {/* Update Form */}
           <div className="w-full md:w-2/3 mt-6 md:mt-0">
-            <h2 className="text-lg font-semibold text-green-600 mb-4">Update Profile</h2>
+            <h2 className="text-lg font-semibold text-green-600 mb-4">تحديث الملف الشخصي</h2>
             <form onSubmit={onSubmitCredentials} className="space-y-4">
               <div>
-                <label className="text-sm font-medium text-gray-600">Email</label>
+                <label className="text-sm font-medium text-gray-600">البريد الإلكتروني</label>
                 <div className="flex gap-2">
                   <input
                     ref={emailRef}
@@ -106,13 +106,13 @@ export default function ProfilePage({ isAuthenticated, checkAuthenticated }) {
                     value={email}
                     onChange={onChange}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Email"
+                    placeholder="البريد الإلكتروني"
                   />
-                  <button type="button" onClick={() => focusInput(emailRef)} className="text-green-600 hover:underline">Change</button>
+                  <button type="button" onClick={() => focusInput(emailRef)} className="text-green-600 hover:underline">تغيير</button>
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600">Zip Code</label>
+                <label className="text-sm font-medium text-gray-600">الرمز البريدي</label>
                 <div className="flex gap-2">
                   <input
                     ref={zipCodeRef}
@@ -121,13 +121,13 @@ export default function ProfilePage({ isAuthenticated, checkAuthenticated }) {
                     value={zip_code}
                     onChange={onChange}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Zip Code"
+                    placeholder="الرمز البريدي"
                   />
-                  <button type="button" onClick={() => focusInput(zipCodeRef)} className="text-green-600 hover:underline">Change</button>
+                  <button type="button" onClick={() => focusInput(zipCodeRef)} className="text-green-600 hover:underline">تغيير</button>
                 </div>
               </div>
               <div>
-                <label className="text-sm font-medium text-gray-600">Username</label>
+                <label className="text-sm font-medium text-gray-600">اسم المستخدم</label>
                 <div className="flex gap-2">
                   <input
                     ref={usernameRef}
@@ -136,16 +136,16 @@ export default function ProfilePage({ isAuthenticated, checkAuthenticated }) {
                     value={username}
                     onChange={onChange}
                     className="w-full border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Username"
+                    placeholder="اسم المستخدم"
                   />
-                  <button type="button" onClick={() => focusInput(usernameRef)} className="text-green-600 hover:underline">Change</button>
+                  <button type="button" onClick={() => focusInput(usernameRef)} className="text-green-600 hover:underline">تغيير</button>
                 </div>
               </div>
               <button
                 type="submit"
                 className="w-full bg-green-600 text-white py-2 rounded-xl font-semibold hover:bg-green-700 transition-all"
               >
-                Update Profile
+                تحديث الملف الشخصي
               </button>
             </form>
           </div>

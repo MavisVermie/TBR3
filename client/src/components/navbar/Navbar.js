@@ -7,9 +7,9 @@ import React, { Fragment, useState, useEffect } from "react";
 import { toast } from 'react-toastify';
 
 const navigation = [
-  { name: 'My Feed', href: '/' },
-  { name: 'Create Post', href: '/create_post' },
-  { name: 'About Us', href: '/about' },
+  { name: 'الرئيسية', href: '/' },
+  { name: 'إنشاء منشور', href: '/create_post' },
+  { name: 'من نحن', href: '/about' },
 ];
 
 function classNames(...classes) {
@@ -56,7 +56,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
               {/* Mobile menu button */}
               <div className="flex sm:hidden">
                 <Disclosure.Button className="p-2 rounded-md text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white">
-                  <span className="sr-only">Toggle menu</span>
+                  <span className="sr-only">تبديل القائمة</span>
                   {open ? (
                     <XMarkIcon className="h-6 w-6" />
                   ) : (
@@ -112,7 +112,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                                 'block px-4 py-2 text-sm'
                               )}
                             >
-                              {name || "User"} Profile
+                              {name || "المستخدم"} الملف الشخصي
                             </Link>
                           )}
                         </Menu.Item>
@@ -125,7 +125,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                                 'block px-4 py-2 text-sm'
                               )}
                             >
-                              Create Post
+                              إنشاء منشور
                             </Link>
                           )}
                         </Menu.Item>
@@ -138,7 +138,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                                 'w-full text-left px-4 py-2 text-sm'
                               )}
                             >
-                              Sign out
+                              تسجيل الخروج
                             </button>
                           )}
                         </Menu.Item>
@@ -151,13 +151,13 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                       to="/authentication/login"
                       className="rounded-full text-white border border-white px-4 py-1.5 font-semibold hover:bg-white hover:text-green-600 transition"
                     >
-                      Login
+                      تسجيل الدخول
                     </Link>
                     <Link
                       to="/authentication/registration"
                       className="rounded-full bg-green-600 text-white px-4 py-1.5 font-semibold hover:bg-green-700 transition"
                     >
-                      Register
+                      تسجيل
                     </Link>
                   </>
                 )}

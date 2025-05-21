@@ -73,7 +73,7 @@ export default function RegistrationPage({ setAuth }) {
       {/* Left side (Form) */}
       <div className="w-full md:w-2/3 flex flex-col items-center justify-center bg-gray-100 px-4 py-8 bg-gradient-to-br from-green-200 via-gray-100 to-green-100
 font-sans">
-        <h2 className="text-3xl font-bold text-green-600 mb-10 ">Registration</h2>
+        <h2 className="text-3xl font-bold text-green-600 mb-10 ">التسجيل</h2>
         <form onSubmit={onSubmitForm} className="w-full max-w-md space-y-3">
           {['username', 'email', 'password', 'phone_number', 'zip_code'].map((field, index) => (
             <input
@@ -83,9 +83,11 @@ font-sans">
               value={inputs[field]}
               onChange={onChange}
               placeholder={
-                field === 'username' ? 'Full Name'
-                : field === 'phone_number' ? 'e.g. +9627XXXXXXXX or 07XXXXXXXX'
-                : field === 'zip_code' ? 'Zip Code'
+                field === 'username' ? 'الاسم الكامل'
+                : field === 'phone_number' ? 'مثال: +9627XXXXXXXX أو 07XXXXXXXX'
+                : field === 'zip_code' ? 'الرمز البريدي'
+                : field === 'email' ? 'البريد الإلكتروني'
+                : field === 'password' ? 'كلمة المرور'
                 : field.charAt(0).toUpperCase() + field.slice(1)
               }
               className="w-full px-4 py-2 border rounded-full transition duration-200 outline-none
@@ -98,13 +100,13 @@ font-sans">
             type="submit"
             className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-full font-semibold transition duration-200"
           >
-            Create Account
+            إنشاء حساب
           </button>
         </form>
         <p className="text-sm text-center mt-3 text-gray-700">
-          Already have an account?{' '}
+          لديك حساب بالفعل؟{' '}
           <a href="/authentication/login" className="underline font-medium text-green-600">
-            Log in
+            تسجيل الدخول
           </a>
         </p>
       </div>

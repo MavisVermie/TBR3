@@ -57,7 +57,7 @@ export default function SignInPage({ setAuth }) {
                 htmlFor="email"
                 className="block text-sm font-medium text-green-600 mb-2"
               >
-                Email
+                البريد الإلكتروني
               </label>
               <input
                 id="email"
@@ -79,7 +79,7 @@ export default function SignInPage({ setAuth }) {
                 htmlFor="password"
                 className="block text-sm font-medium text-green-600 mb-2"
               >
-                Password
+                كلمة المرور
               </label>
               <input
                 id="password"
@@ -101,7 +101,7 @@ export default function SignInPage({ setAuth }) {
                 href="/forgot-password"
                 className="text-white hover:underline transition duration-150"
               >
-                Forgot your password?
+                نسيت كلمة المرور؟
               </a>
             </p>
 
@@ -115,12 +115,12 @@ export default function SignInPage({ setAuth }) {
 
             {/* Register Link */}
             <p className="text-sm text-center text-white">
-              Don't have an account?{" "}
+              ليس لديك حساب؟{" "}
               <a
                 href="/authentication/registration"
                 className="text-green-600 hover:underline transition duration-150"
               >
-                Register
+                سجل الآن
               </a>
             </p>
           </form>

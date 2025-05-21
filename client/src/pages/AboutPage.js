@@ -4,33 +4,33 @@ import tbr3logo from '../assets/tbr3.png';
 
 const people = [
   {
-    name: 'Mohammad I Al-Majali',
-    role: 'Back-End Developer',
+    name: 'محمد المجالي',
+    role: 'مطور الواجهة الخلفية',
     linkedinUrl: 'https://linkedin.com/in/mavisverm',
   },
   {
-    name: 'Marah Y AL-Qunbor',
-    role: 'Font-End Developer-designing',
+    name: 'مرح القنبر',
+    role: 'مطور الواجهة الأمامية والتصميم',
     linkedinUrl: 'https://www.linkedin.com/in/marahyousef',
   },
   {
-    name: 'Manar M Abu-Irsheid ',
-    role: 'Front-End Developer',
+    name: 'منار أبو إرشيد',
+    role: 'مطور الواجهة الأمامية',
     linkedinUrl: 'https://www.linkedin.com/in/manar-abu-irsheid-06b352325',
   },
   {
-    name: 'Rama F Al-Odat',
-    role: 'Back-End developer',
+    name: 'راما العودات',
+    role: 'مطور الواجهة الخلفية',
     linkedinUrl: 'https://www.linkedin.com/in/rama-alodat-686aa932a/',
   },
   {
-    name: 'Bashar I Shaqour',
-    role: 'Back-End Developer',
+    name: 'بشار شقور',
+    role: 'مطور الواجهة الخلفية',
     linkedinUrl: 'https://www.linkedin.com/in/bashar-shaqour-320b922a7/',
   },
   {
-    name: 'Mohammed O AL-Bzoor',
-    role: 'Front-End Developer',
+    name: 'محمد البزور',
+    role: 'مطور الواجهة الأمامية',
     linkedinUrl: 'https://www.linkedin.com/in/mohammed-al-bzoor-774b12329/',
   },
 ];
@@ -43,8 +43,8 @@ export default function AboutPage() {
       {/* Team Section */}
       <section className="max-w-6xl mx-auto mb-20">
         <div className="text-center mb-12">
-          <h1 className="text-6xl font-semibold text-red-700">Meet Our Team</h1>
-          <p className="mt-2 text-grey-600 text-lg">Passionate minds behind TBR3</p>
+          <h1 className="text-6xl font-semibold text-red-700">تعرف على فريقنا</h1>
+          <p className="mt-2 text-grey-600 text-lg">العقول الشغوفة وراء TBR3</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {people.map((person, index) => (
@@ -79,12 +79,9 @@ export default function AboutPage() {
       <section className="bg-red-900 w-full py-12 px-6 mb-20 rounded-lg">
         <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-2">
           <div>
-            <h1 className="text-4xl font-bold text-white">About Us</h1>
+            <h1 className="text-4xl font-bold text-white">من نحن</h1>
             <p className="mt-4 text-zinc-100 text-lg leading-relaxed">
-             We are a team of six students from the Information Technology College at Al al-Bayt University. United by our passion and dedication, we created this website focused on 
-             green-computing. Using our skills in programming and development, we aim to deliver an exceptional and user-friendly experience.
-
-
+              نحن فريق من ستة طلاب من كلية تكنولوجيا المعلومات في جامعة آل البيت. متحدون بشغفنا وتفانينا، قمنا بإنشاء هذا الموقع الذي يركز على الحوسبة الخضراء. باستخدام مهاراتنا في البرمجة والتطوير، نسعى لتقديم تجربة استثنائية وسهلة الاستخدام.
             </p>
           </div>
           <div className="flex justify-center  md:justify-center ">
