@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import '../index.css';
-import tbr3logo from '../assets/abtus logo.png';
+import tbr3logo from '../assets/tbr3.png';
 
 const people = [
   {
@@ -88,7 +88,7 @@ export default function AboutPage() {
             </p>
           </div>
           <div className="flex justify-center  md:justify-center ">
-            <img src={tbr3logo} alt="tbr3 Logo" className="h-44 object-contain" />
+            <img src={tbr3logo} alt="tbr3 Logo" className="h-56 object-contain" />
           </div>
         </div>
       </section>
