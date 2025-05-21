@@ -353,15 +353,17 @@ export default function ShowDataProduct() {
               <div className="image-gallery">
                 {/* Main Image Container with Navigation Arrows */}
                 <div className="main-image-container mb-4 bg-gray-100 rounded-xl relative">
-                  {/* Previous Image Button */}
-                  <button
-                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-10"
-                    onClick={handlePrevImage}
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
+                  {/* Previous Image Button - Only show if there are multiple images */}
+                  {allImages.length > 1 && (
+                    <button
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-10"
+                      onClick={handlePrevImage}
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                  )}
 
                   {/* Main Image Display */}
                   <div className="flex items-center justify-center p-4">
@@ -383,18 +385,20 @@ export default function ShowDataProduct() {
                     )}
                   </div>
 
-                  {/* Next Image Button */}
-                  <button
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-10"
-                    onClick={handleNextImage}
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
+                  {/* Next Image Button - Only show if there are multiple images */}
+                  {allImages.length > 1 && (
+                    <button
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-10"
+                      onClick={handleNextImage}
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  )}
                 </div>
 
-                {/* Thumbnail Gallery - Shows all available images */}
+                {/* Thumbnail Gallery - Only show if there are multiple images */}
                 {allImages.length > 1 && (
                   <div className="thumbnail-gallery mt-4">
                     <div className="grid grid-cols-5 gap-3">
