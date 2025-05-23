@@ -14,6 +14,7 @@ const crypto = require('crypto');
 const NodeCache = require('node-cache');
 const cache = new NodeCache();
 // const sharp = require('sharp');
+const feedbackRouter = require("./routes/feedback");
 
 // Middleware
 app.use(cors());
@@ -21,6 +22,8 @@ app.use(express.json());
 app.use(fileUpload());
 
 // ROUTES
+app.use("/api/users", require("./routes/users")); // Mounts /api/users/:userId
+app.use("/api/feedback", require("./routes/feedback")); // Mounts /api/feedback endpoints
 app.use("/admin", require("./routes/adminroutes"));
 app.use("/authentication", require("./routes/jwtAuth"));
 app.use("/Posting", require("./routes/itemPost"));

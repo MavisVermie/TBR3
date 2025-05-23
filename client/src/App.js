@@ -21,6 +21,7 @@ import SinglePost from './pages/PostsPages/SinglePostPage';
 import EditPostPage from './pages/PostsPages/EditPostPage';
 //عشان ترجعي تحذفيها
 import MyPostsPage from "./pages/PostsPages/MyPostsPage";
+import UserProfilePage from './pages/UserProfilePage';
 
 import { cssTransition } from "react-toastify";
 
@@ -107,6 +108,7 @@ function App() {
             <Route path="/admin/posts" element={<AdminPosts />} />
             <Route path="/posts/:id" element={<SinglePost />} />
             <Route path="/myposts" element={<MyPostsPage />} /> //rama posts
+            <Route path="/user/:userId" element={<UserProfilePage />} />
             <Route path="/*" element={<PageNotFound />} />
             <Route path="/home" element={<NewHome />} />
 

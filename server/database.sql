@@ -17,3 +17,12 @@ CREATE TABLE posts (
     user_id int REFERENCES users(user_id)
     -- Foreign key????/
 );
+
+CREATE TABLE feedback (
+  feedback_id SERIAL PRIMARY KEY,
+  giver_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+  receiver_id INTEGER REFERENCES users(user_id) ON DELETE CASCADE,
+  rating INTEGER CHECK (rating >= 1 AND rating <= 5),
+  comment TEXT,
+  created_at TIMESTAMP DEFAULT now()
+);
