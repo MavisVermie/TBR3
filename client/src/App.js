@@ -21,6 +21,8 @@ import AdminPosts from './pages/AdminStuff/AdminPosts';
 import NewHome from './pages2/Home';
 import SinglePost from './pages/PostsPages/showDataProduct';
 import EditPostPage from './pages/PostsPages/EditPostPage';
+//عشان ترجعي تحذفيها
+import MyPostsPage from "./pages/PostsPages/MyPostsPage";
 
 import { cssTransition } from "react-toastify";
 
@@ -106,6 +108,8 @@ function App() {
             <Route path="/admin" element={<AdminPanel />} />
             <Route path="/admin/posts" element={<AdminPosts />} />
             <Route path="/posts/:id" element={<SinglePost />} />
+            //عشان ترجعي تحذفيها
+            <Route path="/my-posts" element={<MyPostsPage />} />
             <Route path="/*" element={<PageNotFound />} />
                         <Route path="/Home" element={<NewHome />} />
 

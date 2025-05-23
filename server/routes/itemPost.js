@@ -224,6 +224,32 @@ res.json({
 });
 
 
+// ... كود الراوتات السابقة
+
+// ✅ Route جديد: Get posts of the logged-in user only
+router.get("/my-posts", authorize, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    console.log("Fetching posts for userId:", userId); // Debug log
+
+    // Only get posts for the logged-in user
+    const myPosts = await pool.query(
+      "SELECT post_id, title, description, primary_photo, location, created_at FROM posts WHERE user_id = $1 ORDER BY created_at DESC",
+      [userId]
+    );
+    console.log("Number of posts found:", myPosts.rows.length); // Debug log
+
+    const formattedPosts = myPosts.rows.map(post => ({
+      ...post,
+      primary_photo: post.primary_photo?.toString("base64") || null
+    }));
+
+    res.json(formattedPosts);
+  } catch (err) {
+    console.error("Error fetching user's posts:", err.message);
+    res.status(500).send("Server error");
+  }
+});
 
 
 
