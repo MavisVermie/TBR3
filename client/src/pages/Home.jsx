@@ -4,7 +4,7 @@ const Homepage = () => {
   return (
     <div className="min-h-screen bg-[#f3fffb] text-[#065f46] font-sans">
 
-      <section className="relative w-full h-[500px] overflow-hidden rounded-b-3xl shadow-lg">
+      <section className="relative w-full h-[500px] overflow-hidden rounded-b-xl shadow-lg">
         <img
           src="/images/banner2.gif"
           alt="background donation"
@@ -17,7 +17,7 @@ const Homepage = () => {
           <p className="text-lg md:text-xl mb-8 max-w-2xl">
             Help those in need and be Eco-friendly
           </p>
-          <button className="bg-[#10b981] hover:bg-[#34d399] text-white font-bold py-3 px-8 rounded-full text-lg transition shadow-lg">
+          <button className="bg-green-600 hover:bg-[#34d399] text-white font-bold py-3 px-8 rounded-full text-lg transition shadow-lg">
         Donate now
           </button>
         </div>
