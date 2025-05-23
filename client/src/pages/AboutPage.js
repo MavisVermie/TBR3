@@ -74,20 +74,22 @@ export default function AboutPage() {
         </div>
       </section>
 
+
       {/* About Section */}
       <section className="bg-red-900 w-full py-12 px-6 mb-20 rounded-lg">
-        <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-24">
           <div>
-            <h1 className="text-4xl font-bold text-white">About Us</h1>
-            <p className="mt-4 text-zinc-100 text-lg leading-relaxed">
-             We are a team of six students from the Information Technology College at Al al-Bayt University. United by our passion and dedication, we created this website focused on 
+            <h1 className="text-4xl font-bold  text-white">About Us</h1>
+            <p className=" text-zinc-100 text-lg leading-loose text-center">
+             We are a team of six students from the IT College at Al al-Bayt University.<br></br> United by our passion and dedication.
+              <br></br>We created this website focused on 
              green-computing. Using our skills in programming and development, we aim to deliver an exceptional and user-friendly experience.
 
 
             </p>
           </div>
-          <div className="flex justify-center  md:justify-center ">
-            <img src={tbr3logo} alt="tbr3 Logo" className="h-56 object-contain" />
+          <div className="flex justify-center md:justify-center md:min-w-fit"> 
+            <img src="/images/uni.jpg" alt="uni pic" className="rounded-3xl shadow-lg w-full h-[400px] object-cover"/>
           </div>
         </div>
       </section>
