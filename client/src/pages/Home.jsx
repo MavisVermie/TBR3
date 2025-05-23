@@ -2,51 +2,69 @@ import React from "react";
 
 const Homepage = () => {
   return (
-    <div className="min-h-screen bg-[#f3fffb] text-[#065f46] font-sans">
+    <div className="min-h-screen bg-gray-100 text-[#065f46] font-sans">
 
-      <section className="relative w-full h-[450px] overflow-hidden rounded-b-3xl shadow-lg">
+      <section className="relative w-full h-[500px] overflow-hidden rounded-b-xl shadow-lg">
         <img
-          src="/images/recycle2.jpg"
+          src="/images/banner2.gif"
           alt="background donation"
           className="w-full h-full object-cover backdrop-blur-sm"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center text-white text-center px-4">
+        <div className="absolute inset-0 flex flex-col justify-center items-center text-white text-center px-4">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 drop-shadow-lg">
             Be influential and donate
           </h1>
           <p className="text-lg md:text-xl mb-8 max-w-2xl">
-            Help those in need with a simple donation
+            Help those in need and be Eco-friendly
           </p>
-          <button className="bg-[#10b981] hover:bg-[#34d399] text-white font-bold py-3 px-8 rounded-full text-lg transition shadow-lg">
-        Donate now
+          <button className="bg-green-600 hover:bg-[#34d399] text-white font-bold py-3 px-8 rounded-full text-lg transition shadow-lg">
+            Donate now
           </button>
         </div>
       </section>
 
-      <section className="flex flex-col md:flex-row items-center bg-[#e0fff2] p-10 mt-20 rounded-3xl shadow-lg mx-4 gap-10">
+      <div className="w-full mx-auto flex flex-col md:flex-row gap-8">
+        <section className="flex flex-col md:flex-row items-center bg-green-600 p-10 mt-20 shadow-lg gap-10">
+          <div className="md:w-1/2">
+            <h2 className="text-4xl font-medium text-white mb-4 text-center md:text-left">our perspective..</h2>
+            <p className="text-lg text-white leading-loose text-center md:text-left">
+              TBR3 is a Jordanian-born platform inspired by the Arabic word "تبَرّع" meaning "to donate" 
+              reflecting a mission rooted in giving, sustainability, and community care. 
+              It allows people to share second-hand items instead of discarding them,
+              reducing waste and offering support to those in need.<br /><br />
+              By extending the life cycle of goods, 
+              TBR3 actively supports green computing principles, minimising environmental impact, conserving resources,
+              and encouraging eco-conscious behaviour. The platform also aligns deeply with Islamic values such as charity,
+              avoiding waste, and stewardship of the Earth. <br /><br />
+              TBR3 is more than just a donation platform, it's a movement that brings 
+              technology, faith, and environmental responsibility together to build a kinder, greener, and more giving society.
+            </p>
+          </div>
+          <div className="md:w-1/2">
+            <img src="/images/donation.jpg" alt="donation" className="rounded-lg shadow-lg w-full h-[500px] object-cover" />
+          </div>
+        </section>
+      </div>
+
+      <section className="flex flex-col md:flex-row items-center bg-[#093965] p-10 mt-20 shadow-lg mb-10 gap-10">
         <div className="md:w-1/2">
-          <img src="/images/ddd1.jpg" alt="أهمية التبرع" className="rounded-3xl shadow-lg w-full h-[400px] object-cover" />
+          <img src="/images/list.jpg" alt="Who we are" className="shadow-lg w-full h-[400px] object-cover rounded-lg" />
         </div>
         <div className="md:w-1/2">
-          <h2 className="text-4xl font-bold text-[#10b981] mb-4 text-center md:text-left">The importance of reuse</h2>
-          <p className="text-lg text-[#065f46] leading-relaxed text-center md:text-left">
+          <h2 className="text-4xl font-bold text-[#10b981] mb-2 text-center md:text-left">
+            what can you donate?
+          </h2>
+          <p className="text-lg text-white leading-loose text-center md:text-left whitespace-pre-line">
+            Items
+            Clothing – gently used or new clothes, shoes, coats.<br></br>
 
-Reusing is important not only because it saves resources and protects the environment, but also because it helps spread kindness among people. When we reuse items we no longer need and donate them, we give those things a new chance to benefit others instead of throwing them away as waste. This act strengthens the spirit of giving and solidarity in the community and supports those in need of items we might consider simple. In doing so, we contribute to building a more cooperative society and preserving a clean and healthy planet for future generations.
+            Furniture – beds, sofas, tables, etc.<br></br>
 
-          </p>
-        </div>
-      </section>
+            Electronics – phones, laptops, tablets (in working condition).<br></br>
 
-      <section className="flex flex-col md:flex-row-reverse items-center bg-[#dffef3] p-10 mt-20 rounded-3xl shadow-lg mx-4 mb-10 gap-10">
-        <div className="md:w-1/2">
-          <img src="/images/uni.jpg" alt="Who we are" className="rounded-3xl shadow-lg w-full h-[400px] object-cover" />
-        </div>
-        <div className="md:w-1/2">
-          <h2 className="text-4xl font-bold text-[#10b981] mb-4 text-center md:text-left">Who we are?</h2>
-          <p className="text-lg text-[#065f46] leading-relaxed text-center md:text-left">
-             We are six students from the College of Technology at Al al-Bayt University, from different majors but united by one goal: to help people and protect our environment. We created a website to encourage recycling and donating items we no longer need, giving them a new chance to benefit others and keep the Earth clean. We believe every small action makes a big difference, and we work together to make a real impact.
+            Books and Toys – for children or general community use.<br></br>
 
-
+            Household items – kitchenware, linens, appliances.<br></br>
           </p>
         </div>
       </section>

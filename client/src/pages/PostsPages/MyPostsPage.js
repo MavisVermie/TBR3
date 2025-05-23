@@ -38,16 +38,16 @@ const MyPostsPage = () => {
     }
   };
 
-  if (loading) return <div className="text-center py-10">Loading...</div>;
+  if (loading) return <div className="text-center py-10">loading...</div>;
 
   return (
     <section className="bg-gray-100 min-h-screen">
     <div className="max-w-6xl mx-auto px-4 py-8">
-      <h2 className="text-4xl font-semibold mb-6 text-center">My Posts</h2>
+      <h2 className="text-4xl font-semibold mb-6 text-center text-green-500">My Posts</h2>
      
       {myPosts.length === 0 ? (
       <div className=" flex items-center justify-center min-h-40"> 
-        <p className="text-center text-black text-bold text-4xl">You haven't posted anything yet.</p></div>
+        <p className="text-center text-red-600 text-bold text-4xl font-sans">You haven't posted anything yet.</p></div>
       ) : (
         <div className="flex flex-wrap -mx-3">
           {myPosts.map((post) => (
@@ -74,7 +74,7 @@ const MyPostsPage = () => {
                   </button>
                   <a
                     href={`/edit_post/${post.post_id}`}
-                    className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700"
+                    className="bg-gray-700 text-white px-4 py-1 rounded hover:bg-blue-700"
                   >
                     Edit
                   </a>
