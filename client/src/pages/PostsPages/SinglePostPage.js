@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./showDataProduct.css";
+import "./SinglePostPage.css";
 import { jwtDecode } from 'jwt-decode';
 
 /**
@@ -107,7 +107,7 @@ export default function ShowDataProduct() {
       try {
         const decoded = jwtDecode(token);
         console.log("Decoded token:", decoded)
-        setCurrentUserId(decoded.userId); // Adjust this field if needed
+        setCurrentUserId(decoded.userId); 
         setIsAdmin(decoded.isAdmin);
       } catch (e) {
         console.error("Failed to decode token", e);
