@@ -20,7 +20,7 @@ const Homepage = () => {
             Help those in need and be Eco-friendly
           </p>
           <button
-            onClick={() => navigate("/CreatePostPage")}
+            onClick={() => navigate("/feed")}
            className="bg-green-600 hover:bg-[#34d399] text-white font-bold py-3 px-8 rounded-full text-lg transition shadow-lg"
           >
            Donate now

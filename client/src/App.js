@@ -5,7 +5,6 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from './pages/myFeed';
 import Homepage from "./pages/Home";
 import AboutPage from './pages/AboutPage';
-import CreatePostPage from './pages/PostsPages/CreatePostPage';
 import SignInPage from './components/LoginStuff/SignInPage';
 import RegistrationPage from './components/LoginStuff/RegistrationPage';
 import PageNotFound from './pages/PageNotFound'
@@ -13,6 +12,7 @@ import ProfilePage from './pages/ProfilePage';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from 'react-toastify';
+import CreatePostPage from './pages/PostsPages/CreatePostPage'; 
 import ForgotPassword from './components/LoginStuff/ForgotPassword';
 import ResetPassword from './components/LoginStuff/ResetPassword';
 import AdminPanel from './pages/AdminStuff/AdminPanel';
@@ -24,6 +24,7 @@ import EditPostPage from './pages/PostsPages/EditPostPage';
 import MyPostsPage from "./pages/PostsPages/MyPostsPage";
 
 import { cssTransition } from "react-toastify";
+import MyFeed from './pages/myFeed';
 
 const SlowFade = cssTransition({
   enter: 'fadeIn',
@@ -109,8 +110,8 @@ function App() {
             <Route path="/myposts" element={<MyPostsPage />} /> //rama posts
             <Route path="/*" element={<PageNotFound />} />
             <Route path="/home" element={<NewHome />} />
-<Route path="/" element={<Homepage />} />
-        <Route path="/CreatePostPage" element={<CreatePostPage />} />
+            <Route path="/" element={<Homepage />} />
+            
           </Routes>
         </Layout>
       </BrowserRouter>
