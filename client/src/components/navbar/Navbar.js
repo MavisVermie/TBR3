@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import logo from '../../assets/TBR.png';
+import logo from '../../assets/T.png';
 import profile from '../../assets/profilepic.png';
 import React, { Fragment, useState, useEffect } from "react";
 import { toast } from 'react-toastify';

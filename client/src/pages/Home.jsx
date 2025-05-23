@@ -10,7 +10,7 @@ const Homepage = () => {
           alt="background donation"
           className="w-full h-full object-cover backdrop-blur-sm"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center text-white text-center px-4">
+        <div className="absolute inset-0 flex flex-col justify-center items-center text-white text-center px-4">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 drop-shadow-lg">
             Be influential and donate
           </h1>
@@ -48,7 +48,7 @@ const Homepage = () => {
 
       <section className="flex flex-col md:flex-row items-center bg-[#093965] p-10 mt-20 shadow-lg mb-10 gap-10">
         <div className="md:w-1/2">
-          <img src="/images/uni.jpg" alt="Who we are" className="shadow-lg w-full h-[400px] object-cover rounded-lg" />
+          <img src="/images/list.jpg" alt="Who we are" className="shadow-lg w-full h-[400px] object-cover rounded-lg" />
         </div>
         <div className="md:w-1/2">
           <h2 className="text-4xl font-bold text-[#10b981] mb-2 text-center md:text-left">

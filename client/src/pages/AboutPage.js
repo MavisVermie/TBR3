@@ -38,7 +38,7 @@ export default function AboutPage() {
   const [message, setMessage] = useState('');
 
   return (
-    <div className="bg-gray-100 min-h-screen py-16 px-4">
+    <div className=" bg-gray-100 min-h-screen py-16 px-4">
       {/* Team Section */}
       <section className="max-w-6xl mx-auto mb-20">
         <div className="text-center mb-12">
@@ -76,7 +76,7 @@ export default function AboutPage() {
 
 
       {/* About Section */}
-      <section className="bg-red-900 w-full py-12 px-6 mb-20 rounded-lg">
+      <section className="bg-[#093965] w-full py-12 px-6 mb-20 rounded-lg">
         <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-24">
           <div>
             <h1 className="text-4xl font-bold  text-white">About Us</h1>
