@@ -6,7 +6,9 @@ import React from 'react';
  * - اسم المستخدم
  * - البريد الإلكتروني
  * - رقم الهاتف
- * - تاريخ الانضمام
+ * - الموقع
+ * - التقييم
+ * - عدد المنشورات النشطة
  */
 const ProfileInfo = ({ userInfo }) => {
   return (
@@ -28,9 +30,10 @@ const ProfileInfo = ({ userInfo }) => {
           </p>
         </div>
       </div>
-      
+
       {/* تفاصيل الملف الشخصي */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Email */}
         <div className="space-y-6">
           <div className="bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors duration-300">
             <h3 className="text-sm font-medium text-gray-500 mb-2">Email</h3>
@@ -41,6 +44,8 @@ const ProfileInfo = ({ userInfo }) => {
               {userInfo.email}
             </p>
           </div>
+
+          {/* Phone Number */}
           <div className="bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors duration-300">
             <h3 className="text-sm font-medium text-gray-500 mb-2">Phone Number</h3>
             <p className="text-lg text-gray-900 flex items-center">
@@ -51,9 +56,46 @@ const ProfileInfo = ({ userInfo }) => {
             </p>
           </div>
         </div>
+
+        {/* Location, Rating, Active Posts */}
+        <div className="space-y-6">
+          {/* Location */}
+          <div className="bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors duration-300">
+            <h3 className="text-sm font-medium text-gray-500 mb-2">Location</h3>
+            <p className="text-lg text-gray-900 flex items-center">
+              <svg className="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              {userInfo.location || 'Not specified'}
+            </p>
+          </div>
+
+          {/* Rating */}
+          <div className="bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors duration-300">
+            <h3 className="text-sm font-medium text-gray-500 mb-2">Rating</h3>
+            <p className="text-lg text-gray-900 flex items-center">
+              <svg className="w-5 h-5 mr-2 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 .587l3.668 7.431 8.2 1.192-5.934 5.784 1.4 8.173L12 18.896l-7.334 3.852 1.4-8.173L.132 9.21l8.2-1.192z" />
+              </svg>
+              {userInfo.rating !== undefined ? `${userInfo.rating} / 5` : 'No rating yet'}
+            </p>
+          </div>
+
+          {/* Active Posts */}
+          <div className="bg-gray-50 rounded-xl p-6 hover:bg-gray-100 transition-colors duration-300">
+            <h3 className="text-sm font-medium text-gray-500 mb-2">Active Posts</h3>
+            <p className="text-lg text-gray-900 flex items-center">
+              <svg className="w-5 h-5 mr-2 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+              </svg>
+              {userInfo.active_posts !== undefined ? userInfo.active_posts : 0}
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
-export default ProfileInfo; 
+export default ProfileInfo;

@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { Link } from 'react-router-dom';
 import EditUserInfo from '../components/ProfileStuff/EditUserInfo';
-import Security from '../components/ProfileStuff/Security';
-import Notifications from '../components/ProfileStuff/Notifications';
 import ProfileInfo from '../components/ProfileStuff/ProfileInfo';
 
 /**
@@ -91,10 +89,7 @@ export default function ProfilePage(){
         return <ProfileInfo userInfo={userInfo} />;
       case 'edit':
         return <EditUserInfo />;
-      case 'security':
-        return <Security />;
-      case 'notifications':
-        return <Notifications />;
+
       default:
         return null;
     }
@@ -109,8 +104,6 @@ export default function ProfilePage(){
             {[
               { id: 'profile', label: 'Profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
               { id: 'edit', label: 'Edit Profile', icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' },
-              { id: 'security', label: 'Security', icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' },
-              { id: 'notifications', label: 'Notifications', icon: 'M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9' }
             ].map(({ id, label, icon }) => (
               <button
                 key={id}
