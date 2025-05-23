@@ -7,8 +7,8 @@ const Homepage = () => {
       <section className="relative w-full h-[450px] overflow-hidden rounded-b-3xl shadow-lg">
         <img
           src="/images/recycle2.jpg"
-          alt="تبرع"
-          className="w-full h-full object-cover"
+          alt="background donation"
+          className="w-full h-full object-cover backdrop-blur-sm"
         />
         <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center text-white text-center px-4">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 drop-shadow-lg">
