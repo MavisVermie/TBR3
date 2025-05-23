@@ -80,11 +80,11 @@ export default function AboutPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-24">
           <div>
             <h1 className="text-4xl font-bold  text-white">About Us</h1>
-            <p className=" text-zinc-100 text-lg leading-loose text-center">
-             We are a team of six students from the IT College at Al al-Bayt University.<br></br> United by our passion and dedication.
-              <br></br>We created this website focused on 
-             green-computing. Using our skills in programming and development, we aim to deliver an exceptional and user-friendly experience.
-
+            <p className=" text-zinc-100 text-lg leading-loose ">
+           We are six students from the College of Technology at Al al-Bayt University, from different majors but united by one goal.
+           <br></br>To help people and protect our environment. We created a website to encourage recycling and donating items we no longer need,<br></br> 
+           giving them a new chance to benefit others and keep the Earth clean.<br></br> 
+           We believe every small action makes a big difference, and we work together to make a real impact.
             </p>
           </div>
           <div className="flex justify-center md:justify-center md:min-w-fit pt-10 "> 
