@@ -1,25 +1,9 @@
-/**
- * مكون تعديل معلومات المستخدم
- * 
- * هذا المكون يقوم بما يلي:
- * 1. عرض نموذج لتعديل معلومات المستخدم (اسم المستخدم، البريد الإلكتروني، رقم الهاتف، الموقع)
- * 2. جلب بيانات المستخدم الحالية من الخادم عند تحميل المكون
- * 3. السماح للمستخدم بتحديث معلوماته
- * 4. عرض رسائل نجاح أو خطأ عند تحديث المعلومات
- * 5. عرض مؤشر تحميل أثناء جلب البيانات
- * 
- * المكون يستخدم:
- * - useState لإدارة حالة البيانات
- * - useEffect لجلب البيانات عند تحميل المكون
- * - fetch للتواصل مع الخادم
- * - toast لعرض الإشعارات
- */
+
 
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
 const EditUserInfo = () => {
-  // حالة لتخزين معلومات الملف الشخصي
   const [profile, setProfile] = useState({
     username: '',
     email: '',
@@ -27,17 +11,8 @@ const EditUserInfo = () => {
     location: '',
     created_at: ''
   });
-  // حالة لتتبع حالة التحميل
   const [loading, setLoading] = useState(true);
 
-  /**
-   * دالة جلب بيانات الملف الشخصي
-   * تقوم هذه الدالة بما يلي:
-   * 1. التحقق من وجود توكن المستخدم
-   * 2. إرسال طلب GET إلى الخادم لجلب البيانات
-   * 3. تحديث حالة الملف الشخصي بالبيانات المستلمة
-   * 4. معالجة الأخطاء وعرض رسائل مناسبة
-   */
   useEffect(() => {
     const getProfile = async () => {
       try {
@@ -87,14 +62,7 @@ const EditUserInfo = () => {
     getProfile();
   }, []);
 
-  /**
-   * دالة تحديث معلومات الملف الشخصي
-   * تقوم هذه الدالة بما يلي:
-   * 1. منع السلوك الافتراضي للنموذج
-   * 2. التحقق من وجود توكن المستخدم
-   * 3. إرسال طلب PUT إلى الخادم لتحديث البيانات
-   * 4. عرض رسالة نجاح أو خطأ حسب نتيجة العملية
-   */
+  
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
     try {
@@ -130,12 +98,7 @@ const EditUserInfo = () => {
     }
   };
 
-  /**
-   * دالة معالجة تغيير قيم الحقول
-   * تقوم هذه الدالة بما يلي:
-   * 1. استخراج اسم الحقل وقيمته من الحدث
-   * 2. تحديث حالة الملف الشخصي بالقيمة الجديدة للحقل
-   */
+  
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProfile(prev => ({
@@ -144,7 +107,6 @@ const EditUserInfo = () => {
     }));
   };
 
-  // عرض مؤشر التحميل أثناء جلب البيانات
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
@@ -153,7 +115,6 @@ const EditUserInfo = () => {
     );
   }
 
-  // عرض نموذج تعديل الملف الشخصي
   return (
     <div className="bg-white rounded-2xl shadow-xl p-8 transform transition-all duration-300 hover:shadow-2xl">
       <form onSubmit={handleUpdateProfile} className="space-y-8">

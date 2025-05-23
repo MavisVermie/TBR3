@@ -6,14 +6,6 @@ import Security from '../components/ProfileStuff/Security';
 import Notifications from '../components/ProfileStuff/Notifications';
 import ProfileInfo from '../components/ProfileStuff/ProfileInfo';
 
-/**
- * مكون صفحة الملف الشخصي
- * يتضمن:
- * - عرض معلومات الملف الشخصي
- * - تعديل المعلومات
- * - إعدادات الأمان
- * - إعدادات الإشعارات
- */
 export default function ProfilePage(){
   const [activeTab, setActiveTab] = useState('profile');
   const [userInfo, setUserInfo] = useState({
@@ -24,9 +16,6 @@ export default function ProfilePage(){
   });
   const [loading, setLoading] = useState(true);
 
-  /**
-   * جلب بيانات المستخدم عند تحميل المكون
-   */
   useEffect(() => {
     const fetchUserInfo = async () => {
       try {
@@ -71,9 +60,6 @@ export default function ProfilePage(){
     fetchUserInfo();
   }, []);
 
-  /**
-   * عرض مؤشر التحميل
-   */
   if (loading) {
     return (
       <div className="flex justify-center items-center h-screen bg-gradient-to-br from-green-50 to-white">
@@ -82,9 +68,7 @@ export default function ProfilePage(){
     );
   }
 
-  /**
-   * عرض محتوى التبويب النشط
-   */
+  
   const renderContent = () => {
     switch (activeTab) {
       case 'profile':
@@ -103,7 +87,7 @@ export default function ProfilePage(){
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-white py-12">
       <div className="container mx-auto px-4">
-        {/* شريط التنقل */}
+
         <div className="mb-8">
           <nav className="flex space-x-4 bg-white rounded-2xl shadow-lg p-2">
             {[
@@ -130,7 +114,7 @@ export default function ProfilePage(){
           </nav>
         </div>
 
-        {/* منطقة المحتوى */}
+   
         {renderContent()}
       </div>
     </div>

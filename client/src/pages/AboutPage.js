@@ -85,7 +85,6 @@ export default function AboutPage() {
               <br></br>We created this website focused on 
              green-computing. Using our skills in programming and development, we aim to deliver an exceptional and user-friendly experience.
 
-
             </p>
           </div>
           <div className="flex justify-center md:justify-center md:min-w-fit pt-10 "> 
