@@ -57,7 +57,7 @@ const Homepage = () => {
 
       {/* Donation Types Section */}
       <div className="container mx-auto px-4 w-full sm:px-6 lg:px-8">
-        <section className="transition-transform duration-300 hover:scale-[1.02] flex flex-col md:flex-row items-center bg-[#093965] p-6 sm:p-8 md:p-10 mt-10 md:mt-20 mb-10 shadow-lg gap-10 rounded-lg">
+        <section className="transition-transform duration-300 hover:scale-[1.02] flex flex-col md:flex-row items-center bg-gray-800 p-6 sm:p-8 md:p-10 mt-10 md:mt-20 mb-10 shadow-lg gap-10 rounded-lg">
           <div className="md:w-1/2">
             <img
               src="/images/list.jpg"

@@ -50,7 +50,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
   ];
 
   return (
-    <Disclosure as="nav" className="w-full  bg-green-600">
+    <Disclosure as="nav" className="w-full  bg-green-700">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 font-sans">
