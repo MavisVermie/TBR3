@@ -4,18 +4,18 @@ const Homepage = () => {
   return (
     <div className="min-h-screen bg-[#f3fffb] text-[#065f46] font-sans">
 
-      <section className="relative w-full h-[450px] overflow-hidden rounded-b-3xl shadow-lg">
+      <section className="relative w-full h-[500px] overflow-hidden rounded-b-3xl shadow-lg">
         <img
-          src="/images/recycle2.jpg"
+          src="/images/banner2.gif"
           alt="background donation"
           className="w-full h-full object-cover backdrop-blur-sm"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-40 flex flex-col justify-center items-center text-white text-center px-4">
+        <div className="absolute inset-0 bg- bg-opacity-40 flex flex-col justify-center items-center text-white text-center px-4">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 drop-shadow-lg">
             Be influential and donate
           </h1>
           <p className="text-lg md:text-xl mb-8 max-w-2xl">
-            Help those in need with a simple donation
+            Help those in need and be Eco-friendly
           </p>
           <button className="bg-[#10b981] hover:bg-[#34d399] text-white font-bold py-3 px-8 rounded-full text-lg transition shadow-lg">
         Donate now

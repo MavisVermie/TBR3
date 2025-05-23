@@ -44,7 +44,7 @@ export default function SignInPage({ setAuth }) {
   };
 
   return (
-    <section className="bg-bannerImg bg-no-repeat bg-cover w-full backdrop-blur-2xl min-h-screen flex items-center justify-center">
+    <section className="bg-bannerImg bg-no-repeat bg-cover w-full min-h-screen flex items-center justify-center">
       <div className=" w-full max-w-md px-6 py-12 shadow-2xl bg-white/10 backdrop-blur-md rounded-2xl transition-all duration-500 ease ">
         <div className="flex flex-col items-center text-center gap-8">
           {/* Logo Image */}
