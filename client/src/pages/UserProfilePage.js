@@ -89,7 +89,7 @@ const UserProfilePage = () => {
     e.preventDefault();
     setSubmitError("");
     if (!token || rating === 0) {
-      setSubmitError("Please provide a rating and be logged in.");
+      setSubmitError("Please login to provide a rating.");
       return;
     }
 
