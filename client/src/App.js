@@ -19,11 +19,11 @@ import AdminPosts from './pages/AdminStuff/AdminPosts';
 import NewHome from './pages/Home';
 import SinglePost from './pages/PostsPages/SinglePostPage';
 import EditPostPage from './pages/PostsPages/EditPostPage';
-//عشان ترجعي تحذفيها
 import MyPostsPage from "./pages/PostsPages/MyPostsPage";
-import UserProfilePage from './pages/UserProfilePage';
-
+import PrivacyPolicy from './pages/PrivacyPolicy';
 import { cssTransition } from "react-toastify";
+import TermsOfService from './pages/TermsOfService';
+import ContactUs from './pages/ContactUs';
 
 const SlowFade = cssTransition({
   enter: 'fadeIn',
@@ -94,7 +94,7 @@ function App() {
         <Layout setAuth={setAuth} isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated}>
           <Routes>
             <Route path="/" element={<NewHome />}/>
-                <Route path="/feed" element={isAuthenticated ? <HomePage /> : <SignInPage setAuth={setAuth} />} />
+            <Route path="/feed" element={isAuthenticated ? <HomePage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/create_post" element={isAuthenticated ? <CreatePostPage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/profile" element={isAuthenticated ? <ProfilePage isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated} /> : <SignInPage setAuth={setAuth} />} />
@@ -108,9 +108,11 @@ function App() {
             <Route path="/admin/posts" element={<AdminPosts />} />
             <Route path="/posts/:id" element={<SinglePost />} />
             <Route path="/myposts" element={<MyPostsPage />} /> //rama posts
-            <Route path="/user/:userId" element={<UserProfilePage />} />
             <Route path="/*" element={<PageNotFound />} />
             <Route path="/home" element={<NewHome />} />
+            <Route path="/Privacy-Policy" element={<PrivacyPolicy />} />
+            <Route path="/terms" element={<TermsOfService />} />
+            <Route path="/contact" element={<ContactUs />} />
 
           </Routes>
         </Layout>

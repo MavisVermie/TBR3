@@ -47,18 +47,17 @@ export default function Navbar({ setAuth, isAuthenticated }) {
     { name: 'Create Post', href: '/create_post' },
     ...(isAuthenticated ? [{ name: 'My Posts', href: '/myposts' }] : []),
     { name: 'About Us', href: '/about' },
-    
   ];
 
   return (
-    <Disclosure as="nav" className="bg-green-700 z-50 ">
+    <Disclosure as="nav" className="w-full  bg-green-700">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 font-sans">
             <div className="flex h-16 items-center justify-between">
               {/* Mobile menu button */}
               <div className="flex sm:hidden">
-                <Disclosure.Button className="p-2 rounded-md text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white">
+                <Disclosure.Button className="p-2 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-white">
                   <span className="sr-only">Toggle menu</span>
                   {open ? (
                     <XMarkIcon className="h-6 w-6" />
@@ -71,7 +70,6 @@ export default function Navbar({ setAuth, isAuthenticated }) {
               {/* Logo and nav */}
               <div className="flex flex-1 items-center justify-between sm:justify-start">
                 <img className="h-20 w-auto" src={logo} alt="TBR3" />
-
                 <div className="hidden sm:flex sm:ml-10 space-x-8">
                   {navigation.map((item) => (
                     <Link
@@ -105,30 +103,30 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                       leaveFrom="transform opacity-100 scale-100"
                       leaveTo="transform opacity-0 scale-95"
                     >
-                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right bg-white/90 backdrop-blur-md rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
+                      <Menu.Items className="absolute right-0 z-10 mt-2 w-48 origin-top-right bg-green-600/90 text-white backdrop-blur-md rounded-md shadow-lg ring-1 ring-black ring-opacity-5">
                         <Menu.Item>
                           {({ active }) => (
                             <Link
                               to="/profile"
                               className={classNames(
-                                active ? 'bg-green-100 text-green-700' : 'text-green-600',
+                                active ? 'bg-green-500' : '',
                                 'block px-4 py-2 text-sm'
                               )}
                             >
-                              {name || "User"} Profile
+                              👤 {name || "User"} Profile
                             </Link>
                           )}
                         </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
                             <Link
-                              to="/create_post"
+                              to="/my-posts"
                               className={classNames(
-                                active ? 'bg-green-100 text-green-700' : 'text-green-600',
+                                active ? 'bg-green-500' : '',
                                 'block px-4 py-2 text-sm'
                               )}
                             >
-                              Create Post
+                              📝 My Posts
                             </Link>
                           )}
                         </Menu.Item>
@@ -137,7 +135,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                             <button
                               onClick={logout}
                               className={classNames(
-                                active ? 'bg-green-100 text-green-700' : 'text-green-600',
+                                active ? 'bg-green-500' : '',
                                 'w-full text-left px-4 py-2 text-sm'
                               )}
                             >
@@ -169,7 +167,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
           </div>
 
           {/* Mobile menu */}
-          <Disclosure.Panel className="sm:hidden px-4 pb-3 pt-2 backdrop-blur-md bg-white/10">
+          <Disclosure.Panel className="sm:hidden px-4 pb-3 pt-2 bg-green-600/90 backdrop-blur-md rounded-b-md">
             {navigation.map((item) => (
               <Disclosure.Button
                 key={item.name}
