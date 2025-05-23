@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import '../index.css';
-import tbr3logo from '../assets/logoo.png';
-
+import tbr3logo from '../assets/tbr3.png';
 const people = [
   {
     name: 'Mohammad I Al-Majali',
@@ -39,7 +38,7 @@ export default function AboutPage() {
   const [message, setMessage] = useState('');
 
   return (
-    <div className="bg-gray-100 min-h-screen py-16 px-4">
+    <div className=" bg-gray-100 min-h-screen py-16 px-4">
       {/* Team Section */}
       <section className="max-w-6xl mx-auto mb-20">
         <div className="text-center mb-12">
@@ -75,20 +74,22 @@ export default function AboutPage() {
         </div>
       </section>
 
+
       {/* About Section */}
-      <section className="bg-red-900 w-full py-12 px-6 mb-20 rounded-lg">
-        <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-2">
+      <section className="bg-[#093965] w-full py-12 px-6 mb-20 rounded-lg">
+        <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-24">
           <div>
-            <h1 className="text-4xl font-bold text-white">About Us</h1>
-            <p className="mt-4 text-zinc-100 text-lg leading-relaxed">
-             We are a team of six students from the Information Technology College at Al al-Bayt University. United by our passion and dedication, we created this website focused on 
+            <h1 className="text-4xl font-bold  text-white">About Us</h1>
+            <p className=" text-zinc-100 text-lg leading-loose text-center">
+             We are a team of six students from the IT College at Al al-Bayt University.<br></br> United by our passion and dedication.
+              <br></br>We created this website focused on 
              green-computing. Using our skills in programming and development, we aim to deliver an exceptional and user-friendly experience.
 
 
             </p>
           </div>
-          <div className="flex justify-center  md:justify-center ">
-            <img src={tbr3logo} alt="tbr3 Logo" className="h-44 object-contain" />
+          <div className="flex justify-center md:justify-center md:min-w-fit"> 
+            <img src="/images/uni.jpg" alt="uni pic" className="rounded-3xl shadow-lg w-full h-[400px] object-cover"/>
           </div>
         </div>
       </section>

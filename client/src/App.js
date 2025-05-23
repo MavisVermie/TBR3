@@ -6,11 +6,9 @@ import HomePage from './pages/myFeed';
 import AboutPage from './pages/AboutPage';
 import CreatePostPage from './pages/PostsPages/CreatePostPage';
 import SignInPage from './components/LoginStuff/SignInPage';
-import ProductDescriptionPage from './pages/ProductDescriptionPage';
 import RegistrationPage from './components/LoginStuff/RegistrationPage';
 import PageNotFound from './pages/PageNotFound'
 import ProfilePage from './pages/ProfilePage';
-import MyPosts from './pages/MyPosts';
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from 'react-toastify';
@@ -18,7 +16,11 @@ import ForgotPassword from './components/LoginStuff/ForgotPassword';
 import ResetPassword from './components/LoginStuff/ResetPassword';
 import AdminPanel from './pages/AdminStuff/AdminPanel';
 import AdminPosts from './pages/AdminStuff/AdminPosts';
-import SinglePost from './pages/PostsPages/showDataProduct';
+import NewHome from './pages/Home';
+import SinglePost from './pages/PostsPages/SinglePostPage';
+import EditPostPage from './pages/PostsPages/EditPostPage';
+//عشان ترجعي تحذفيها
+import MyPostsPage from "./pages/PostsPages/MyPostsPage";
 
 import { cssTransition } from "react-toastify";
 
@@ -90,22 +92,24 @@ function App() {
       <BrowserRouter>
         <Layout setAuth={setAuth} isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated}>
           <Routes>
-            <Route path="/" element={isAuthenticated ? <HomePage /> : <SignInPage setAuth={setAuth} />} />
+            <Route path="/" element={<NewHome />}/>
+                <Route path="/feed" element={isAuthenticated ? <HomePage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/create_post" element={isAuthenticated ? <CreatePostPage /> : <SignInPage setAuth={setAuth} />} />
-            <Route path="/profile" element={isAuthenticated ? <ProfilePage /> : <SignInPage setAuth={setAuth} />} />
-            <Route path="/my-posts" element={isAuthenticated ? <MyPosts /> : <SignInPage setAuth={setAuth} />} />
+            <Route path="/profile" element={isAuthenticated ? <ProfilePage isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated} /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/authentication/login" element={isAuthenticated ? <Navigate to="/" /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/authentication/registration" element={isAuthenticated ? <Navigate to="/" /> : <RegistrationPage setAuth={setAuth} />} />
-            <Route path="/edit_post/:id" element={isAuthenticated ? <CreatePostPage /> : <SignInPage setAuth={setAuth} />} />
-            <Route path="/product-description" element={<ProductDescriptionPage />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-        
+            {/* <Route path="/myposts" element={isAuthenticated ? <MyPosts /> : <SignInPage setAuth={setAuth} />} /> */}
+           <Route path="/edit_post/:id" element={isAuthenticated ? <EditPostPage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/admin" element={<AdminPanel />} />
             <Route path="/admin/posts" element={<AdminPosts />} />
             <Route path="/posts/:id" element={<SinglePost />} />
-            <Route path="*" element={<Navigate to="/" />} />
+            <Route path="/myposts" element={<MyPostsPage />} /> //rama posts
+            <Route path="/*" element={<PageNotFound />} />
+            <Route path="/home" element={<NewHome />} />
+
           </Routes>
         </Layout>
       </BrowserRouter>

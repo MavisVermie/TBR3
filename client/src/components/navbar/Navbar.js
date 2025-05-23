@@ -1,16 +1,10 @@
 import { Link } from "react-router-dom";
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import logo from '../../assets/logoo.png';
-import profile from '../../assets/profilepic.png' ;
+import logo from '../../assets/T.png';
+import profile from '../../assets/profilepic.png';
 import React, { Fragment, useState, useEffect } from "react";
 import { toast } from 'react-toastify';
-
-const navigation = [
-  { name: 'My Feed', href: '/' },
-  { name: 'Create Post', href: '/create_post' },
-  { name: 'About Us', href: '/about' },
-];
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
@@ -47,8 +41,17 @@ export default function Navbar({ setAuth, isAuthenticated }) {
     }
   };
 
+  const navigation = [
+    { name: 'Home', href: '/' },
+    { name: 'My Feed', href: '/feed' },
+    { name: 'Create Post', href: '/create_post' },
+    ...(isAuthenticated ? [{ name: 'My Posts', href: '/myposts' }] : []),
+    { name: 'About Us', href: '/about' },
+    
+  ];
+
   return (
-    <Disclosure as="nav" className="bg-green-900 z-50">
+    <Disclosure as="nav" className="bg-green-700 z-50 ">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 font-sans">

@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./showDataProduct.css";
+import "./SinglePostPage.css";
+import { jwtDecode } from 'jwt-decode';
 
 /**
  * SinglePost Component
@@ -9,12 +10,10 @@ import "./showDataProduct.css";
  * It includes features like image gallery with navigation, keyboard controls, and contact seller functionality.
  */
 
-// ثوابت للتحكم في إعادة المحاولات
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 const IMAGE_LOAD_TIMEOUT = 5000;
 
-// دالة محسنة لتحميل الصور
 const loadImage = (base64String) => {
   return new Promise((resolve, reject) => {
     if (!base64String) {
@@ -46,7 +45,6 @@ const loadImage = (base64String) => {
   });
 };
 
-// دالة محسنة لجلب البيانات مع إعادة المحاولة
 const fetchWithRetry = async (url, options = {}, retries = MAX_RETRIES) => {
   try {
     const token = localStorage.getItem('token');
@@ -101,8 +99,21 @@ export default function ShowDataProduct() {
   const [cache, setCache] = useState({});
   const imageLoadQueue = useRef([]);
   const isProcessingQueue = useRef(false);
-
-  // دالة لمعالجة قائمة انتظار تحميل الصور
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+    useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        console.log("Decoded token:", decoded)
+        setCurrentUserId(decoded.userId); 
+        setIsAdmin(decoded.isAdmin);
+      } catch (e) {
+        console.error("Failed to decode token", e);
+      }
+    }
+  }, []);
   const processImageQueue = useCallback(async () => {
     if (isProcessingQueue.current || imageLoadQueue.current.length === 0) return;
 
@@ -117,14 +128,12 @@ export default function ShowDataProduct() {
       }));
     } catch (error) {
       console.error('Error loading image:', error);
-      // لا نقوم بإعادة الصورة إلى قائمة الانتظار لتجنب التكرار
     }
 
     isProcessingQueue.current = false;
     processImageQueue();
   }, []);
 
-  // دالة محسنة لجلب بيانات المنشور
   const fetchPost = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -153,7 +162,6 @@ export default function ShowDataProduct() {
       
       setPost(data);
 
-      // تحميل الصور بشكل تدريجي
       if (data.primary_photo) {
         imageLoadQueue.current.push({
           id: 'primary',
@@ -199,7 +207,6 @@ export default function ShowDataProduct() {
     fetchPost();
   }, [fetchPost]);
 
-  // تحسين معالجة الصور
   const allImages = useMemo(() => {
     if (!post) return [];
     return [
@@ -208,7 +215,6 @@ export default function ShowDataProduct() {
     ].filter(Boolean);
   }, [post]);
 
-  // تحسين التنقل بين الصور
   const handleImageClick = useCallback((index) => {
     setCurrentImageIndex(index);
   }, []);
@@ -221,7 +227,6 @@ export default function ShowDataProduct() {
     setCurrentImageIndex(prev => (prev - 1 + allImages.length) % allImages.length);
   }, [allImages.length]);
 
-  // تحسين التنقل باستخدام لوحة المفاتيح
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowRight') {
@@ -234,6 +239,9 @@ export default function ShowDataProduct() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleNextImage, handlePrevImage]);
+const showEditButton = post && (
+  String(currentUserId) === String(post.user_id) 
+);
 
   // Show loading state while fetching data
   if (error) {
@@ -328,11 +336,11 @@ export default function ShowDataProduct() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 py-10 px-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gray-100 py-10 px-4 font-mono">
+      <div className="max-w-full mx-auto">
         {/* Header Section - Title and Basic Info */}
-        <div className="bg-white p-8 rounded-xl shadow-lg mb-8">
-          <h1 className="text-4xl font-bold text-green-700 mb-3">{post.title}</h1>
+        <div className="bg-white/90 p-8 rounded-xl shadow-md mb-8">
+          <h1 className="text-4xl font-semibold text-green-600 font-sans">{post.title}</h1>
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">
               Posted by <span className="font-semibold text-gray-800">{post.username}</span>
@@ -340,30 +348,31 @@ export default function ShowDataProduct() {
             <p className="text-sm text-gray-500">
               Location: <span className="font-semibold text-gray-800">{post.location}</span>
             </p>
+           
           </div>
+           <div className="w-1/6">
+                {showEditButton && (<button
+                onClick={() => navigate(`/edit_post/${post.post_id}`)}
+                className="w-full bg-red-600 text-white px-8 py-4 rounded-lg hover:bg-red-800
+              transition text-lg font-semibold shadow-md mt-4"> Edit Post  </button>)}
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           {/* Left Column - Image Gallery */}
           <div className="lg:col-span-2">
-            <div className="bg-white p-6 rounded-xl shadow-lg">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Product Images</h2>
-              
-              {/* Main Image Gallery with Navigation */}
+            <div className="bg-white rounded-lg shadow-lg">              
               <div className="image-gallery">
                 {/* Main Image Container with Navigation Arrows */}
-                <div className="main-image-container mb-4 bg-gray-100 rounded-xl relative">
-                  {/* Previous Image Button - Only show if there are multiple images */}
-                  {allImages.length > 1 && (
-                    <button
-                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-10"
-                      onClick={handlePrevImage}
-                    >
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-                      </svg>
-                    </button>
-                  )}
+                <div className="main-image-container mb-5 bg-white  rounded-lg  relative">
+                  {/* Previous Image Button */}
+                  <button
+                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-10"
+                    onClick={handlePrevImage}
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
 
                   {/* Main Image Display */}
                   <div className="flex items-center justify-center p-4">
@@ -371,7 +380,7 @@ export default function ShowDataProduct() {
                       <img
                         src={`data:image/jpeg;base64,${allImages[currentImageIndex]}`}
                         alt="Main"
-                        className={`max-w-full max-h-[500px] w-auto h-auto object-contain rounded-xl shadow-md transition-opacity duration-300 ${
+                        className={`max-w-full max-h-[500px] w-auto h-auto object-contain rounded-sm transition-opacity duration-300 ${
                           loadedImages[`extra_${currentImageIndex}`] ? 'opacity-100' : 'opacity-0'
                         }`}
                         loading="lazy"
@@ -385,22 +394,20 @@ export default function ShowDataProduct() {
                     )}
                   </div>
 
-                  {/* Next Image Button - Only show if there are multiple images */}
-                  {allImages.length > 1 && (
-                    <button
-                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-10"
-                      onClick={handleNextImage}
-                    >
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                      </svg>
-                    </button>
-                  )}
+                  {/* Next Image Button */}
+                  <button
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-10"
+                    onClick={handleNextImage}
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
                 </div>
 
-                {/* Thumbnail Gallery - Only show if there are multiple images */}
+                {/* Thumbnail Gallery - Shows all available images */}
                 {allImages.length > 1 && (
-                  <div className="thumbnail-gallery mt-4">
+                  <div className="thumbnail-gallery mt-4 p-5">
                     <div className="grid grid-cols-5 gap-3">
                       {allImages.map((img, idx) => (
                         <div
@@ -445,8 +452,10 @@ export default function ShowDataProduct() {
 
           {/* Right Column - Product Details */}
           <div className="lg:col-span-1">
-            <div className="bg-white p-6 rounded-xl shadow-lg mb-8">
-              <h2 className="text-2xl font-semibold text-gray-800 mb-4">Product Details</h2>
+            <div className="bg-white p-6 rounded-l shadow-lg mb-8">
+    
+              <h2 className="text-xl font-semibold text-green-700 mb-4">Product Details</h2>
+  
               <div className="space-y-6">
                 {/* Product Description */}
                 <div>
@@ -473,7 +482,7 @@ export default function ShowDataProduct() {
 
                 {/* Contact Information */}
                 <div className="border-t pt-6">
-                  <h3 className="text-lg font-medium text-gray-800 mb-3">Contact Information</h3>
+                  <h3 className="text-lg  font-semibold text-red-600 mb-3">Contact Information</h3>
                   <div className="space-y-4">
                     <div>
                       <p className="text-sm text-gray-500">Email</p>
