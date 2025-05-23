@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Layout from './Layout';
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import HomePage from './pages/myFeed';
+import Homepage from "./pages/Home";
 import AboutPage from './pages/AboutPage';
 import CreatePostPage from './pages/PostsPages/CreatePostPage';
 import SignInPage from './components/LoginStuff/SignInPage';
@@ -76,7 +77,6 @@ function App() {
   if (loading) {
     return <div>Loading...</div>; 
   }
-
   return (
     <div className="App">
       <ToastContainer 
@@ -109,7 +109,8 @@ function App() {
             <Route path="/myposts" element={<MyPostsPage />} /> //rama posts
             <Route path="/*" element={<PageNotFound />} />
             <Route path="/home" element={<NewHome />} />
-
+<Route path="/" element={<Homepage />} />
+        <Route path="/CreatePostPage" element={<CreatePostPage />} />
           </Routes>
         </Layout>
       </BrowserRouter>

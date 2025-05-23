@@ -1,6 +1,8 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
 const Homepage = () => {
+  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-gray-100 text-[#065f46] font-sans">
 
@@ -17,9 +19,13 @@ const Homepage = () => {
           <p className="text-lg md:text-xl mb-8 max-w-2xl">
             Help those in need and be Eco-friendly
           </p>
-          <button className="bg-green-600 hover:bg-[#34d399] text-white font-bold py-3 px-8 rounded-full text-lg transition shadow-lg">
-            Donate now
+          <button
+            onClick={() => navigate("/CreatePostPage")}
+           className="bg-green-600 hover:bg-[#34d399] text-white font-bold py-3 px-8 rounded-full text-lg transition shadow-lg"
+          >
+           Donate now
           </button>
+
         </div>
       </section>
 
