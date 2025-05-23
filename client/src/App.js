@@ -18,6 +18,7 @@ import ResetPassword from './components/LoginStuff/ResetPassword';
 import MyPosts from './pages/PostsPages/MyPosts';
 import AdminPanel from './pages/AdminStuff/AdminPanel';
 import AdminPosts from './pages/AdminStuff/AdminPosts';
+import NewHome from './pages2/Home';
 import SinglePost from './pages/PostsPages/showDataProduct';
 import EditPostPage from './pages/PostsPages/EditPostPage';
 //عشان ترجعي تحذفيها
@@ -110,6 +111,8 @@ function App() {
             //عشان ترجعي تحذفيها
             <Route path="/my-posts" element={<MyPostsPage />} />
             <Route path="/*" element={<PageNotFound />} />
+                        <Route path="/Home" element={<NewHome />} />
+
           </Routes>
         </Layout>
       </BrowserRouter>
