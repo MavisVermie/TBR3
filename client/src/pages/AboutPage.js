@@ -76,7 +76,7 @@ export default function AboutPage() {
 
 
       {/* About Section */}
-      <section className="bg-red-800 w-full py-12 px-6 mb-20 rounded-lg">
+      <section className="bg-red-700 w-full py-12 px-6 mb-20 rounded-lg pt-0">
         <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-24">
           <div>
             <h1 className="text-4xl font-bold  text-white">About Us</h1>
@@ -85,11 +85,10 @@ export default function AboutPage() {
               <br></br>We created this website focused on 
              green-computing. Using our skills in programming and development, we aim to deliver an exceptional and user-friendly experience.
 
-
             </p>
           </div>
-          <div className="flex justify-center md:justify-center md:min-w-fit"> 
-            <img src="/images/uni.jpg" alt="uni pic" className="rounded-3xl shadow-lg w-full h-[400px] object-cover"/>
+          <div className="flex justify-center md:justify-center md:min-w-fit pt-10 "> 
+            <img src="/images/uni.jpg" alt="uni pic" className="rounded-3xl shadow-lg w-full h-[400px] object-cover "/>
           </div>
         </div>
       </section>
