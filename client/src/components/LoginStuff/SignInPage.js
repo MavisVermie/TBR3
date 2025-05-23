@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import logo from "../../assets/TBR.png";
+import logo from "../../assets/TB.png";
 
 export default function SignInPage({ setAuth }) {
   const [inputs, setInputs] = useState({
@@ -55,7 +55,7 @@ export default function SignInPage({ setAuth }) {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-green-600 mb-2"
+                className="block text-sm font-medium text-white mb-2"
               >
                 Email
               </label>
@@ -77,7 +77,7 @@ export default function SignInPage({ setAuth }) {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-green-600 mb-2"
+                className="block text-sm font-medium text-white mb-2"
               >
                 Password
               </label>
