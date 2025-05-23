@@ -76,7 +76,7 @@ export default function AboutPage() {
 
 
       {/* About Section */}
-      <section className="bg-[#093965] w-full py-12 px-6 mb-20 rounded-lg">
+      <section className="bg-red-800 w-full py-12 px-6 mb-20 rounded-lg">
         <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-24">
           <div>
             <h1 className="text-4xl font-bold  text-white">About Us</h1>
