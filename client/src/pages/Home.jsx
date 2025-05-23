@@ -1,5 +1,5 @@
 import React from "react";
-
+import { Link } from "react-router-dom";
 const Homepage = () => {
   return (
     <div className="min-h-screen bg-gray-100 text-[#065f46] font-sans">
@@ -17,9 +17,13 @@ const Homepage = () => {
           <p className="text-base sm:text-lg md:text-xl mb-8 max-w-2xl">
             Help those in need and be Eco-friendly
           </p>
-          <button className="bg-green-600 hover:bg-green-800 hover:scale-105 transition-transform  ease duration-700 text-white font-bold py-3 px-8 rounded-full text-lg shadow-lg">
+       
+          <Link to="/feed">
+                    <button className="bg-green-600 hover:bg-[#34d399] text-white font-bold py-3 px-8 rounded-full text-lg transition shadow-lg">
             Donate now
           </button>
+          </Link>
+
         </div>
       </section>
 
