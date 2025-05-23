@@ -67,6 +67,8 @@ function App() {
 
   useEffect(() => {
     checkAuthenticated();
+      const img = new Image();
+  img.src = "/bgtest3.jpg";
   }, []);
 
   const setAuth = (boolean) => {

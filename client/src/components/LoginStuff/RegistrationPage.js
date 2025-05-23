@@ -112,7 +112,7 @@ font-sans">
       {/* Right side (Image) */}
       <div className="hidden md:block md:w-1/3">
         <img
-          src="/reg.jpg"
+          src="/reg1.jpg"
           alt="Side"
           className="w-full h-full object-cover"
         />
