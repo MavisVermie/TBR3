@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import './cardPost.css';
-
+import SliderEvent from '../events/SliderEvent';
 const POSTS_PER_PAGE = 12;
 
 export default function CardPost() {
@@ -127,6 +127,7 @@ export default function CardPost() {
           <Select label="Category" value={selectedCategory} onChange={setSelectedCategory} options={categoryOptions} />
           <Select label="Location" value={selectedLocation} onChange={setSelectedLocation} options={locationOptions} />
           <Select label="Sort by Time" value={sortOrder} onChange={setSortOrder} options={['Newest','Oldest']} />
+        
           <div>
             <label className="block text-sm text-green-900 mb-1">Search Title:</label>
             <input
@@ -153,6 +154,27 @@ export default function CardPost() {
         <LoadingSpinner />
       ) : (
         <>
+               {/* Events Section */}
+      <div className="bg-gradient-to-b from-gray-100 to-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-800 mb-4">Upcoming Events</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Join our community events and be part of something special. From workshops to exhibitions, there's something for everyone.
+            </p>
+          </div>
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-white z-10 pointer-events-none"></div>
+            <SliderEvent />
+          </div>
+          <div className="text-center mt-8">
+            <Link to="/events" className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-full transition duration-300">
+              View All Events
+            </Link>
+          </div>
+        </div>
+      </div>
+         {/*End Events Section */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-14 mx-auto">
             {filteredAndSorted.map(post => (
               <Link to={`/posts/${post.post_id}`} key={post.post_id}>

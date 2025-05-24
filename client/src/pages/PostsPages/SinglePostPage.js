@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./SinglePostPage.css";
+import "./showDataProduct.css";
 import { jwtDecode } from 'jwt-decode';
 
 /**
@@ -365,14 +365,16 @@ const showEditButton = post && (
                 {/* Main Image Container with Navigation Arrows */}
                 <div className="main-image-container mb-5 bg-white  rounded-lg  relative">
                   {/* Previous Image Button */}
-                  <button
-                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-10"
-                    onClick={handlePrevImage}
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
+                  {allImages.length > 1 && (
+                    <button
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-10"
+                      onClick={handlePrevImage}
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                  )}
 
                   {/* Main Image Display */}
                   <div className="flex items-center justify-center p-4">
@@ -395,14 +397,16 @@ const showEditButton = post && (
                   </div>
 
                   {/* Next Image Button */}
-                  <button
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-10"
-                    onClick={handleNextImage}
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
+                  {allImages.length > 1 && (
+                    <button
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-10"
+                      onClick={handleNextImage}
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  )}
                 </div>
 
                 {/* Thumbnail Gallery - Shows all available images */}
