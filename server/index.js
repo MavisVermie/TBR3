@@ -15,6 +15,7 @@ const NodeCache = require('node-cache');
 const cache = new NodeCache();
 // const sharp = require('sharp');
 const feedbackRouter = require("./routes/feedback");
+const moderation = require("./utils/moderation");
 
 // Middleware
 app.use(cors());
@@ -251,6 +252,36 @@ app.post("/create_post", async (req, res) => {
     }
 
     const { title, description, features, email, phone, location } = req.body;
+
+    try {
+      const modTitle = await moderation.moderateText(title);
+      if (modTitle.flagged) {
+        return res.status(400).json({
+          message: "تم رفض البوست بسبب وجود كلمة غير لائقة في العنوان.",
+          reason: modTitle.reason || undefined,
+          details: modTitle.details || undefined
+        });
+      }
+      const modDesc = await moderation.moderateText(description);
+      if (modDesc.flagged) {
+        return res.status(400).json({
+          message: "تم رفض البوست بسبب وجود كلمة غير لائقة في الوصف.",
+          reason: modDesc.reason || undefined,
+          details: modDesc.details || undefined
+        });
+      }
+      const modBoth = await moderation.moderateText(`${title}\n${description}`);
+      if (modBoth.flagged) {
+        return res.status(400).json({
+          message: "تم رفض البوست بسبب وجود محتوى غير لائق في العنوان أو الوصف.",
+          reason: modBoth.reason || undefined,
+          details: modBoth.details || undefined
+        });
+      }
+    } catch (modErr) {
+      console.error("Moderation error:", modErr.message);
+      return res.status(500).json({ message: "AI moderation error. Please try again later." });
+    }
 
     const imageFiles = Array.isArray(req.files.images) ? req.files.images : [req.files.images];
     const primaryPhoto = imageFiles[0].data;
