@@ -72,3 +72,6 @@
   min-height: auto !important;      /* تقليل ارتفاع التوست */
   max-width: 300px !important;      /* تقليل عرض التوست */
 }
+.cardPostTop{
+  margin-top: 50px;
+}

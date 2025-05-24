@@ -1,158 +1,121 @@
-import React, { useEffect, useState, useRef } from 'react';
-import HomePage from './myFeed';
+import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import EditUserInfo from '../components/ProfileStuff/EditUserInfo';
+import ProfileInfo from '../components/ProfileStuff/ProfileInfo';
 
-export default function ProfilePage({ isAuthenticated, checkAuthenticated }) {
-  const [inputs, setInputs] = useState({
+export default function ProfilePage() {
+  const [activeTab, setActiveTab] = useState('profile');
+
+  const [userInfo, setUserInfo] = useState({
     username: '',
     email: '',
-    password: '',
-    zip_code: ''
+    phone_number: '',
+    location: '',
+    rating: null,
+    active_posts: 0,
+    feedbacks: []
   });
+
   const [loading, setLoading] = useState(true);
-  const { username, email, zip_code } = inputs;
-
-  const emailRef = useRef(null);
-  const zipCodeRef = useRef(null);
-  const usernameRef = useRef(null);
-
-  const onChange = e => setInputs({ ...inputs, [e.target.name]: e.target.value });
-
-  const focusInput = (inputRef) => {
-    if (inputRef && inputRef.current) {
-      inputRef.current.focus();
-    }
-  };
-
-  const getProfile = async () => {
-    try {
-      const res = await fetch('http://localhost:5000/Posting/', {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${localStorage.token}`
-        }
-      });
-      const parseData = await res.json();
-
-      if (Array.isArray(parseData) && parseData.length > 0) {
-        setInputs({
-          username: parseData[0].username,
-          zip_code: parseData[0].zip_code,
-          email: parseData[0].email,
-          password: ''
-        });
-      }
-    } catch (err) {
-      console.error("Error in getProfile:", err.message);
-    }
-  };
-
-  const onSubmitCredentials = async (e) => {
-    e.preventDefault();
-    try {
-      const body = { username, email, zip_code };
-      const res = await fetch('http://localhost:5000/authentication/update-credentials', {
-        method: 'PUT',
-        headers: {
-          'Content-type': 'application/json',
-          Authorization: `Bearer ${localStorage.token}`
-        },
-        body: JSON.stringify(body)
-      });
-
-      if (!res.ok) throw new Error(await res.text());
-
-      toast.success('Profile updated successfully!');
-    } catch (err) {
-      toast.error(`Failed to update profile: ${err.message}`);
-    }
-  };
 
   useEffect(() => {
-    const init = async () => {
-      await checkAuthenticated();
-      await getProfile();
-      setLoading(false);
+    const fetchUserInfo = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          toast.error("Please login to view your profile");
+          setLoading(false);
+          return;
+        }
+
+        const response = await fetch("http://localhost:5000/profile", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to fetch profile data');
+        }
+
+        const data = await response.json();
+        if (data && data.length > 0) {
+          const userData = data[0];
+
+          setUserInfo({
+            username: userData.username || '',
+            email: userData.email || '',
+            phone_number: userData.phone_number || 'Not provided',
+            location: userData.location || 'Not specified',
+            rating: typeof userData.rating === 'number' ? userData.rating : null,
+            active_posts: typeof userData.active_posts === 'number' ? userData.active_posts : 0,
+            feedbacks: Array.isArray(userData.feedbacks) ? userData.feedbacks : []
+          });
+        }
+      } catch (err) {
+        console.error('Error loading profile:', err.message);
+        toast.error("Failed to load profile");
+      } finally {
+        setLoading(false);
+      }
     };
-    init();
+
+    fetchUserInfo();
   }, []);
 
-  if (loading) return <div className="text-center text-gray-500 mt-20">Loading...</div>;
-
-  return isAuthenticated ? (
-    <section className="bg-gray-50 min-h-screen py-10 px-4 sm:px-10">
-      <div className="max-w-4xl mx-auto bg-white shadow-xl rounded-2xl p-8">
-        <div className="flex flex-col md:flex-row md:items-start md:gap-10">
-          {/* Profile Info */}
-          <div className="flex flex-col items-center md:items-start text-center md:text-left w-full md:w-1/3">
-            <div className="w-30 h-32 bg-green-700 rounded-full overflow-hidden mb-4 shadow-md">
-              <img src="profilepic.png" alt="Profile" className="w-full h-full object-cover" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-700">{username}</h1>
-            <p className="text-gray-500">{email}</p>
-          </div>
-
-          {/* Update Form */}
-          <div className="w-full md:w-2/3 mt-6 md:mt-0">
-            <h2 className="text-lg font-semibold text-green-600 mb-4">Update Profile</h2>
-            <form onSubmit={onSubmitCredentials} className="space-y-4">
-              <div>
-                <label className="text-sm font-medium text-gray-600">Email</label>
-                <div className="flex gap-2">
-                  <input
-                    ref={emailRef}
-                    type="email"
-                    name="email"
-                    value={email}
-                    onChange={onChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Email"
-                  />
-                  <button type="button" onClick={() => focusInput(emailRef)} className="text-green-600 hover:underline">Change</button>
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-600">Zip Code</label>
-                <div className="flex gap-2">
-                  <input
-                    ref={zipCodeRef}
-                    type="text"
-                    name="zip_code"
-                    value={zip_code}
-                    onChange={onChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Zip Code"
-                  />
-                  <button type="button" onClick={() => focusInput(zipCodeRef)} className="text-green-600 hover:underline">Change</button>
-                </div>
-              </div>
-              <div>
-                <label className="text-sm font-medium text-gray-600">Username</label>
-                <div className="flex gap-2">
-                  <input
-                    ref={usernameRef}
-                    type="text"
-                    name="username"
-                    value={username}
-                    onChange={onChange}
-                    className="w-full border border-gray-300 rounded-lg px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-green-500"
-                    placeholder="Username"
-                  />
-                  <button type="button" onClick={() => focusInput(usernameRef)} className="text-green-600 hover:underline">Change</button>
-                </div>
-              </div>
-              <button
-                type="submit"
-                className="w-full bg-green-600 text-white py-2 rounded-xl font-semibold hover:bg-green-700 transition-all"
-              >
-                Update Profile
-              </button>
-            </form>
-          </div>
-        </div>
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-gray-100">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600"></div>
       </div>
-    </section>
-  ) : (
-    <HomePage />
+    );
+  }
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'profile':
+        return <ProfileInfo userInfo={userInfo} />;
+      case 'edit':
+        return <EditUserInfo userInfo={userInfo} setUserInfo={setUserInfo} />;
+      default:
+        return null;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-100 py-10">
+      <div className="max-w-4xl mx-auto px-4">
+        {/* Navigation Tabs */}
+        <div className="mb-8 flex justify-center">
+          <nav className="inline-flex space-x-4 bg-white rounded-2xl shadow-lg p-2">
+            {[
+              { id: 'profile', label: 'Profile', icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' },
+              { id: 'edit', label: 'Edit Profile', icon: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' }
+            ].map(({ id, label, icon }) => (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id)}
+                className={`flex items-center px-6 py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
+                  activeTab === id
+                    ? 'bg-red-700 text-white shadow-md'
+                    : 'text-gray-600 hover:bg-gray-100'
+                }`}
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d={icon} />
+                </svg>
+                {label}
+              </button>
+            ))}
+          </nav>
+        </div>
+
+        {/* Render Profile Info or Edit Form */}
+        {renderContent()}
+      </div>
+    </div>
   );
-} 
+}

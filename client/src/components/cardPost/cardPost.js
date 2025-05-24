@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import './cardPost.css';
-
+import SliderEvent from '../events/SliderEvent';
 const POSTS_PER_PAGE = 12;
 
 export default function CardPost() {
@@ -127,6 +127,7 @@ export default function CardPost() {
           <Select label="Category" value={selectedCategory} onChange={setSelectedCategory} options={categoryOptions} />
           <Select label="Location" value={selectedLocation} onChange={setSelectedLocation} options={locationOptions} />
           <Select label="Sort by Time" value={sortOrder} onChange={setSortOrder} options={['Newest','Oldest']} />
+        
           <div>
             <label className="block text-sm text-green-900 mb-1">Search Title:</label>
             <input
@@ -153,19 +154,54 @@ export default function CardPost() {
         <LoadingSpinner />
       ) : (
         <>
+               {/* Events Section */}
+      <div className="bg-gradient-to-b from-gray-100 to-white py-16">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-gray-800 mb-4">Upcoming Events</h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Join our community events and be part of something special. From workshops to exhibitions, there's something for everyone.
+            </p>
+          </div>
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-white z-10 pointer-events-none"></div>
+            <SliderEvent />
+          </div>
+          <div className="text-center mt-8">
+            <Link to="/events" className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-full transition duration-300">
+              View All Events
+            </Link>
+          </div>
+        </div>
+      </div>
+         {/*End Events Section */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-14 mx-auto">
             {filteredAndSorted.map(post => (
               <Link to={`/posts/${post.post_id}`} key={post.post_id}>
-                <div className="bg-white shadow rounded overflow-hidden transition-shadow duration-700 ease hover:shadow-xl hover:scale-110 hover:ring-2 hover:ring-green-700 w-l h-80">
-                  <div className="w-full h-2/3 bg-gray-200 flex items-center justify-center">
-                    {post.image
-                      ? <img src={`data:image/jpeg;base64,${post.image}`} alt={post.title} className="object-cover w-full h-full" />
-                      : <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5"
-                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0
-                               00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                    }
+                <div className="bg-white shadow rounded-xl overflow-hidden transition-transform duration-2000 ease-in-out hover:shadow-xl hover:scale-105 hover:ring-2 hover:ring-green-700 w-full h-80 pt-4">
+                  <div className="w-full h-2/3 bg-white flex items-center justify-center">
+                    {post.image ? (
+                      <img
+                        src={`data:image/jpeg;base64,${post.image}`}
+                        alt={post.title}
+                        className="object-cover w-2/3 h-full rounded-lg transition-transform duration-2000 ease-in-out"
+                      />
+                    ) : (
+                      <svg
+                        className="w-12 h-12 text-gray-400"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="1.5"
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 
+                             002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
+                      </svg>
+                    )}
                   </div>
                   <div className="p-4">
                     <h3 className="text-lg font-semibold truncate">{post.title}</h3>
