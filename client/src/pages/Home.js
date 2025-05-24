@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+
 const Homepage = () => {
   return (
     <div className="min-h-screen bg-gray-100 text-[#065f46] font-sans">
@@ -19,13 +20,13 @@ const Homepage = () => {
           </p>
        
           <Link to="/feed">
-                    <button className="bg-green-600 hover:bg-[#34d399] text-white font-bold py-3 px-8 rounded-full text-lg transition shadow-lg">
-            Donate now
-          </button>
+            <button className="bg-green-600 hover:bg-[#34d399] text-white font-bold py-3 px-8 rounded-full text-lg transition shadow-lg">
+              Donate now
+            </button>
           </Link>
-
         </div>
       </section>
+
 
       {/* Perspective Section */}
       <div className="container px-2 w-full sm:px-6 lg:px-8">

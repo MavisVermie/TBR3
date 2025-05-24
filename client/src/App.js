@@ -23,6 +23,9 @@ import EditPostPage from './pages/PostsPages/EditPostPage';
 import MyPostsPage from "./pages/PostsPages/MyPostsPage";
 
 import { cssTransition } from "react-toastify";
+import EventForm from './components/events/EventForm';
+import ShowEvent from './components/events/showEvent';
+import Events from './pages/Events';
 
 const SlowFade = cssTransition({
   enter: 'fadeIn',
@@ -93,7 +96,7 @@ function App() {
         <Layout setAuth={setAuth} isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated}>
           <Routes>
             <Route path="/" element={<NewHome />}/>
-                <Route path="/feed" element={isAuthenticated ? <HomePage /> : <SignInPage setAuth={setAuth} />} />
+            <Route path="/feed" element={isAuthenticated ? <HomePage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/create_post" element={isAuthenticated ? <CreatePostPage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/profile" element={isAuthenticated ? <ProfilePage isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated} /> : <SignInPage setAuth={setAuth} />} />
@@ -101,15 +104,19 @@ function App() {
             <Route path="/authentication/registration" element={isAuthenticated ? <Navigate to="/" /> : <RegistrationPage setAuth={setAuth} />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            {/* <Route path="/myposts" element={isAuthenticated ? <MyPosts /> : <SignInPage setAuth={setAuth} />} /> */}
-           <Route path="/edit_post/:id" element={isAuthenticated ? <EditPostPage /> : <SignInPage setAuth={setAuth} />} />
+            <Route path="/edit_post/:id" element={isAuthenticated ? <EditPostPage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/admin" element={<AdminPanel />} />
             <Route path="/admin/posts" element={<AdminPosts />} />
             <Route path="/posts/:id" element={<SinglePost />} />
-            <Route path="/myposts" element={<MyPostsPage />} /> //rama posts
-            <Route path="/*" element={<PageNotFound />} />
+            <Route path="/myposts" element={<MyPostsPage />} />
+            
+            {/* Event Routes */}
+            <Route path="/events" element={<Events />} />
+            <Route path="/create-event" element={<EventForm />} />
+            <Route path="/events/:id" element={<ShowEvent />} />
+            
             <Route path="/home" element={<NewHome />} />
-
+            <Route path="/*" element={<PageNotFound />} />
           </Routes>
         </Layout>
       </BrowserRouter>

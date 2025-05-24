@@ -12,6 +12,7 @@ function classNames(...classes) {
 
 export default function Navbar({ setAuth, isAuthenticated }) {
   const [name, setName] = useState("");
+  const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
     const getProfile = async () => {
@@ -23,6 +24,8 @@ export default function Navbar({ setAuth, isAuthenticated }) {
         });
         const parseData = await res.json();
         setName(parseData[0]?.username || "");
+        // Check if user is admin
+        setIsAdmin(parseData[0]?.is_admin || false);
       } catch (err) {
         console.error(err.message);
       }
@@ -44,8 +47,10 @@ export default function Navbar({ setAuth, isAuthenticated }) {
   const navigation = [
     { name: 'Home', href: '/' },
     { name: 'My Feed', href: '/feed' },
+    { name: 'Events', href: '/events' },
     { name: 'Create Post', href: '/create_post' },
     ...(isAuthenticated ? [{ name: 'My Posts', href: '/myposts' }] : []),
+    ...(isAdmin ? [{ name: 'Admin Panel', href: '/admin' }] : []),
     { name: 'About Us', href: '/about' },
   ];
 
@@ -120,7 +125,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                         <Menu.Item>
                           {({ active }) => (
                             <Link
-                              to="/my-posts"
+                              to="/myposts"
                               className={classNames(
                                 active ? 'bg-green-500' : '',
                                 'block px-4 py-2 text-sm'
@@ -130,6 +135,21 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                             </Link>
                           )}
                         </Menu.Item>
+                        {isAdmin && (
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link
+                                to="/admin/events"
+                                className={classNames(
+                                  active ? 'bg-green-500' : '',
+                                  'block px-4 py-2 text-sm'
+                                )}
+                              >
+                                🎫 Manage Events
+                              </Link>
+                            )}
+                          </Menu.Item>
+                        )}
                         <Menu.Item>
                           {({ active }) => (
                             <button
