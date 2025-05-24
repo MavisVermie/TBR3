@@ -25,6 +25,9 @@ import { cssTransition } from "react-toastify";
 import TermsOfService from './pages/TermsOfService';
 import ContactUs from './pages/ContactUs';
 import UserProfilePage from './pages/UserProfilePage';
+import EventForm from './components/events/EventForm';
+import ShowEvent from './components/events/showEvent';
+import Events from './pages/Events';
 const SlowFade = cssTransition({
   enter: 'fadeIn',
   exit: 'fadeOut',
@@ -114,7 +117,9 @@ function App() {
             <Route path="/Privacy-Policy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/contact" element={<ContactUs />} />
-
+            <Route path="/events" element={<Events />} />
+            <Route path="/create-event" element={<EventForm />} />
+            <Route path="/events/:id" element={<ShowEvent />} />
           </Routes>
         </Layout>
       </BrowserRouter>
