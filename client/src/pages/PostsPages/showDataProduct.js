@@ -343,7 +343,7 @@ const showEditButton = post && (
           <h1 className="text-4xl font-semibold text-green-600 font-sans">{post.title}</h1>
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">
-              Posted by <span className="font-semibold text-gray-800">{post.username}</span>
+              Posted by <span className="font-semibold text-gray-800 cursor-pointer text-blue-600 hover:underline" onClick={() => navigate(`/user/${post.user_id}`)}>{post.username}</span>
             </p>
             <p className="text-sm text-gray-500">
               Location: <span className="font-semibold text-gray-800">{post.location}</span>
@@ -492,10 +492,10 @@ const showEditButton = post && (
                       <p className="text-sm text-gray-500">Email</p>
                       <p className="text-gray-800 font-medium">{post.email}</p>
                     </div>
-                    {post.phone_number && (
+                    {post.phone && (
                       <div>
                         <p className="text-sm text-gray-500">Phone Number</p>
-                        <p className="text-gray-800 font-medium">{post.phone_number}</p>
+                        <p className="text-gray-800 font-medium">{post.phone}</p>
                       </div>
                     )}
                     <div>
@@ -539,12 +539,12 @@ const showEditButton = post && (
               {/* Phone Number Section */}
               <div className="mb-6">
                 <p className="text-gray-800 font-medium mb-2">Phone Number:</p>
-                <p className="text-gray-700 mb-3">{post.phone_number || "Not provided"}</p>
+                <p className="text-gray-700 mb-3">{post.phone || "Not provided"}</p>
 
                 {/* WhatsApp Button */}
-                {post.phone_number && (
+                {post.phone && (
                   <a
-                    href={`https://wa.me/${post.phone_number.replace(/[^0-9]/g, '')}`}
+                    href={`https://wa.me/${post.phone.replace(/[^0-9]/g, '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center px-6 py-3 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 transition w-full"

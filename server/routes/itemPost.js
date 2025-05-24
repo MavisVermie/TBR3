@@ -161,7 +161,7 @@ router.get("/posts/:id", async (req, res) => {
   posts.user_id,              -- ✅ post owner ID remains as is
   users.username,
   users.email,
-  users.phone_number
+  posts.phone
 FROM posts
 LEFT JOIN users ON posts.user_id = users.id
 WHERE posts.post_id = $1
@@ -210,7 +210,7 @@ res.json({
   extra_images: extraImages,
   username: post.username,
   email: post.email,
-  phone_number: post.phone_number,
+  phone: post.phone,
   location: post.location || '',
   features: parsedFeatures,
   user_id: post.user_id  // ✅ still the owner ID

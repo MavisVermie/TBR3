@@ -28,7 +28,7 @@ const EditUserInfo = () => {
           return;
         }
 
-        const response = await fetch("http://localhost:5000/Posting/", {
+        const response = await fetch("http://localhost:5000/profile", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -36,24 +36,18 @@ const EditUserInfo = () => {
           }
         });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to fetch profile');
-        }
+        if (!response.ok) throw new Error("Failed to fetch profile");
 
         const data = await response.json();
-        if (data && data.length > 0) {
-          const userData = data[0];
-          setProfile({
-            username: userData.username || '',
-            email: userData.email || '',
-            phone_number: userData.phone_number || userData.phone || '',
-            location: userData.location || '',
-            created_at: userData.created_at ? new Date(userData.created_at).toLocaleString() : ''
-          });
-        }
+        const user = data[0];
+        setProfile({
+          username: user.username || '',
+          email: user.email || '',
+          phone_number: user.phone_number || '',
+          location: user.location || '',
+          created_at: user.created_at ? new Date(user.created_at).toLocaleString() : ''
+        });
       } catch (err) {
-        console.error('Error fetching profile:', err.message);
         toast.error(err.message || "Error loading profile");
       } finally {
         setLoading(false);
@@ -72,7 +66,7 @@ const EditUserInfo = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:5000/Posting/update", {
+      const response = await fetch("http://localhost:5000/update-credentials", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -88,19 +82,8 @@ const EditUserInfo = () => {
 
       toast.success("Profile updated successfully");
     } catch (err) {
-      console.error('Error updating profile:', err.message);
       toast.error(err.message || "Error updating profile");
     }
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setProfile(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handlePasswordInputChange = (e) => {
-    const { name, value } = e.target;
-    setPasswords(prev => ({ ...prev, [name]: value }));
   };
 
   const handlePasswordChange = async (e) => {
@@ -111,7 +94,6 @@ const EditUserInfo = () => {
     }
 
     try {
-      setLoading(true);
       const token = localStorage.getItem('token');
       const response = await fetch("http://localhost:5000/change-password", {
         method: "PUT",
@@ -127,23 +109,30 @@ const EditUserInfo = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update password');
+        throw new Error(errorData.message || 'Failed to change password');
       }
 
-      toast.success("Password updated successfully!");
+      toast.success("Password updated successfully");
       setPasswords({ current: '', new: '', confirm: '' });
     } catch (err) {
-      console.error('Error updating password:', err.message);
       toast.error(err.message || "Error updating password");
-    } finally {
-      setLoading(false);
     }
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setProfile(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handlePasswordInputChange = (e) => {
+    const { name, value } = e.target;
+    setPasswords(prev => ({ ...prev, [name]: value }));
   };
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-64">
-        <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-600 border-t-transparent"></div>
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 border-t-transparent"></div>
       </div>
     );
   }
@@ -151,7 +140,7 @@ const EditUserInfo = () => {
   return (
     <div className="max-w-7xl mx-auto p-4 font-sans">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Container 1: Edit Profile */}
+        {/* Edit Profile */}
         <div className="bg-white rounded-2xl shadow-lg p-6 space-y-6">
           <h2 className="text-2xl font-semibold text-gray-800 text-center">Edit Your Profile</h2>
           <form onSubmit={handleUpdateProfile} className="space-y-6">
@@ -162,7 +151,7 @@ const EditUserInfo = () => {
                     {field.replace('_', ' ')}
                   </label>
                   <input
-                    type={field.includes('email') ? 'email' : 'text'}
+                    type={field === 'email' ? 'email' : 'text'}
                     name={field}
                     value={profile[field]}
                     onChange={handleInputChange}
@@ -188,14 +177,14 @@ const EditUserInfo = () => {
           </form>
         </div>
 
-        {/* Container 2: Change Password */}
+        {/* Change Password */}
         <div className="bg-white rounded-2xl shadow-lg p-6 space-y-6">
           <h2 className="text-2xl font-semibold text-gray-800 text-center">Change Your Password</h2>
           <form onSubmit={handlePasswordChange} className="space-y-6">
             <div className="space-y-4">
               {['current', 'new', 'confirm'].map((type) => (
                 <div key={type}>
-                  <label className="block text-sm font-medium text-green-700  text-left mb-3">
+                  <label className="block text-sm font-medium text-green-700 text-left mb-3">
                     {`${type.charAt(0).toUpperCase() + type.slice(1)} Password`}
                   </label>
                   <input
