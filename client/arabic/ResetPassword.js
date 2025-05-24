@@ -26,10 +26,10 @@ export default function ResetPassword() {
       if (res.ok) {
         toast.success(data.message || "تم إعادة تعيين كلمة المرور بنجاح");
       } else {
-        toast.error(data.message || "فشلت إعادة تعيين كلمة المرور");
+        toast.error(data.message || "فشل في إعادة تعيين كلمة المرور");
       }
     } catch (err) {
-      console.error(":خطأ في إعادة التعيين", err);
+      console.error("خطأ في إعادة التعيين:", err);
       toast.error("حدث خطأ ما");
     }
   };
@@ -38,19 +38,19 @@ export default function ResetPassword() {
     <div className="min-h-screen flex items-center justify-center bg-gray-100 font-sans">
       <div className="backdrop-blur-md bg-white/60 shadow-xl rounded-2xl p-8 w-full max-w-md">
         <h1 className="text-3xl font-semibold text-center text-green-700 mb-6">
-       قم بتعيين كلمة المرور الجديدة الخاصة بك
+          تعيين كلمة المرور الجديدة
         </h1>
 
         <form onSubmit={onSubmit} className="space-y-4">
           <div>
             <label htmlFor="password" className="sr-only">
-              New Password
+              كلمة المرور الجديدة
             </label>
             <input
               id="password"
               name="password"
               type="password"
-              placeholder="ادخل كلمة المرور"
+              placeholder="أدخل كلمة المرور الجديدة"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}

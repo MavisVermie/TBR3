@@ -3,33 +3,33 @@ import '../index.css';
 import tbr3logo from '../assets/tbr3.png';
 const people = [
   {
-    name: 'Mohammad I Al-Majali',
-    role: 'Back-End Developer',
+    name: 'محمد أ المـجالي',
+    role: 'مطور خلفي (Back-End)',
     linkedinUrl: 'https://linkedin.com/in/mavisverm',
   },
   {
-    name: 'Marah Y AL-Qunbor',
-    role: 'Font-End Developer-designing',
+    name: 'مرح يوسف القنبور',
+    role: 'مطورة واجهة وتصميم (Front-End Developer-designing)',
     linkedinUrl: 'https://www.linkedin.com/in/marahyousef',
   },
   {
-    name: 'Manar M Abu-Irsheid ',
-    role: 'Front-End Developer',
+    name: 'منار م أبو إرشيد',
+    role: 'مطوّرة واجهة (Front-End Developer)',
     linkedinUrl: 'https://www.linkedin.com/in/manar-abu-irsheid-06b352325',
   },
   {
-    name: 'Rama F Al-Odat',
-    role: 'Back-End developer',
+    name: 'راما ف العودات',
+    role: 'مطور خلفي (Back-End Developer)',
     linkedinUrl: 'https://www.linkedin.com/in/rama-alodat-686aa932a/',
   },
   {
-    name: 'Bashar I Shaqour',
-    role: 'Back-End Developer',
+    name: 'بشار ع الشقور',
+    role: 'مطور خلفي (Back-End Developer)',
     linkedinUrl: 'https://www.linkedin.com/in/bashar-shaqour-320b922a7/',
   },
   {
-    name: 'Mohammed O AL-Bzoor',
-    role: 'Front-End Developer',
+    name: 'محمد ع البزور',
+    role: 'مطوّر واجهة (Front-End Developer)',
     linkedinUrl: 'https://www.linkedin.com/in/mohammed-al-bzoor-774b12329/',
   },
 ];
@@ -39,11 +39,11 @@ export default function AboutPage() {
 
   return (
     <div className=" bg-gray-100 min-h-screen py-16 px-4">
-      {/* Team Section */}
+      {/* قسم الفريق */}
       <section className="max-w-6xl mx-auto mb-20">
         <div className="text-center mb-12">
-          <h1 className="text-6xl font-semibold text-red-700">Meet Our Team</h1>
-          <p className="mt-2 text-grey-600 text-lg">Passionate minds behind TBR3</p>
+          <h1 className="text-6xl font-semibold text-red-700">تعرف على فريقنا</h1>
+          <p className="mt-2 text-grey-600 text-lg">العقول الشغوفة وراء TBR3</p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {people.map((person, index) => (
@@ -56,9 +56,10 @@ export default function AboutPage() {
               <a
                 href={person.linkedinUrl}
                 target="_blank"
+                rel="noopener noreferrer"
                 className="mt-4 text-green-600 group-hover:text-zinc-400 transition"
               >
-                {/* LinkedIn SVG icon */}
+                {/* أيقونة لينكدإن */}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -74,29 +75,27 @@ export default function AboutPage() {
         </div>
       </section>
 
-
-      {/* About Section */}
+      {/* قسم عنا */}
       <section className="bg-[#093965] w-full py-12 px-6 mb-20 rounded-lg">
         <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-24">
           <div>
-            <h1 className="text-4xl font-bold  text-white">About Us</h1>
+            <h1 className="text-4xl font-bold  text-white">من نحن</h1>
             <p className=" text-zinc-100 text-lg leading-loose text-center">
-             We are a team of six students from the IT College at Al al-Bayt University.<br></br> United by our passion and dedication.
-              <br></br>We created this website focused on 
-             green-computing. Using our skills in programming and development, we aim to deliver an exceptional and user-friendly experience.
-
-
+              نحن فريق مكون من ستة طلاب من كلية تقنية المعلومات في جامعة آل البيت.<br />
+              متحدون بشغفنا وتفانينا.<br />
+              أنشأنا هذا الموقع الإلكتروني الذي يركز على الحوسبة الخضراء.
+              باستخدام مهاراتنا في البرمجة والتطوير، نهدف لتقديم تجربة استثنائية وسهلة الاستخدام.
             </p>
           </div>
-          <div className="flex justify-center md:justify-center md:min-w-fit"> 
-            <img src="/images/uni.jpg" alt="uni pic" className="rounded-3xl shadow-lg w-full h-[400px] object-cover"/>
+          <div className="flex justify-center md:justify-center md:min-w-fit">
+            <img
+              src="/images/uni.jpg"
+              alt="صورة الجامعة"
+              className="rounded-3xl shadow-lg w-full h-[400px] object-cover"
+            />
           </div>
         </div>
       </section>
-
     </div>
   );
 }
-
-
-

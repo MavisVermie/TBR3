@@ -25,7 +25,7 @@ export default function ContactInfo({ phone, setPhone }) {
           required
         />
         <p className="mt-1 text-sm text-gray-500">
-          ادخل رقم هاتفك بدون رمز الدولة(e.g., 07XXXXXXXX)
+          أدخل رقم هاتفك بدون رمز الدولة (مثلاً: 07XXXXXXXX)
         </p>
       </div>
     </div>

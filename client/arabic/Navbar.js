@@ -42,21 +42,20 @@ export default function Navbar({ setAuth, isAuthenticated }) {
   };
 
   const navigation = [
-    { name: 'الصفحة الرئيسية', href: '/' },
-    { name: 'المخصص لي', href: '/feed' },
-    { name: 'انشاء حساب', href: '/create_post' },
+    { name: 'الرئيسية', href: '/' },
+    { name: 'مخصص لي', href: '/feed' },
+    { name: 'إنشاء حساب', href: '/create_post' },
     ...(isAuthenticated ? [{ name: 'منشوراتي', href: '/myposts' }] : []),
     { name: 'معلومات عنا', href: '/about' },
-    
   ];
 
   return (
-    <Disclosure as="nav" className="bg-green-700 z-50 ">
+    <Disclosure as="nav" className="bg-green-700 z-50">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 font-sans">
             <div className="flex h-16 items-center justify-between">
-              {/* Mobile menu button */}
+              {/* زر القائمة في الجوال */}
               <div className="flex sm:hidden">
                 <Disclosure.Button className="p-2 rounded-md text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white">
                   <span className="sr-only">تبديل القائمة</span>
@@ -68,9 +67,9 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                 </Disclosure.Button>
               </div>
 
-              {/* Logo and nav */}
+              {/* الشعار والقائمة */}
               <div className="flex flex-1 items-center justify-between sm:justify-start">
-                <img className="h-20 w-auto" src={logo} alt="TBR3" />
+                <img className="h-20 w-auto" src={logo} alt="تبرع" />
 
                 <div className="hidden sm:flex sm:ml-10 space-x-8">
                   {navigation.map((item) => (
@@ -85,7 +84,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                 </div>
               </div>
 
-              {/* Auth buttons / profile */}
+              {/* أزرار الدخول/الحساب */}
               <div className="flex items-center space-x-4">
                 {isAuthenticated ? (
                   <Menu as="div" className="relative">
@@ -93,7 +92,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                       <img
                         className="h-8 w-8 rounded-full border border-white"
                         src={profile}
-                        alt="User Profile"
+                        alt="صورة المستخدم"
                       />
                     </Menu.Button>
                     <Transition
@@ -115,7 +114,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                                 'block px-4 py-2 text-sm'
                               )}
                             >
-                              {name || "User"} Profile
+                              الملف الشخصي ({name || "مستخدم"})
                             </Link>
                           )}
                         </Menu.Item>
@@ -128,7 +127,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                                 'block px-4 py-2 text-sm'
                               )}
                             >
-                              انشاء منشور
+                              إنشاء منشور
                             </Link>
                           )}
                         </Menu.Item>
@@ -138,10 +137,10 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                               onClick={logout}
                               className={classNames(
                                 active ? 'bg-green-100 text-green-700' : 'text-green-600',
-                                'w-full text-left px-4 py-2 text-sm'
+                                'w-full text-right px-4 py-2 text-sm'
                               )}
                             >
-                             تسجيل الخروج
+                              تسجيل الخروج
                             </button>
                           )}
                         </Menu.Item>
@@ -160,7 +159,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                       to="/authentication/registration"
                       className="rounded-full bg-green-600 text-white px-4 py-1.5 font-semibold hover:bg-green-700 transition"
                     >
-                     يسجل
+                      إنشاء حساب
                     </Link>
                   </>
                 )}
@@ -168,7 +167,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
             </div>
           </div>
 
-          {/* Mobile menu */}
+          {/* قائمة الجوال */}
           <Disclosure.Panel className="sm:hidden px-4 pb-3 pt-2 backdrop-blur-md bg-white/10">
             {navigation.map((item) => (
               <Disclosure.Button

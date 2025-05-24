@@ -1,88 +1,91 @@
 import { useState, useEffect } from "react";
 
-export default function خريطة_الموقع({ عند_اختيار_الموقع, الموقع_الابتدائي = '' }) {
-  const [المنطقة_المختارة, تعيين_المنطقة_المختارة] = useState('');
-  const [المنطقة_الفرعية, تعيين_المنطقة_الفرعية] = useState('');
+export default function LocationMap({ onLocationSelect, initialLocation = '' }) {
+  const [selectedRegion, setSelectedRegion] = useState('');
+  const [subLocation, setSubLocation] = useState('');
 
-  const مناطق_الأردن = {
-    عمان: { name: 'عمان' },
-    الزرقاء: { name: 'الزرقاء' },
-    اربد: { name: 'اربد' },
-    السلط: { name: 'السلط' },
-    مأدبا: { name: 'مأدبا' },
-    جرش: { name: 'جرش' },
-    عجلون: { name: 'عجلون' },
-    الكرك: { name: 'الكرك' },
-    الطفيلة: { name: 'الطفيلة' },
-    معان: { name: 'معان' },
-    العقبة: { name: 'العقبة' },
-    المفرق: { name: 'المفرق' }
+  const jordanRegions = {
+    amman: { name: 'عمان' },
+    zarqa: { name: 'الزرقاء' },
+    irbid: { name: 'إربد' },
+    salt: { name: 'السلط' },
+    madaba: { name: 'مادبا' },
+    jerash: { name: 'جرش' },
+    ajloun: { name: 'عجلون' },
+    karak: { name: 'الكرك' },
+    tafilah: { name: 'الطفيلة' },
+    maan: { name: 'معان' },
+    aqaba: { name: 'العقبة' },
+    mafraq: { name: 'المفرق' }
   };
 
   useEffect(() => {
-    if (الموقع_الابتدائي) {
-      const [اسم_المنطقة, الفرعية = ''] = الموقع_الابتدائي.split(" - ");
-      const معرف_المنطقة = Object.keys(مناطق_الأردن).find(
-        key => مناطق_الأردن[key].name.toLowerCase() === اسم_المنطقة.toLowerCase()
+    if (initialLocation) {
+      const [regionName, subLoc = ''] = initialLocation.split(" - ");
+      const regionId = Object.keys(jordanRegions).find(
+        key => jordanRegions[key].name === regionName
       );
-      if (معرف_المنطقة) {
-        تعيين_المنطقة_المختارة(معرف_المنطقة);
-        تعيين_المنطقة_الفرعية(الفرعية);
+      if (regionId) {
+        setSelectedRegion(regionId);
+        setSubLocation(subLoc);
       }
     }
-  }, [الموقع_الابتدائي]);
+  }, [initialLocation]);
 
   useEffect(() => {
-    if (المنطقة_المختارة !== '' && المنطقة_الفرعية !== '') {
-      const الموقع_الكامل = `${مناطق_الأردن[المنطقة_المختارة].name} - ${المنطقة_الفرعية}`;
-      عند_اختيار_الموقع(الموقع_الكامل);
-    } else if (المنطقة_المختارة !== '') {
-      عند_اختيار_الموقع(مناطق_الأردن[المنطقة_المختارة].name);
+    if (selectedRegion === '') {
+      onLocationSelect('');
+    } else if (subLocation) {
+      onLocationSelect(`${jordanRegions[selectedRegion].name} - ${subLocation}`);
+    } else {
+      onLocationSelect(jordanRegions[selectedRegion].name);
     }
-  }, [المنطقة_المختارة, المنطقة_الفرعية]);
+  }, [selectedRegion, subLocation, onLocationSelect, jordanRegions]);
 
-  const عند_تغيير_المنطقة = (e) => {
-    تعيين_المنطقة_المختارة(e.target.value);
-    تعيين_المنطقة_الفرعية('');
+  const handleRegionChange = (e) => {
+    setSelectedRegion(e.target.value);
+    setSubLocation('');
   };
 
-  const عند_تغيير_الفرعية = (e) => {
-    تعيين_المنطقة_الفرعية(e.target.value);
+  const handleSubLocationChange = (e) => {
+    setSubLocation(e.target.value);
   };
 
   return (
     <div className="space-y-4">
       <div>
         <label htmlFor="region" className="block text-sm font-medium text-gray-700 mb-1">
-          اختر المحافظة
+          اختر المنطقة
         </label>
         <select
           id="region"
+          aria-label="اختر المنطقة"
           className="block w-full mt-1 border rounded-md py-2 px-3 shadow-sm focus:border-green-500 focus:ring-green-500"
-          onChange={عند_تغيير_المنطقة}
-          value={المنطقة_المختارة}
+          onChange={handleRegionChange}
+          value={selectedRegion}
         >
-          <option value="" disabled>-- اختر المحافظة --</option>
-          {Object.entries(مناطق_الأردن).map(([id, المنطقة]) => (
+          <option value="" disabled>-- اختر المنطقة --</option>
+          {Object.entries(jordanRegions).map(([id, region]) => (
             <option key={id} value={id}>
-              {المنطقة.name}
+              {region.name}
             </option>
           ))}
         </select>
       </div>
 
-      {المنطقة_المختارة && (
+      {selectedRegion && (
         <div>
           <label htmlFor="sub-location" className="block text-sm font-medium text-gray-700 mb-1">
-            المنطقة الفرعية (اختياري)
+            المنطقة المحددة
           </label>
           <input
             id="sub-location"
             type="text"
+            aria-label="المنطقة المحددة"
             className="block w-full border rounded-md py-2 px-3 shadow-sm focus:border-green-500 focus:ring-green-500"
-            placeholder="مثلاً: تلاع العلي"
-            value={المنطقة_الفرعية}
-            onChange={عند_تغيير_الفرعية}
+            placeholder="مثلاً: طلة العلي"
+            value={subLocation}
+            onChange={handleSubLocationChange}
           />
         </div>
       )}

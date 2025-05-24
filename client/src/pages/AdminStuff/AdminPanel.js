@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode"; // ✅ Correct import
+import  jwtDecode  from "jwt-decode"; // ✅ Correct import
 
 export default function AdminPanel() {
   const [users, setUsers] = useState([]);
