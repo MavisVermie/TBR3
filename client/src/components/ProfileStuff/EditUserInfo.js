@@ -6,12 +6,10 @@ const EditUserInfo = () => {
     username: '',
     email: '',
     phone_number: '',
-    location: '',
     created_at: ''
   });
 
   const [passwords, setPasswords] = useState({
-    current: '',
     new: '',
     confirm: ''
   });
@@ -22,13 +20,7 @@ const EditUserInfo = () => {
     const getProfile = async () => {
       try {
         const token = localStorage.getItem('token');
-        if (!token) {
-          toast.error("Please login to view your profile");
-          setLoading(false);
-          return;
-        }
-
-        const response = await fetch("http://localhost:5000/Posting/", {
+        const response = await fetch("http://localhost:5000/profile", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -36,25 +28,18 @@ const EditUserInfo = () => {
           }
         });
 
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.message || 'Failed to fetch profile');
-        }
+        if (!response.ok) throw new Error('Failed to fetch profile');
 
         const data = await response.json();
-        if (data && data.length > 0) {
-          const userData = data[0];
-          setProfile({
-            username: userData.username || '',
-            email: userData.email || '',
-            phone_number: userData.phone_number || userData.phone || '',
-            location: userData.location || '',
-            created_at: userData.created_at ? new Date(userData.created_at).toLocaleString() : ''
-          });
-        }
+        const user = data[0];
+        setProfile({
+          username: user.username || '',
+          email: user.email || '',
+          phone_number: user.phone_number || '',
+          created_at: user.created_at ? new Date(user.created_at).toLocaleString() : ''
+        });
       } catch (err) {
-        console.error('Error fetching profile:', err.message);
-        toast.error(err.message || "Error loading profile");
+        toast.error(err.message || "Failed to load profile");
       } finally {
         setLoading(false);
       }
@@ -65,20 +50,24 @@ const EditUserInfo = () => {
 
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
+    if (passwords.new && passwords.new !== passwords.confirm) {
+      return toast.error("New passwords don't match");
+    }
+
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        toast.error("Please login to update your profile");
-        return;
-      }
+      const body = {
+        ...profile,
+        newPassword: passwords.new || undefined
+      };
 
-      const response = await fetch("http://localhost:5000/Posting/update", {
+      const response = await fetch("http://localhost:5000/update-credentials", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(profile)
+        body: JSON.stringify(body)
       });
 
       if (!response.ok) {
@@ -87,9 +76,9 @@ const EditUserInfo = () => {
       }
 
       toast.success("Profile updated successfully");
+      setPasswords({ new: '', confirm: '' });
     } catch (err) {
-      console.error('Error updating profile:', err.message);
-      toast.error(err.message || "Error updating profile");
+      toast.error(err.message || "Update failed");
     }
   };
 
@@ -103,125 +92,82 @@ const EditUserInfo = () => {
     setPasswords(prev => ({ ...prev, [name]: value }));
   };
 
-  const handlePasswordChange = async (e) => {
-    e.preventDefault();
-    if (passwords.new !== passwords.confirm) {
-      toast.error("New passwords don't match");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const token = localStorage.getItem('token');
-      const response = await fetch("http://localhost:5000/change-password", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          currentPassword: passwords.current,
-          newPassword: passwords.new
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update password');
-      }
-
-      toast.success("Password updated successfully!");
-      setPasswords({ current: '', new: '', confirm: '' });
-    } catch (err) {
-      console.error('Error updating password:', err.message);
-      toast.error(err.message || "Error updating password");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-64">
-        <div className="animate-spin rounded-full h-16 w-16 border-4 border-green-600 border-t-transparent"></div>
+      <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-green-600 border-t-transparent"></div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-4 font-sans">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Container 1: Edit Profile */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 space-y-6">
-          <h2 className="text-2xl font-semibold text-gray-800 text-center">Edit Your Profile</h2>
-          <form onSubmit={handleUpdateProfile} className="space-y-6">
-            <div className="space-y-4">
-              {['username', 'email', 'phone_number', 'location'].map((field) => (
-                <div key={field}>
-                  <label className="block text-sm font-medium text-green-700 capitalize text-left mb-3">
-                    {field.replace('_', ' ')}
-                  </label>
-                  <input
-                    type={field.includes('email') ? 'email' : 'text'}
-                    name={field}
-                    value={profile[field]}
-                    onChange={handleInputChange}
-                    className="w-full rounded-xl border border-gray-300 bg-white py-2 px-3 focus:outline-none focus:border-green-500"
-                    placeholder={`Enter your ${field.replace('_', ' ')}`}
-                  />
-                </div>
-              ))}
-            </div>
+    <div className="max-w-6xl mx-auto px-4 py-8 animate-fade-in">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        
+        {/* Edit Profile */}
+        <div className="bg-white shadow-xl rounded-2xl p-6 space-y-6 transition-transform duration-300 hover:scale-[1.02]">
+          <h2 className="text-2xl font-bold text-center text-green-700">Edit Profile</h2>
+          <form onSubmit={handleUpdateProfile} className="space-y-4">
+            {['username', 'email', 'phone_number'].map((field) => (
+              <div key={field}>
+                <label className="block text-sm font-medium text-gray-700 capitalize mb-1">
+                  {field.replace('_', ' ')}
+                </label>
+                <input
+                  type={field === 'email' ? 'email' : 'text'}
+                  name={field}
+                  value={profile[field]}
+                  onChange={handleInputChange}
+                  className="w-full border rounded-xl py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm transition"
+                  placeholder={`Enter your ${field.replace('_', ' ')}`}
+                />
+              </div>
+            ))}
 
-            <div className="text-sm text-gray-500 text-left">
-              <strong>Member Since:</strong> {profile.created_at}
-            </div>
 
-            <div className="flex justify-end">
+            <div className="text-right">
               <button
                 type="submit"
-                className="px-6 py-2 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition"
+                className="bg-green-600 text-white font-semibold px-6 py-2 rounded-xl hover:bg-green-700 transition-all shadow"
               >
-                Update Profile
+                Save Changes
               </button>
             </div>
           </form>
         </div>
 
-        {/* Container 2: Change Password */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 space-y-6">
-          <h2 className="text-2xl font-semibold text-gray-800 text-center">Change Your Password</h2>
-          <form onSubmit={handlePasswordChange} className="space-y-6">
-            <div className="space-y-4">
-              {['current', 'new', 'confirm'].map((type) => (
-                <div key={type}>
-                  <label className="block text-sm font-medium text-green-700  text-left mb-3">
-                    {`${type.charAt(0).toUpperCase() + type.slice(1)} Password`}
-                  </label>
-                  <input
-                    type="password"
-                    name={type}
-                    value={passwords[type]}
-                    onChange={handlePasswordInputChange}
-                    placeholder={`${type.charAt(0).toUpperCase() + type.slice(1)} Password`}
-                    className="w-full rounded-xl border border-gray-300 bg-white py-2 px-3 focus:outline-none focus:border-green-500"
-                    required
-                  />
-                </div>
-              ))}
-            </div>
+        {/* Change Password */}
+        <div className="bg-white shadow-xl rounded-2xl p-6 space-y-6 transition-transform duration-300 hover:scale-[1.02]">
+          <h2 className="text-2xl font-bold text-center text-green-700">Change Password</h2>
+          <form onSubmit={handleUpdateProfile} className="space-y-4">
+            {['new', 'confirm'].map((type) => (
+              <div key={type}>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {type === 'new' ? 'New Password' : 'Confirm Password'}
+                </label>
+                <input
+                  type="password"
+                  name={type}
+                  value={passwords[type]}
+                  onChange={handlePasswordInputChange}
+                  placeholder={`${type === 'new' ? 'Enter new' : 'Confirm new'} password`}
+                  className="w-full border rounded-xl py-2 px-4 text-sm focus:outline-none focus:ring-2 focus:ring-green-400 shadow-sm transition"
+                  required={type === 'new'}
+                />
+              </div>
+            ))}
 
-            <div className="flex justify-end">
+            <div className="text-right">
               <button
                 type="submit"
-                disabled={loading}
-                className="px-6 py-2 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition disabled:opacity-50"
+                className="bg-green-600 text-white font-semibold px-6 py-2 rounded-xl hover:bg-green-700 transition-all shadow"
               >
-                {loading ? 'Updating...' : 'Change Password'}
+                Update Password
               </button>
             </div>
           </form>
         </div>
+
       </div>
     </div>
   );

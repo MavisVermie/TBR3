@@ -80,33 +80,68 @@ function generateJWTToken(userId) {
     return jwt.sign({ userId }, jwtSecret, { expiresIn: '1h' });
   }
 
-// Use the 'authorize' middleware to validate the JWT token and extract user information
+
 app.put("/update-credentials", authorize, async (req, res) => {
   try {
-    // Extracting the user ID added to the req by the 'authorize' middleware
-    const user_id = req.user.id; // This assumes that the authorize middleware adds the user object with 'id' to the req
-    
-    // Extract user details from request body
-    const { username, email, zip_code } = req.body;
+    const user_id = req.user.id;
+    const {
+      username,
+      email,
+      phone_number,
+      newPassword
+    } = req.body;
 
-    // Update user in the database
-    const updateUser = await pool.query(
-      "UPDATE users SET username = $1, email = $2, zip_code = $3 WHERE user_id = $4 RETURNING username, email, zip_code",
-      [username, email, zip_code, user_id]
-    );
+    const fields = [];
+    const values = [];
+    let index = 1;
 
-    if (updateUser.rows.length === 0) {
+    if (username) {
+      fields.push(`username = $${index++}`);
+      values.push(username);
+    }
+
+    if (email) {
+      fields.push(`email = $${index++}`);
+      values.push(email);
+    }
+
+    if (phone_number) {
+      fields.push(`phone_number = $${index++}`);
+      values.push(phone_number);
+    }
+
+    if (newPassword && newPassword.length >= 6) {
+      const hashed = await bcrypt.hash(newPassword, 10);
+      fields.push(`password = $${index++}`);
+      values.push(hashed);
+    } else if (newPassword && newPassword.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters long" });
+    }
+
+    if (fields.length === 0) {
+      return res.status(400).json({ message: "No valid fields provided to update." });
+    }
+
+    const query = `
+      UPDATE users 
+      SET ${fields.join(', ')} 
+      WHERE id = $${index}
+      RETURNING username, email, phone_number
+    `;
+    values.push(user_id);
+
+    const updated = await pool.query(query, values);
+
+    if (updated.rows.length === 0) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Send back the updated user information
-    res.json(updateUser.rows[0]);
+    res.json(updated.rows[0]);
   } catch (err) {
-    console.error(err.message);
+    console.error("Error updating user credentials:", err.message);
     res.status(500).send("Server Error");
   }
 });
-
 
 
 
@@ -386,6 +421,55 @@ app.get('/posts', async (req, res) => {
 
 
 
+
+app.get("/profile", authorize, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const profileResult = await pool.query(
+      `SELECT username, email, phone_number FROM users WHERE id = $1`,
+      [userId]
+    );
+
+    if (profileResult.rows.length === 0) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const user = profileResult.rows[0];
+
+    // ✅ Only get the number of posts — no images
+    const postsCountResult = await pool.query(
+      `SELECT COUNT(*) FROM posts WHERE user_id = $1`,
+      [userId]
+    );
+    user.active_posts = parseInt(postsCountResult.rows[0].count, 10);
+
+    // ✅ Average rating
+    const ratingResult = await pool.query(
+      `SELECT ROUND(AVG(rating)::numeric, 1) AS rating FROM feedback WHERE receiver_id = $1`,
+      [userId]
+    );
+user.rating = ratingResult.rows[0].rating !== null
+  ? parseFloat(ratingResult.rows[0].rating)
+  : null;
+
+    // ✅ Feedbacks
+    const feedbackResult = await pool.query(
+      `SELECT f.giver_id, f.rating, f.comment, f.created_at, u.username AS giver_username
+       FROM feedback f
+       JOIN users u ON f.giver_id = u.id
+       WHERE f.receiver_id = $1
+       ORDER BY f.created_at DESC`,
+      [userId]
+    );
+    user.feedbacks = feedbackResult.rows;
+
+    res.json([user]);
+  } catch (err) {
+    console.error("Error in /profile:", err.message);
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 
 

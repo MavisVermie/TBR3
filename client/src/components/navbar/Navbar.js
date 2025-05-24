@@ -120,7 +120,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                         <Menu.Item>
                           {({ active }) => (
                             <Link
-                              to="/my-posts"
+                              to="/myposts"
                               className={classNames(
                                 active ? 'bg-green-500' : '',
                                 'block px-4 py-2 text-sm'
