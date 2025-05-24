@@ -19,7 +19,7 @@ const Homepage = () => {
           </p>
        
           <Link to="/feed">
-                    <button className="bg-green-600 hover:bg-[#34d399] text-white font-bold py-3 px-8 rounded-full text-lg transition shadow-lg">
+                    <button className="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-8 rounded-full text-lg transition shadow-lg">
             Donate now
           </button>
           </Link>
