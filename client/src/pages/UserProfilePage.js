@@ -5,35 +5,41 @@ import { jwtDecode } from "jwt-decode";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+// StarRating component
 const StarRating = ({ rating, setRating }) => {
   const handleClick = (value) => {
     if (setRating) setRating(value);
   };
 
   return (
-    <div className="flex space-x-1 cursor-pointer">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <svg
-          key={star}
-          onClick={() => handleClick(star)}
-          xmlns="http://www.w3.org/2000/svg"
-          fill={star <= rating ? "#facc15" : "none"}
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          className="w-6 h-6 text-yellow-500 hover:scale-125 transition-transform duration-300 hover:text-yellow-400"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={1.5}
-            d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l2.065 6.34a1 1 0 00.95.69h6.634c.969 0 1.371 1.24.588 1.81l-5.37 3.886a1 1 0 00-.364 1.118l2.065 6.34c.3.921-.755 1.688-1.538 1.118l-5.37-3.887a1 1 0 00-1.176 0l-5.37 3.887c-.783.57-1.838-.197-1.538-1.118l2.065-6.34a1 1 0 00-.364-1.118L2.812 11.767c-.783-.57-.38-1.81.588-1.81h6.634a1 1 0 00.95-.69l2.065-6.34z"
-          />
-        </svg>
-      ))}
+    <div className="flex justify-center space-x-5">
+      {[1, 2, 3, 4, 5].map((star) => {
+        const isFilled = star <= rating;
+        return (
+         <svg
+  key={star}
+  onClick={() => handleClick(star)}
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 20 20"
+  fill={isFilled ? "#facc15" : "none"}
+  stroke="#facc15"
+  className="w-10 h-10 cursor-pointer transition-transform duration-200 hover:scale-110"
+>
+  <path
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    strokeWidth="1.5"
+    d="M10 1.5c.4 0 .77.24.93.61l1.7 3.67 4.05.59c.98.14 1.38 1.34.66 2.03l-2.93 2.77.69 4.01c.17.98-.86 1.72-1.74 1.26L10 14.77l-3.62 1.9c-.88.46-1.91-.28-1.74-1.26l.69-4.01-2.93-2.77c-.72-.69-.32-1.89.66-2.03l4.05-.59 1.7-3.67c.16-.37.53-.61.93-.61Z"
+  />
+</svg>
+
+        );
+      })}
     </div>
   );
 };
 
+// Main component
 const UserProfilePage = () => {
   const { userId } = useParams();
   const [user, setUser] = useState(null);
@@ -88,8 +94,9 @@ const UserProfilePage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitError("");
+
     if (!token || rating === 0) {
-      setSubmitError("Please login to provide a rating.");
+      setSubmitError("Please login and select a rating.");
       return;
     }
 
@@ -100,7 +107,7 @@ const UserProfilePage = () => {
         { receiver_id: userId, rating, comment },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      toast.success("Feedback submitted successfully!");
+      toast.success("Feedback submitted!");
       setRating(0);
       setComment("");
       setTimeout(() => window.location.reload(), 1500);
@@ -131,70 +138,76 @@ const UserProfilePage = () => {
   };
 
   if (loading)
-    return <div className="p-6 animate-pulse text-gray-500">Loading profile...</div>;
+    return <div className="p-6 text-gray-500 animate-pulse">Loading profile...</div>;
   if (error) return <div className="p-6 text-red-600">{error}</div>;
   if (!user) return <div className="p-6">No user data available.</div>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 animate-fadeIn">
+    <div className="min-h-screen bg-gray-100 py-12 px-4">
       <ToastContainer />
-      <h1 className="text-3xl font-bold mb-6 text-green-700">User Profile</h1>
-      <div className="mb-6 border p-6 rounded-xl shadow bg-white transition-transform hover:scale-[1.01]">
-        <p className="text-lg"><strong>Username:</strong> {user.username}</p>
-        <p className="text-lg"><strong>Email:</strong> {user.email}</p>
-      </div>
+      <div className="max-w-6xl  mx-auto bg-white rounded-2xl shadow-lg p-8 space-y-4">
+        <div>
+          <h1 className="text-4xl font-semibold leading-loose text-green-700 mb-4">User Info</h1>
+          <p className="text-xl leading-loose "> Username : <span className=" text-red-600">{user.username}</span></p>
+          <p className="text-xl leading-loose">Email : <span className=" text-red-600">{user.email}</span> </p>
+          <p className="text-xl leading-loose">Phone : <span className=" text-red-600"></span> </p>
+        </div>
+        <div>
+          <h2 className="text-2xl font-semibold mb-2 text-left">Feedback:</h2>
+          <p className="text-gray-700 mb-4 text-left">Average Rating: <strong>{averageRating}</strong> / 5</p>
 
-      <div className="p-6 border rounded-xl shadow bg-white mb-6 transition-transform hover:scale-[1.01]">
-        <h2 className="text-2xl font-bold mb-4">Feedback</h2>
-        <p className="mb-4 text-gray-700">Average Rating: <strong>{averageRating}</strong> / 5</p>
+          {feedbacks.length === 0 ? (
+            <p className="text-gray-500 italic">No feedback yet.</p>
+          ) : (
+            <ul className="space-y-4">
+              {feedbacks.map((f, index) => (
+                <li key={index} className="relative bg-gray-100 border p-4 rounded-lg shadow-sm">
+                  <div className="flex justify-between items-center">
+                    <span className="font-semibold">{f.giver_username}</span>
+                    <span className="text-yellow-500 font-medium">{f.rating} / 5</span>
+                  </div>
+                  <p className="text-gray-600 mt-2">{f.comment}</p>
+                  <p className="text-xs text-right text-gray-400 mt-1">
+                    {new Date(f.created_at).toLocaleDateString()}
+                  </p>
+                  {f.giver_id === currentUserId && (
+                    <button
+                      onClick={handleDelete}
+                      className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm"
+                    >
+                      Delete
+                    </button>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
 
-        {feedbacks.length === 0 ? (
-          <p className="text-gray-500 italic">No feedback yet.</p>
-        ) : (
-          <ul className="space-y-3">
-            {feedbacks.map((f, index) => (
-              <li key={index} className="border p-4 rounded-xl bg-gray-50 relative transition-transform hover:scale-[1.01]">
-                <strong>{f.giver_username}</strong>: {f.rating} / 5
-                <p className="text-sm text-gray-600 mt-1">{f.comment}</p>
-                <p className="text-xs text-gray-400 mt-1">
-                  {new Date(f.created_at).toLocaleDateString()}
-                </p>
-                {f.giver_id === currentUserId && (
-                  <button
-                    onClick={handleDelete}
-                    className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm"
-                  >
-                    Delete
-                  </button>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-
-      <div className="p-6 border rounded-xl shadow bg-white mt-4 transition-transform hover:scale-[1.01]">
-        <h2 className="text-xl font-bold mb-3">Leave Feedback</h2>
-        {submitError && <p className="text-red-500 text-sm mb-2">{submitError}</p>}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <p className="mb-1 font-medium">Rating:</p>
-            <StarRating rating={rating} setRating={setRating} />
-          </div>
-          <textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            className="w-full border p-2 rounded"
-            placeholder="Write your thoughts..."
-          ></textarea>
-          <button
-            type="submit"
-            disabled={submitting}
-            className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition shadow"
-          >
-            {submitting ? "Submitting..." : "Submit Feedback"}
-          </button>
-        </form>
+        <div>
+          <h2 className="text-xl font-semibold mb-3">Leave Your Feedback</h2>
+          {submitError && <p className="text-red-500 text-sm mb-2">{submitError}</p>}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <p className="mb-3 font-medium ">Rating:</p>
+              <StarRating rating={rating} setRating={setRating} />
+            </div>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              className="w-full border p-3 rounded-md resize-none"
+              placeholder="Write your feedback..."
+              rows="4"
+            ></textarea>
+            <button
+              type="submit"
+              disabled={submitting}
+              className="w-full bg-green-700 text-white py-2 rounded hover:bg-green-800 transition"
+            >
+              {submitting ? "Submitting..." : "Submit Feedback"}
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );

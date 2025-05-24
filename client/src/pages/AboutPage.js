@@ -10,7 +10,7 @@ const people = [
   },
   {
     name: 'Marah Y AL-Qunbor',
-    role: 'Font-End Developer-designing',
+    role: 'Front-End Developer-designing',
     linkedinUrl: 'https://www.linkedin.com/in/marahyousef',
   },
   {
