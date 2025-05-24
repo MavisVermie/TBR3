@@ -1,0 +1,122 @@
+import React, { useState } from 'react';
+import { toast } from 'react-toastify';
+
+export default function RegistrationPage({ setAuth }) {
+  const [inputs, setInputs] = useState({
+    username: '',
+    email: '',
+    password: '',
+    zip_code: '',
+    phone_number: ''
+  });
+
+  const { username, email, password, zip_code, phone_number } = inputs;
+
+  const onChange = e =>
+    setInputs({ ...inputs, [e.target.name]: e.target.value });
+
+  const onSubmitForm = async e => {
+    e.preventDefault();
+
+    const jordanPhoneRegex = /^(?:\+9627\d{8}|07\d{8})$/;
+    if (!jordanPhoneRegex.test(phone_number)) {
+      toast.error(" +9627XXXXXXXX or 07XXXXXXXX يجب ان يكون رقم الهاتف بالتنسيق");
+      return;
+    }
+
+    const formattedPhone =
+      phone_number.startsWith("07") ? "+962" + phone_number.slice(1) : phone_number;
+
+    try {
+      const body = {
+        username,
+        password,
+        email,
+        zip_code,
+        phone_number: formattedPhone
+      };
+
+      const response = await fetch(
+        'http://localhost:5000/authentication/registration',
+        {
+          method: 'POST',
+          headers: {
+            'Content-type': 'application/json'
+          },
+          body: JSON.stringify(body)
+        }
+      );
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(errorMessage);
+      }
+
+      const parseRes = await response.json();
+
+      if (parseRes.jwtToken) {
+        localStorage.setItem('token', parseRes.jwtToken);
+        setAuth(true);
+        toast.success('تم التسجيل بنجاح');
+      } else {
+        setAuth(false);
+        toast.error('خطأ: غير قادر على التسجيل');
+      }
+    } catch (err) {
+      console.error('خطأ', err.message);
+      toast.error('خطأ: غير قادر على التسجيل');
+    }
+  };
+
+  return (
+    <div className="flex min-h-screen">
+      {/* Left side (Form) */}
+      <div className="w-full md:w-2/3 flex flex-col items-center justify-center bg-gray-100 px-4 py-8 bg-gradient-to-br from-green-200 via-gray-100 to-green-100
+font-sans">
+        <h2 className="text-3xl font-bold text-green-600 mb-10 ">تسجيل</h2>
+        <form onSubmit={onSubmitForm} className="w-full max-w-md space-y-3">
+          {['اسم المستخدم', 'البريد الالكتروني', 'كلمة المرور ', 'رقم الهاتف', 'الرمز البريدي'].map((field, index) => (
+            <input
+              key={index}
+              type={field === 'البريد الالكتروني' ? 'البريد الالكتروني' : field === 'كلمة المرور' ? 'كلمة المرور' : field === 'رقم الهاتف' ? 'الهاتف' : 'text'}
+              name={field}
+              value={inputs[field]}
+              onChange={onChange}
+              placeholder={
+                field === 'اسم المستخدم' ? 'الاسم الكامل'
+                : field === 'رقم الهاتف' ? 'e.g. +9627XXXXXXXX or 07XXXXXXXX'
+                : field === 'الرمز البريدي' ? 'الرمز البريدي'
+                : field.charAt(0).toUpperCase() + field.slice(1)
+              }
+              className="w-full px-4 py-2 border rounded-full transition duration-200 outline-none
+                focus:border-green-500 focus:ring-2 focus:ring-green-400
+                hover:ring-2 hover:ring-green-400"
+              required={field !== 'الرمز البريدي'}
+            />
+          ))}
+          <button
+            type="submit"
+            className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-full font-semibold transition duration-200"
+          >
+           إنشاء حساب
+          </button>
+        </form>
+        <p className="text-sm text-center mt-3 text-gray-700">
+        هل لديك حساب بالفعل؟ {' '}
+          <a href="/authentication/login" className="underline font-medium text-green-600">
+           تسجيل الدخول
+          </a>
+        </p>
+      </div>
+
+      {/* Right side (Image) */}
+      <div className="hidden md:block md:w-1/3">
+        <img
+          src="/reg.jpg"
+          alt="Side"
+          className="w-full h-full object-cover"
+        />
+      </div>
+    </div>
+  );
+}
