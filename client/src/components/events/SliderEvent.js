@@ -85,26 +85,7 @@ const SliderEvent = () => {
       </Swiper>
 
       {/* Custom Pagination */}
-      <div className="swiper-pagination mt-6 !bottom-0"></div>
-
-      <style jsx>{`
-        .swiper-pagination-bullet {
-          width: 10px;
-          height: 10px;
-          background: #2563eb;
-          opacity: 0.5;
-        }
-        .swiper-pagination-bullet-active {
-          opacity: 1;
-          background: #2563eb;
-        }
-        .swiper-slide {
-          transition: transform 0.3s ease;
-        }
-        .swiper-slide-active {
-          transform: scale(1.02);
-        }
-      `}</style>
+      <div className="swiper-pagination mt-6 !bottom-0 [&_.swiper-pagination-bullet]:w-2.5 [&_.swiper-pagination-bullet]:h-2.5 [&_.swiper-pagination-bullet]:bg-blue-600 [&_.swiper-pagination-bullet]:opacity-50 [&_.swiper-pagination-bullet-active]:opacity-100 [&_.swiper-pagination-bullet-active]:bg-blue-600"></div>
     </div>
   );
 };
