@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./SinglePostPage.css";
+import "./showDataProduct.css";
 import { jwtDecode } from 'jwt-decode';
 
 /**
@@ -343,7 +343,7 @@ const showEditButton = post && (
           <h1 className="text-4xl font-semibold text-green-600 font-sans">{post.title}</h1>
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">
-              Posted by <span className="font-semibold text-gray-800">{post.username}</span>
+              Posted by <span className="font-semibold text-gray-800 cursor-pointer text-blue-600 hover:underline" onClick={() => navigate(`/user/${post.user_id}`)}>{post.username}</span>
             </p>
             <p className="text-sm text-gray-500">
               Location: <span className="font-semibold text-gray-800">{post.location}</span>
@@ -365,14 +365,16 @@ const showEditButton = post && (
                 {/* Main Image Container with Navigation Arrows */}
                 <div className="main-image-container mb-5 bg-white  rounded-lg  relative">
                   {/* Previous Image Button */}
-                  <button
-                    className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-10"
-                    onClick={handlePrevImage}
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
+                  {allImages.length > 1 && (
+                    <button
+                      className="absolute left-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-10"
+                      onClick={handlePrevImage}
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7" />
+                      </svg>
+                    </button>
+                  )}
 
                   {/* Main Image Display */}
                   <div className="flex items-center justify-center p-4">
@@ -395,14 +397,16 @@ const showEditButton = post && (
                   </div>
 
                   {/* Next Image Button */}
-                  <button
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-10"
-                    onClick={handleNextImage}
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
+                  {allImages.length > 1 && (
+                    <button
+                      className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75 transition z-10"
+                      onClick={handleNextImage}
+                    >
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                      </svg>
+                    </button>
+                  )}
                 </div>
 
                 {/* Thumbnail Gallery - Shows all available images */}
@@ -488,10 +492,10 @@ const showEditButton = post && (
                       <p className="text-sm text-gray-500">Email</p>
                       <p className="text-gray-800 font-medium">{post.email}</p>
                     </div>
-                    {post.phone_number && (
+                    {post.phone && (
                       <div>
                         <p className="text-sm text-gray-500">Phone Number</p>
-                        <p className="text-gray-800 font-medium">{post.phone_number}</p>
+                        <p className="text-gray-800 font-medium">{post.phone}</p>
                       </div>
                     )}
                     <div>
@@ -535,12 +539,12 @@ const showEditButton = post && (
               {/* Phone Number Section */}
               <div className="mb-6">
                 <p className="text-gray-800 font-medium mb-2">Phone Number:</p>
-                <p className="text-gray-700 mb-3">{post.phone_number || "Not provided"}</p>
+                <p className="text-gray-700 mb-3">{post.phone || "Not provided"}</p>
 
                 {/* WhatsApp Button */}
-                {post.phone_number && (
+                {post.phone && (
                   <a
-                    href={`https://wa.me/${post.phone_number.replace(/[^0-9]/g, '')}`}
+                    href={`https://wa.me/${post.phone.replace(/[^0-9]/g, '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center justify-center px-6 py-3 bg-green-500 text-white rounded-lg shadow hover:bg-green-600 transition w-full"

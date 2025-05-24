@@ -2,10 +2,10 @@ const router = require("express").Router();
 const authorize = require("../middleware/authorize");
 const pool = require("../db");
 
-// Get user profile info (username, email, zip_code)
-router.get("/", authorize, async (req, res) => {   // ✅ Add authorize here
+// ✅ جلب معلومات الملف الشخصي للمستخدم (الاسم، البريد الإلكتروني، الرمز البريدي)
+router.get("/", authorize, async (req, res) => {
   try {
-    const userId = req.user.id;  // ✅ authorize middleware sets req.user.id
+    const userId = req.user.id;
 
     const user = await pool.query(
       "SELECT username, email, zip_code FROM users WHERE id = $1",
@@ -14,37 +14,12 @@ router.get("/", authorize, async (req, res) => {   // ✅ Add authorize here
 
     res.json(user.rows);
   } catch (err) {
-    console.error("Error fetching user profile:", err.message);
-    res.status(500).send("Server error");
+    console.error("خطأ في جلب الملف الشخصي:", err.message);
+    res.status(500).send("خطأ في الخادم");
   }
 });
 
-// Create post (not used here - done in index.js)
-/*
-router.post("/create-post", authorize, async (req, res) => {
-  try {
-    const { title } = req.body;
-    const file = req.file;
-
-    if (!file) {
-      return res.status(400).send("No files were uploaded.");
-    }
-
-    const imageData = file.buffer;
-
-    const newPost = await pool.query(
-      "INSERT INTO posts (title, attached_photo, user_id) VALUES ($1, $2, $3) RETURNING *",
-      [title, imageData, req.user.id]
-    );
-
-    res.json(newPost.rows[0]);
-  } catch (err) {
-    console.error("Error creating post:", err.message);
-    res.status(500).send("Server error");
-  }
-});
-*/
-
+// ✅ تحديث منشور
 router.put("/update-post/:id", authorize, async (req, res) => {
   try {
     const { id } = req.params;
@@ -63,7 +38,7 @@ router.put("/update-post/:id", authorize, async (req, res) => {
     try {
       parsedFeatures = features ? JSON.parse(features) : [];
     } catch (err) {
-      console.warn("Failed to parse features:", err.message);
+      console.warn("فشل في تحويل المزايا:", err.message);
     }
 
     const files = req.files?.images;
@@ -72,7 +47,7 @@ router.put("/update-post/:id", authorize, async (req, res) => {
     const primaryPhoto = imageFiles[0]?.data || null;
     const extraImages = imageFiles.slice(1);
 
-    // 🔄 Step 1: Update the post
+    // الخطوة 1: تحديث البيانات الرئيسية للمنشور
     const updateQuery = `
       UPDATE posts
       SET title = $1,
@@ -99,15 +74,15 @@ router.put("/update-post/:id", authorize, async (req, res) => {
     ]);
 
     if (result.rows.length === 0) {
-      return res.status(403).json({ message: "Not authorized or post not found" });
+      return res.status(403).json({ message: "غير مصرح لك أو المنشور غير موجود" });
     }
 
     const postId = result.rows[0].post_id;
 
-    // 🔄 Step 2: Optionally delete old extra images
+    // الخطوة 2: حذف الصور الإضافية القديمة
     await pool.query("DELETE FROM post_images WHERE post_id = $1", [postId]);
 
-    // 🔄 Step 3: Insert new extra images
+    // الخطوة 3: إضافة الصور الإضافية الجديدة
     for (const file of extraImages) {
       await pool.query(
         "INSERT INTO post_images (post_id, image) VALUES ($1, $2)",
@@ -115,16 +90,15 @@ router.put("/update-post/:id", authorize, async (req, res) => {
       );
     }
 
-    return res.json({ message: "Post updated successfully" });
+    return res.json({ message: "تم تحديث المنشور بنجاح" });
 
   } catch (err) {
-    console.error("Error updating post:", err.message);
-    res.status(500).send("Server error");
+    console.error("خطأ أثناء تحديث المنشور:", err.message);
+    res.status(500).send("خطأ في الخادم");
   }
 });
 
-
-// Delete a post
+// ✅ حذف منشور
 router.delete("/delete-post/:id", authorize, async (req, res) => {
   try {
     const { id } = req.params;
@@ -135,63 +109,58 @@ router.delete("/delete-post/:id", authorize, async (req, res) => {
     );
 
     if (deletePost.rows.length === 0) {
-      return res.json("This post is not yours or does not exist.");
+      return res.json("هذا المنشور ليس لك أو غير موجود.");
     }
 
-    res.json("Post deleted successfully.");
+    res.json("تم حذف المنشور بنجاح.");
   } catch (err) {
-    console.error("Error deleting post:", err.message);
-    res.status(500).send("Server error");
+    console.error("خطأ أثناء حذف المنشور:", err.message);
+    res.status(500).send("خطأ في الخادم");
   }
 });
-// GET single post by ID with extra images
+
+// ✅ جلب منشور معين باستخدام معرفه مع الصور الإضافية
 router.get("/posts/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Fetch main post details including features and location
     const postResult = await pool.query(`
       SELECT  
-  posts.post_id,
-  posts.title,
-  posts.description,
-  posts.primary_photo,
-  posts.location,
-  posts.features,
-  posts.user_id,              -- ✅ post owner ID remains as is
-  users.username,
-  users.email,
-  posts.phone
-FROM posts
-LEFT JOIN users ON posts.user_id = users.id
-WHERE posts.post_id = $1
-
+        posts.post_id,
+        posts.title,
+        posts.description,
+        posts.primary_photo,
+        posts.location,
+        posts.features,
+        posts.user_id,
+        users.username,
+        users.email,
+        posts.phone
+      FROM posts
+      LEFT JOIN users ON posts.user_id = users.id
+      WHERE posts.post_id = $1
     `, [id]);
 
     if (postResult.rows.length === 0) {
-      return res.status(404).json({ message: "Post not found" });
+      return res.status(404).json({ message: "المنشور غير موجود" });
     }
 
     const post = postResult.rows[0];
 
-
-
-    // ✅ Parse PostgreSQL array string like '{Furniture,Used}'
+    // ✅ تحويل مميزات PostgreSQL من صيغة النص إلى مصفوفة
     let parsedFeatures = [];
 
     if (post.features && typeof post.features === 'string') {
       parsedFeatures = post.features
-        .replace(/[{}"]/g, '')      // remove braces and quotes
-        .split(',')                 // split into array
-        .map(f => f.trim())         // trim spaces
-        .filter(f => f);            // remove empty strings
+        .replace(/[{}"]/g, '')
+        .split(',')
+        .map(f => f.trim())
+        .filter(f => f);
     } else if (Array.isArray(post.features)) {
-      // If using text[] type in PostgreSQL, no parsing needed
       parsedFeatures = post.features;
     }
 
- 
-    // Get extra images
+    // ✅ جلب الصور الإضافية
     const extraImagesResult = await pool.query(
       "SELECT image FROM post_images WHERE post_id = $1",
       [id]
@@ -201,43 +170,39 @@ WHERE posts.post_id = $1
       img.image?.toString("base64")
     );
 
-    // ✅ Final response
-res.json({
-  post_id: post.post_id,
-  title: post.title,
-  description: post.description,
-  primary_photo: post.primary_photo?.toString("base64") || null,
-  extra_images: extraImages,
-  username: post.username,
-  email: post.email,
-  phone: post.phone,
-  location: post.location || '',
-  features: parsedFeatures,
-  user_id: post.user_id  // ✅ still the owner ID
-});
-
+    // ✅ الاستجابة النهائية
+    res.json({
+      post_id: post.post_id,
+      title: post.title,
+      description: post.description,
+      primary_photo: post.primary_photo?.toString("base64") || null,
+      extra_images: extraImages,
+      username: post.username,
+      email: post.email,
+      phone: post.phone,
+      location: post.location || '',
+      features: parsedFeatures,
+      user_id: post.user_id
+    });
 
   } catch (err) {
-    console.error("Error fetching post by ID:", err.message);
-    res.status(500).send("Server Error");
+    console.error("خطأ أثناء جلب المنشور:", err.message);
+    res.status(500).send("خطأ في الخادم");
   }
 });
 
-
-// ... كود الراوتات السابقة
-
-// ✅ Route جديد: Get posts of the logged-in user only
+// ✅ جلب جميع المنشورات الخاصة بالمستخدم الحالي
 router.get("/my-posts", authorize, async (req, res) => {
   try {
     const userId = req.user.id;
-    console.log("Fetching posts for userId:", userId); // Debug log
+    console.log("جلب منشورات المستخدم:", userId);
 
-    // Only get posts for the logged-in user
     const myPosts = await pool.query(
       "SELECT post_id, title, description, primary_photo, location, created_at FROM posts WHERE user_id = $1 ORDER BY created_at DESC",
       [userId]
     );
-    console.log("Number of posts found:", myPosts.rows.length); // Debug log
+
+    console.log("عدد المنشورات:", myPosts.rows.length);
 
     const formattedPosts = myPosts.rows.map(post => ({
       ...post,
@@ -246,12 +211,9 @@ router.get("/my-posts", authorize, async (req, res) => {
 
     res.json(formattedPosts);
   } catch (err) {
-    console.error("Error fetching user's posts:", err.message);
-    res.status(500).send("Server error");
+    console.error("خطأ أثناء جلب منشورات المستخدم:", err.message);
+    res.status(500).send("خطأ في الخادم");
   }
 });
-
-
-
 
 module.exports = router;
