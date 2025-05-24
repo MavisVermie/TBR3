@@ -149,8 +149,7 @@ const UserProfilePage = () => {
         <div>
           <h1 className="text-4xl font-semibold leading-loose text-green-700 mb-4">User Info</h1>
           <p className="text-xl leading-loose "> Username : <span className=" text-red-600">{user.username}</span></p>
-          <p className="text-xl leading-loose">Email : <span className=" text-red-600">{user.email}</span> </p>
-          <p className="text-xl leading-loose">Phone : <span className=" text-red-600"></span> </p>
+          <p className="text-xl leading-loose">Phone : <span className=" text-red-600">{user.phone_number}</span> </p>
         </div>
         <div>
           <h2 className="text-2xl font-semibold mb-2 text-left">Feedback:</h2>
