@@ -17,7 +17,7 @@ import ResetPassword from './components/LoginStuff/ResetPassword';
 import AdminPanel from './pages/AdminStuff/AdminPanel';
 import AdminPosts from './pages/AdminStuff/AdminPosts';
 import NewHome from './pages/Home';
-import SinglePost from './pages/PostsPages/SinglePostPage';
+import SinglePost from './pages/PostsPages/showDataProduct';
 import EditPostPage from './pages/PostsPages/EditPostPage';
 //عشان ترجعي تحذفيها
 import MyPostsPage from "./pages/PostsPages/MyPostsPage";
