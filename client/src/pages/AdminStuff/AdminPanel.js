@@ -38,6 +38,13 @@ export default function AdminDashboard() {
         </button>
 
         <button
+          onClick={() => navigate("/admin/events")}
+          className="bg-yellow-600 hover:bg-yellow-700 text-white py-3 px-6 rounded-lg font-semibold text-lg"
+        >
+          Manage Events
+        </button>
+
+        <button
           onClick={() => navigate("/admin/create-event")}
           className="bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-semibold text-lg"
         >

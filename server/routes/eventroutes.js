@@ -112,5 +112,26 @@ router.post("/", async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 });
+// DELETE /events/:id - Admin only
+router.delete("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    // Delete images first (due to FK constraint)
+    await pool.query("DELETE FROM event_images WHERE event_id = $1", [id]);
+
+    // Then delete the event
+    const result = await pool.query("DELETE FROM events WHERE id = $1 RETURNING *", [id]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    return res.json({ message: "Event deleted successfully" });
+  } catch (err) {
+    console.error("❌ Error deleting event:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
 
 module.exports = router;
