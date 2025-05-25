@@ -6,8 +6,6 @@ const EditUserInfo = () => {
     username: '',
     email: '',
     phone_number: '',
-    location: '',
-    created_at: ''
   });
 
   const [passwords, setPasswords] = useState({
@@ -43,9 +41,7 @@ const EditUserInfo = () => {
         setProfile({
           username: user.username || '',
           email: user.email || '',
-          phone_number: user.phone_number || '',
-          location: user.location || '',
-          created_at: user.created_at ? new Date(user.created_at).toLocaleString() : ''
+          phone_number: user.phone_number || ''
         });
       } catch (err) {
         toast.error(err.message || "Error loading profile");
@@ -138,34 +134,28 @@ const EditUserInfo = () => {
   }
 
   return (
-    <div className="max-w-7xl mx-auto p-4 font-sans">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Edit Profile */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 space-y-6">
-          <h2 className="text-2xl font-semibold text-gray-800 text-center">Edit Your Profile</h2>
+    <div className="w-full max-w-screen-lg mx-auto px-4 sm:px-6 lg:px-8 py-10 font-sans">
+
+      <div className="grid grid-cols-1 gap-8">
+        {/* Profile Card */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 hover:shadow-2xl transition duration-300">
+          <h3 className="text-xl sm:text-2xl font-semibold text-gray-700 mb-6">Update Profile</h3>
           <form onSubmit={handleUpdateProfile} className="space-y-6">
-            <div className="space-y-4">
-              {['username', 'email', 'phone_number', 'location'].map((field) => (
-                <div key={field}>
-                  <label className="block text-sm font-medium text-green-700 capitalize text-left mb-3">
-                    {field.replace('_', ' ')}
-                  </label>
-                  <input
-                    type={field === 'email' ? 'email' : 'text'}
-                    name={field}
-                    value={profile[field]}
-                    onChange={handleInputChange}
-                    className="w-full rounded-xl border border-gray-300 bg-white py-2 px-3 focus:outline-none focus:border-green-500"
-                    placeholder={`Enter your ${field.replace('_', ' ')}`}
-                  />
-                </div>
-              ))}
-            </div>
-
-            <div className="text-sm text-gray-500 text-left">
-              <strong>Member Since:</strong> {profile.created_at}
-            </div>
-
+            {['username', 'email', 'phone_number'].map((field) => (
+              <div key={field}>
+                <label className="block text-sm font-medium text-green-700 capitalize mb-2">
+                  {field.replace('_', ' ')}
+                </label>
+                <input
+                  type={field === 'email' ? 'email' : 'text'}
+                  name={field}
+                  value={profile[field]}
+                  onChange={handleInputChange}
+                  className="w-full rounded-xl border border-gray-300 bg-white py-3 px-4 focus:outline-none focus:border-green-500 text-sm sm:text-base"
+                  placeholder={`Enter your ${field.replace('_', ' ')}`}
+                />
+              </div>
+            ))}
             <div className="flex justify-end">
               <button
                 type="submit"
@@ -177,29 +167,26 @@ const EditUserInfo = () => {
           </form>
         </div>
 
-        {/* Change Password */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 space-y-6">
-          <h2 className="text-2xl font-semibold text-gray-800 text-center">Change Your Password</h2>
+        {/* Password Card */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8 hover:shadow-2xl transition duration-300">
+          <h3 className="text-xl sm:text-2xl font-semibold text-gray-700 mb-6">Change Password</h3>
           <form onSubmit={handlePasswordChange} className="space-y-6">
-            <div className="space-y-4">
-              {['current', 'new', 'confirm'].map((type) => (
-                <div key={type}>
-                  <label className="block text-sm font-medium text-green-700 text-left mb-3">
-                    {`${type.charAt(0).toUpperCase() + type.slice(1)} Password`}
-                  </label>
-                  <input
-                    type="password"
-                    name={type}
-                    value={passwords[type]}
-                    onChange={handlePasswordInputChange}
-                    placeholder={`${type.charAt(0).toUpperCase() + type.slice(1)} Password`}
-                    className="w-full rounded-xl border border-gray-300 bg-white py-2 px-3 focus:outline-none focus:border-green-500"
-                    required
-                  />
-                </div>
-              ))}
-            </div>
-
+            {['current', 'new', 'confirm'].map((type) => (
+              <div key={type}>
+                <label className="block text-sm font-medium text-green-700 mb-2">
+                  {`${type.charAt(0).toUpperCase() + type.slice(1)} Password`}
+                </label>
+                <input
+                  type="password"
+                  name={type}
+                  value={passwords[type]}
+                  onChange={handlePasswordInputChange}
+                  placeholder={`${type.charAt(0).toUpperCase() + type.slice(1)} Password`}
+                  className="w-full rounded-xl border border-gray-300 bg-white py-3 px-4 focus:outline-none focus:border-green-500 text-sm sm:text-base"
+                  required
+                />
+              </div>
+            ))}
             <div className="flex justify-end">
               <button
                 type="submit"

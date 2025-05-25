@@ -14,18 +14,12 @@ const SliderEvent = () => {
   }
 
   return (
-    <div className="relative px-4 py-8">
+    <div className="relative px-4 bg-gray-100 pb-3">
       <Swiper
-        modules={[Pagination, Autoplay]}
+        modules={[Autoplay]}  // Removed Pagination module here
         spaceBetween={20}
         slidesPerView={3}
-        pagination={{
-          clickable: true,
-          el: '.swiper-pagination',
-          renderBullet: function (index, className) {
-            return '<span class="' + className + ' bg-blue-600"></span>';
-          },
-        }}
+        // Removed pagination config entirely
         autoplay={{
           delay: 3000,
           disableOnInteraction: false,
@@ -35,18 +29,18 @@ const SliderEvent = () => {
         breakpoints={{
           320: {
             slidesPerView: 1,
-            spaceBetween: 10
+            spaceBetween: 10,
           },
           640: {
             slidesPerView: 2,
-            spaceBetween: 15
+            spaceBetween: 15,
           },
           1024: {
             slidesPerView: 3,
-            spaceBetween: 20
-          }
+            spaceBetween: 20,
+          },
         }}
-        className="relative"
+        className="relative bg-gray-100"
       >
         {mockEvents.map((event) => (
           <SwiperSlide key={event.id}>
@@ -84,10 +78,9 @@ const SliderEvent = () => {
         ))}
       </Swiper>
 
-      {/* Custom Pagination */}
-      <div className="swiper-pagination mt-6 !bottom-0 [&_.swiper-pagination-bullet]:w-2.5 [&_.swiper-pagination-bullet]:h-2.5 [&_.swiper-pagination-bullet]:bg-blue-600 [&_.swiper-pagination-bullet]:opacity-50 [&_.swiper-pagination-bullet-active]:opacity-100 [&_.swiper-pagination-bullet-active]:bg-blue-600"></div>
+      {/* Removed the pagination div here */}
     </div>
   );
 };
 
-export default SliderEvent; 
+export default SliderEvent;
