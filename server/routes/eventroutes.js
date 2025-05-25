@@ -1,0 +1,96 @@
+const express = require("express");
+const router = express.Router();
+const pool = require("../db");
+const authorize = require("../middleware/authorize");
+
+// ✅ Apply authorize + admin-check middleware to all routes below
+router.use(authorize);
+router.use((req, res, next) => {
+  if (!req.user?.isAdmin) {
+    return res.status(403).json({ message: "Only admins can access this route." });
+  }
+  next();
+});
+
+// ✅ Test route to confirm router is working
+router.get("/ping", (req, res) => {
+  res.send("events router is working ✅");
+});
+
+// ✅ POST /events - Create event (admin only)
+router.post("/", async (req, res) => {
+  try {
+    console.log("⚡ Event creation request received");
+    console.log("req.user =", req.user);
+    console.log("REQ BODY:", req.body);
+    console.log("REQ FILES:", req.files);
+
+    const {
+      title,
+      description,
+      owner_name,
+      location,
+      event_date,
+      start_time,
+      end_time
+    } = req.body;
+
+    if (!title || !description || !owner_name || !location || !event_date || !start_time || !end_time) {
+      return res.status(400).json({ message: "All fields are required." });
+    }
+
+    const result = await pool.query(
+      `INSERT INTO events (title, description, owner_name, location, event_date, start_time, end_time, admin_id)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`,
+      [title, description, owner_name, location, event_date, start_time, end_time, req.user.id]
+    );
+
+    const eventId = result.rows[0].id;
+
+    if (req.files?.images) {
+      const images = Array.isArray(req.files.images) ? req.files.images : [req.files.images];
+      for (const image of images) {
+        const buffer = image.data;
+        await pool.query(
+          `INSERT INTO event_images (event_id, image) VALUES ($1, $2)`,
+          [eventId, buffer]
+        );
+      }
+    }
+
+    return res.status(201).json({ message: "Event created successfully", event_id: eventId });
+
+  } catch (err) {
+    console.error("❌ Error creating event:", err);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+// ✅ GET /events/:id - Get single event with base64 images
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const eventRes = await pool.query(`SELECT * FROM events WHERE id = $1`, [id]);
+
+    if (eventRes.rows.length === 0) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    const imageRes = await pool.query(`SELECT image FROM event_images WHERE event_id = $1`, [id]);
+    const images = imageRes.rows.map((row) => row.image.toString("base64"));
+
+    const event = {
+      ...eventRes.rows[0],
+      images
+    };
+
+    return res.json(event);
+
+  } catch (err) {
+    console.error("❌ Error fetching event:", err.message);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+module.exports = router;
