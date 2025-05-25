@@ -22,23 +22,12 @@ import EditPostPage from './pages/PostsPages/EditPostPage';
 import MyPostsPage from "./pages/PostsPages/MyPostsPage";
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import { cssTransition } from "react-toastify";
-<<<<<<< HEAD
-=======
-
-import MyFeed from './pages/myFeed';
-
-
->>>>>>> f21ee20f9ffd6b9c3968b1f7c1f788153d6ba696
 import TermsOfService from './pages/TermsOfService';
 import ContactUs from './pages/ContactUs';
 import UserProfilePage from './pages/UserProfilePage';
 import EventForm from './components/events/EventForm';
 import ShowEvent from './components/events/showEvent';
 import Events from './pages/Events';
-<<<<<<< HEAD
-=======
-
->>>>>>> f21ee20f9ffd6b9c3968b1f7c1f788153d6ba696
 const SlowFade = cssTransition({
   enter: 'fadeIn',
   exit: 'fadeOut',
@@ -124,12 +113,6 @@ function App() {
             <Route path="/myposts" element={<MyPostsPage />} /> //rama posts
             <Route path="/*" element={<PageNotFound />} />
             <Route path="/home" element={<NewHome />} />
-<<<<<<< HEAD
-=======
-
-            <Route path="/" element={<Homepage />} />
-            
->>>>>>> f21ee20f9ffd6b9c3968b1f7c1f788153d6ba696
             <Route path="/user/:userId" element={<UserProfilePage />} />
             <Route path="/Privacy-Policy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<TermsOfService />} />
