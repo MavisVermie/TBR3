@@ -16,6 +16,8 @@ import ForgotPassword from './components/LoginStuff/ForgotPassword';
 import ResetPassword from './components/LoginStuff/ResetPassword';
 import AdminPanel from './pages/AdminStuff/AdminPanel';
 import AdminPosts from './pages/AdminStuff/AdminPosts';
+import AdminUsers from './pages/AdminStuff/AdminUsers';
+import AdminEvents from './pages/AdminStuff/AdminEvents';
 import NewHome from './pages/Home';
 import SinglePost from './pages/PostsPages/SinglePostPage';
 import EditPostPage from './pages/PostsPages/EditPostPage';
@@ -118,8 +120,11 @@ function App() {
             <Route path="/terms" element={<TermsOfService />} />
             <Route path="/contact" element={<ContactUs />} />
             <Route path="/events" element={<Events />} />
-            <Route path="/create-event" element={<EventForm />} />
+            <Route path="/admin/create-event" element={<EventForm />} />
             <Route path="/events/:id" element={<ShowEvent />} />
+            <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/events" element={<AdminEvents />} />
+
           </Routes>
         </Layout>
       </BrowserRouter>
