@@ -1,31 +1,41 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
-import { Pagination, Autoplay } from 'swiper/modules';
+import { Autoplay } from 'swiper/modules';
 import 'swiper/css';
-import 'swiper/css/pagination';
 import { useNavigate } from 'react-router-dom';
-import { mockEvents } from '../../data/mockEvents';
 
 const SliderEvent = () => {
+  const [events, setEvents] = useState([]);
   const navigate = useNavigate();
 
-  if (mockEvents.length === 0) {
-    return null;
-  }
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/events');
+        const data = await res.json();
+
+        const formatted = data.map((event) => ({
+          ...event,
+          images: event.images.map(img => `data:image/jpeg;base64,${img}`)
+        }));
+
+        setEvents(formatted);
+      } catch (err) {
+        console.error('Error fetching events:', err);
+      }
+    };
+
+    fetchEvents();
+  }, []);
+
+  if (events.length === 0) return null;
 
   return (
-    <div className="relative px-4 py-8">
+    <div className="relative px-4 bg-gray-100 pb-3">
       <Swiper
-        modules={[Pagination, Autoplay]}
+        modules={[Autoplay]}
         spaceBetween={20}
         slidesPerView={3}
-        pagination={{
-          clickable: true,
-          el: '.swiper-pagination',
-          renderBullet: function (index, className) {
-            return '<span class="' + className + ' bg-blue-600"></span>';
-          },
-        }}
         autoplay={{
           delay: 3000,
           disableOnInteraction: false,
@@ -33,28 +43,19 @@ const SliderEvent = () => {
         speed={500}
         loop={true}
         breakpoints={{
-          320: {
-            slidesPerView: 1,
-            spaceBetween: 10
-          },
-          640: {
-            slidesPerView: 2,
-            spaceBetween: 15
-          },
-          1024: {
-            slidesPerView: 3,
-            spaceBetween: 20
-          }
+          320: { slidesPerView: 1, spaceBetween: 10 },
+          640: { slidesPerView: 2, spaceBetween: 15 },
+          1024: { slidesPerView: 3, spaceBetween: 20 },
         }}
-        className="relative"
+        className="relative bg-gray-100"
       >
-        {mockEvents.map((event) => (
+        {events.map((event) => (
           <SwiperSlide key={event.id}>
-            <div 
+            <div
               className="bg-white rounded-xl shadow-xl overflow-hidden cursor-pointer transform transition duration-300 hover:scale-105 hover:shadow-2xl"
               onClick={() => navigate(`/events/${event.id}`)}
             >
-              {event.images && event.images.length > 0 && (
+              {event.images?.length > 0 && (
                 <div className="relative h-48">
                   <img
                     src={event.images[0]}
@@ -83,11 +84,8 @@ const SliderEvent = () => {
           </SwiperSlide>
         ))}
       </Swiper>
-
-      {/* Custom Pagination */}
-      <div className="swiper-pagination mt-6 !bottom-0 [&_.swiper-pagination-bullet]:w-2.5 [&_.swiper-pagination-bullet]:h-2.5 [&_.swiper-pagination-bullet]:bg-blue-600 [&_.swiper-pagination-bullet]:opacity-50 [&_.swiper-pagination-bullet-active]:opacity-100 [&_.swiper-pagination-bullet-active]:bg-blue-600"></div>
     </div>
   );
 };
 
-export default SliderEvent; 
+export default SliderEvent;
