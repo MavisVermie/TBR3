@@ -30,6 +30,9 @@ import UserProfilePage from './pages/UserProfilePage';
 import EventForm from './components/events/EventForm';
 import ShowEvent from './components/events/showEvent';
 import Events from './pages/Events';
+import ArabicFeed from './pages/arabic/myFeed';
+import ArabicHome from './pages/arabic/Home';
+
 const SlowFade = cssTransition({
   enter: 'fadeIn',
   exit: 'fadeOut',
@@ -100,6 +103,9 @@ function App() {
           <Routes>
             <Route path="/" element={<NewHome />}/>
             <Route path="/feed" element={isAuthenticated ? <HomePage /> : <SignInPage setAuth={setAuth} />} />
+            <Route path="/ar/feed" element={isAuthenticated ? <ArabicFeed /> : <SignInPage setAuth={setAuth} />} />
+            <Route path="/ar/home" element={isAuthenticated ? <ArabicHome /> : <SignInPage setAuth={setAuth} />} />
+
             <Route path="/about" element={<AboutPage />} />
             <Route path="/create_post" element={isAuthenticated ? <CreatePostPage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/profile" element={isAuthenticated ? <ProfilePage isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated} /> : <SignInPage setAuth={setAuth} />} />
