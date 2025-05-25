@@ -16,6 +16,7 @@ export default function CardPost() {
   const [error, setError] = useState(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [hasEvents, setHasEvents] = useState(false);
   const observerRef = useRef(null);
 
   const categoryOptions = [
@@ -24,6 +25,21 @@ export default function CardPost() {
   ];
 
   const extractCity = (location) => location?.split(' - ')[0]?.trim() || 'Unknown';
+
+  // ✅ Check if there are events to show
+  useEffect(() => {
+    const checkEvents = async () => {
+      try {
+        const res = await fetch('http://localhost:5000/events');
+        const data = await res.json();
+        setHasEvents(Array.isArray(data) && data.length > 0);
+      } catch (err) {
+        console.error('Error checking events:', err);
+        setHasEvents(false);
+      }
+    };
+    checkEvents();
+  }, []);
 
   useEffect(() => {
     const getProfile = async () => {
@@ -126,23 +142,26 @@ export default function CardPost() {
         </div>
       )}
 
-      {/* Events Section */}
-      <div className="bg-gray-100  mb-12">
-        <div className="container">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-white/60 via-transparent to-white/60 z-10 pointer-events-none" />
-            <SliderEvent />
-          </div>
-          <div className="text-center mt-1">
-            <Link to="/events" className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-full transition duration-300">
-              View All Events
-            </Link>
+      {/* ✅ Events Section (only if events exist) */}
+      {hasEvents && (
+        <div className="bg-gray-100 mb-12">
+          <div className="container">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-white/60 via-transparent to-white/60 z-10 pointer-events-none" />
+              <SliderEvent />
+            </div>
+            <div className="text-center mt-1">
+              <Link to="/events" className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-full transition duration-300">
+                View All Events
+              </Link>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* Filters */}
-      <div className="max-w-6xl mx-auto text-center mt-0 mb-6"> <div className="flex flex-wrap justify-center gap-6">
+      <div className="max-w-6xl mx-auto text-center mt-0 mb-6">
+        <div className="flex flex-wrap justify-center gap-6">
           <Select label="Category" value={selectedCategory} onChange={setSelectedCategory} options={categoryOptions} />
           <Select label="Location" value={selectedLocation} onChange={setSelectedLocation} options={locationOptions} />
           <Select label="Sort by Time" value={sortOrder} onChange={setSortOrder} options={['Newest', 'Oldest']} />
@@ -178,7 +197,7 @@ export default function CardPost() {
                       strokeLinejoin="round"
                       strokeWidth="1.5"
                       d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 
-                        002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                     />
                   </svg>
                 )}

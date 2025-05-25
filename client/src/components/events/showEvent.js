@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { mockEvents } from '../../data/mockEvents';
 
 export default function ShowEvent() {
   const { id } = useParams();
@@ -11,8 +10,14 @@ export default function ShowEvent() {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const foundEvent = mockEvents.find(e => e.id === parseInt(id));
-        setEvent(foundEvent);
+        const response = await fetch(`http://localhost:5000/events/${id}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch event');
+        }
+        const data = await response.json();
+        // Convert base64 images to data URLs
+        const images = data.images.map(img => `data:image/jpeg;base64,${img}`);
+        setEvent({ ...data, images });
       } catch (error) {
         console.error('Error fetching event:', error);
       } finally {
@@ -56,15 +61,7 @@ export default function ShowEvent() {
         className="inline-flex items-center mb-8 text-green-700 hover:text-green-900 font-semibold transition"
         aria-label="Back to Events"
       >
-        <svg
-          className="w-5 h-5 mr-2"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          viewBox="0 0 24 24"
-        >
+        <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
           <path d="M10 19l-7-7 7-7M3 12h18" />
         </svg>
         Back to Events
@@ -84,15 +81,7 @@ export default function ShowEvent() {
 
         <div className="p-8">
           <h1 className="text-4xl font-semibold mb-6 flex items-center text-gray-900">
-            <svg
-              className="w-9 h-9 mr-4 text-green-700"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              viewBox="0 0 24 24"
-            >
+            <svg className="w-9 h-9 mr-4 text-green-700" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
               <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
             </svg>
             {event.title}
@@ -100,15 +89,7 @@ export default function ShowEvent() {
 
           <section className="mb-10">
             <h2 className="text-2xl font-semibold mb-4 flex items-center text-green-700">
-              <svg
-                className="w-7 h-7 mr-2"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                viewBox="0 0 24 24"
-              >
+              <svg className="w-7 h-7 mr-2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                 <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               Event Details
@@ -118,28 +99,15 @@ export default function ShowEvent() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <div>
                 <h3 className="font-semibold mb-3 flex items-center text-gray-900">
-                  <svg
-                    className="w-6 h-6 mr-3 text-green-700"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-6 h-6 mr-3 text-green-700" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                     <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   Date & Time
                 </h3>
                 <div className="space-y-3 text-gray-800 font-medium bg-gray-50 rounded-lg p-4 shadow-inner">
-                  <p>
-                    {new Date(event.event_date).toLocaleDateString('en-US', {
-                      weekday: 'long',
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric',
-                    })}
-                  </p>
+                  <p>{new Date(event.event_date).toLocaleDateString('en-US', {
+                    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+                  })}</p>
                   <p>
                     From <span className="font-semibold">{formatTime(event.start_time)}</span> to{' '}
                     <span className="font-semibold">{formatTime(event.end_time)}</span>
@@ -149,15 +117,7 @@ export default function ShowEvent() {
 
               <div>
                 <h3 className="font-semibold mb-3 flex items-center text-gray-900">
-                  <svg
-                    className="w-6 h-6 mr-3 text-green-700"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    viewBox="0 0 24 24"
-                  >
+                  <svg className="w-6 h-6 mr-3 text-green-700" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                     <path d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
@@ -172,15 +132,7 @@ export default function ShowEvent() {
 
           <section className="mb-10">
             <h2 className="text-2xl font-semibold mb-4 flex items-center text-green-700">
-              <svg
-                className="w-7 h-7 mr-2"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                viewBox="0 0 24 24"
-              >
+              <svg className="w-7 h-7 mr-2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                 <path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
               Organizer
@@ -193,15 +145,7 @@ export default function ShowEvent() {
           {event.images && event.images.length > 1 && (
             <section>
               <h2 className="text-2xl font-semibold mb-6 flex items-center text-green-700">
-                <svg
-                  className="w-7 h-7 mr-2"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  viewBox="0 0 24 24"
-                >
+                <svg className="w-7 h-7 mr-2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                   <path d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 Gallery
