@@ -112,11 +112,38 @@ export default function EventForm() {
 
     try {
       setIsSubmitting(true);
-      toast.success('Event created successfully');
-      navigate(`/events/preview`);
+
+      const payload = new FormData();
+      payload.append("title", formData.title);
+      payload.append("description", formData.description);
+      payload.append("owner_name", formData.owner_name);
+      payload.append("location", formData.location);
+      payload.append("event_date", formData.event_date);
+      payload.append("start_time", formData.start_time);
+      payload.append("end_time", formData.end_time);
+      formData.images.forEach(img => payload.append("images", img));
+
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:5000/events", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: payload,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        toast.error(data?.message || "Failed to create event");
+        return;
+      }
+
+      toast.success("Event created successfully!");
+      navigate(`/events/${data.event_id}`);
     } catch (error) {
-      toast.error('Error creating event');
-      console.error('Error creating event:', error);
+      toast.error("Error creating event");
+      console.error("Submission error:", error);
     } finally {
       setIsSubmitting(false);
     }

@@ -3,7 +3,54 @@ const router = express.Router();
 const pool = require("../db");
 const authorize = require("../middleware/authorize");
 
-// ✅ Apply authorize + admin-check middleware to all routes below
+// ✅ Public route: Get ALL events with base64 images
+router.get("/", async (req, res) => {
+  try {
+    const result = await pool.query("SELECT * FROM events ORDER BY event_date ASC");
+    const events = result.rows;
+
+    const withImages = await Promise.all(events.map(async (event) => {
+      const imagesRes = await pool.query(
+        "SELECT image FROM event_images WHERE event_id = $1",
+        [event.id]
+      );
+      const images = imagesRes.rows.map(row => row.image.toString("base64"));
+      return { ...event, images };
+    }));
+
+    res.json(withImages);
+  } catch (err) {
+    console.error("❌ Error fetching events:", err.message);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// ✅ Public route: Get SINGLE event by ID
+router.get("/:id", async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const eventRes = await pool.query("SELECT * FROM events WHERE id = $1", [id]);
+    if (eventRes.rows.length === 0) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    const imageRes = await pool.query("SELECT image FROM event_images WHERE event_id = $1", [id]);
+    const images = imageRes.rows.map((row) => row.image.toString("base64"));
+
+    const event = {
+      ...eventRes.rows[0],
+      images
+    };
+
+    return res.json(event);
+  } catch (err) {
+    console.error("❌ Error fetching event:", err.message);
+    return res.status(500).json({ message: "Server error" });
+  }
+});
+
+// ✅ Admin-only routes below
 router.use(authorize);
 router.use((req, res, next) => {
   if (!req.user?.isAdmin) {
@@ -12,12 +59,12 @@ router.use((req, res, next) => {
   next();
 });
 
-// ✅ Test route to confirm router is working
+// ✅ Ping test (admin only)
 router.get("/ping", (req, res) => {
   res.send("events router is working ✅");
 });
 
-// ✅ POST /events - Create event (admin only)
+// ✅ Create event (admin only)
 router.post("/", async (req, res) => {
   try {
     console.log("⚡ Event creation request received");
@@ -62,33 +109,6 @@ router.post("/", async (req, res) => {
 
   } catch (err) {
     console.error("❌ Error creating event:", err);
-    return res.status(500).json({ message: "Server error" });
-  }
-});
-
-// ✅ GET /events/:id - Get single event with base64 images
-router.get("/:id", async (req, res) => {
-  const { id } = req.params;
-
-  try {
-    const eventRes = await pool.query(`SELECT * FROM events WHERE id = $1`, [id]);
-
-    if (eventRes.rows.length === 0) {
-      return res.status(404).json({ message: "Event not found" });
-    }
-
-    const imageRes = await pool.query(`SELECT image FROM event_images WHERE event_id = $1`, [id]);
-    const images = imageRes.rows.map((row) => row.image.toString("base64"));
-
-    const event = {
-      ...eventRes.rows[0],
-      images
-    };
-
-    return res.json(event);
-
-  } catch (err) {
-    console.error("❌ Error fetching event:", err.message);
     return res.status(500).json({ message: "Server error" });
   }
 });
