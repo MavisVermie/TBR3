@@ -1,3 +1,11 @@
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+
+// export default HomePage;
+=======
+>>>>>>> main
+>>>>>>> f21ee20f9ffd6b9c3968b1f7c1f788153d6ba696
 import CardPost from "../components/cardPost/cardPost";
 import { useState, useEffect } from "react";
 
