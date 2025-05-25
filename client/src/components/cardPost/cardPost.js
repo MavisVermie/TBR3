@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import './cardPost.css';
 import SliderEvent from '../events/SliderEvent';
+
 const POSTS_PER_PAGE = 12;
 
 export default function CardPost() {
@@ -33,7 +34,7 @@ export default function CardPost() {
           headers: { "Authorization": `Bearer ${token}` }
         });
         if (res.ok) {
-          const [profile] = await res.json() || [];
+          const [profile] = await res.json();
           if (profile) setUserZipCode(profile.zip_code);
         } else if (res.status === 401) {
           localStorage.removeItem('token');
@@ -45,7 +46,7 @@ export default function CardPost() {
     getProfile();
   }, []);
 
-  const fetchPostsPage = async (pageNum) => {
+  const fetchPostsPage = useCallback(async (pageNum) => {
     setIsLoading(true);
     setError(null);
     try {
@@ -54,15 +55,10 @@ export default function CardPost() {
         'Content-Type': 'application/json',
         ...(token && { 'Authorization': `Bearer ${token}` })
       };
-      const res = await fetch(
-        `http://localhost:5000/posts?page=${pageNum}&limit=${POSTS_PER_PAGE}`,
-        { headers }
-      );
+      const res = await fetch(`http://localhost:5000/posts?page=${pageNum}&limit=${POSTS_PER_PAGE}`, { headers });
       if (!res.ok) throw new Error(`Status ${res.status}`);
       const { posts: newPosts = [] } = await res.json();
-
       setHasMore(newPosts.length === POSTS_PER_PAGE);
-
       setPosts(prev => {
         const ids = new Set(prev.map(p => p.post_id));
         const uniqueNewPosts = newPosts
@@ -76,16 +72,15 @@ export default function CardPost() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchPostsPage(1);
-  }, []);
+  }, [fetchPostsPage]);
 
-  const locationOptions = useMemo(() =>
-    ['All', ...new Set(posts.map(p => extractCity(p.location)).filter(Boolean))],
-    [posts]
-  );
+  const locationOptions = useMemo(() => {
+    return ['All', ...new Set(posts.map(p => extractCity(p.location)).filter(Boolean))];
+  }, [posts]);
 
   const filteredAndSorted = useMemo(() => {
     return posts
@@ -104,14 +99,14 @@ export default function CardPost() {
     observerRef.current = new IntersectionObserver(entries => {
       if (entries[0].isIntersecting && hasMore) {
         setPage(prev => {
-          const next = prev + 1;
-          fetchPostsPage(next);
-          return next;
+          const nextPage = prev + 1;
+          fetchPostsPage(nextPage);
+          return nextPage;
         });
       }
     });
     if (node) observerRef.current.observe(node);
-  }, [isLoading, hasMore]);
+  }, [isLoading, hasMore, fetchPostsPage]);
 
   const LoadingSpinner = () => (
     <div className="flex justify-center my-8">
@@ -121,13 +116,36 @@ export default function CardPost() {
 
   return (
     <section className="min-h-screen bg-gray-100 py-12 px-4">
-      <div className="max-w-6xl mx-auto text-center mb-8">
-        <h1 className="text-4xl font-semibold text-red-700">Browsing All Items</h1>
-        <div className="flex flex-wrap justify-center gap-6 mt-6">
+      {/* Error Message */}
+      {error && (
+        <div className="max-w-6xl mx-auto mb-8 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+          <p>{error}</p>
+          <button onClick={() => fetchPostsPage(page)} className="mt-2 px-4 py-2 bg-red-600 text-white rounded">
+            Try Again
+          </button>
+        </div>
+      )}
+
+      {/* Events Section */}
+      <div className="bg-gray-100  mb-12">
+        <div className="container">
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-white/60 via-transparent to-white/60 z-10 pointer-events-none" />
+            <SliderEvent />
+          </div>
+          <div className="text-center mt-1">
+            <Link to="/events" className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-full transition duration-300">
+              View All Events
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Filters */}
+      <div className="max-w-6xl mx-auto text-center mt-0 mb-6"> <div className="flex flex-wrap justify-center gap-6">
           <Select label="Category" value={selectedCategory} onChange={setSelectedCategory} options={categoryOptions} />
           <Select label="Location" value={selectedLocation} onChange={setSelectedLocation} options={locationOptions} />
-          <Select label="Sort by Time" value={sortOrder} onChange={setSortOrder} options={['Newest','Oldest']} />
-        
+          <Select label="Sort by Time" value={sortOrder} onChange={setSortOrder} options={['Newest', 'Oldest']} />
           <div>
             <label className="block text-sm text-green-900 mb-1">Search Title:</label>
             <input
@@ -141,95 +159,54 @@ export default function CardPost() {
         </div>
       </div>
 
-      {error && (
-        <div className="max-w-6xl mx-auto mb-8 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-          <p>{error}</p>
-          <button onClick={() => fetchPostsPage(page)} className="mt-2 px-4 py-2 bg-red-600 text-white rounded">
-            Try Again
-          </button>
-        </div>
-      )}
-
-      {isLoading && page === 1 ? (
-        <LoadingSpinner />
-      ) : (
-        <>
-               {/* Events Section */}
-      <div className="bg-gradient-to-b from-gray-100 to-white py-16">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-gray-800 mb-4">Upcoming Events</h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Join our community events and be part of something special. From workshops to exhibitions, there's something for everyone.
-            </p>
-          </div>
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-white z-10 pointer-events-none"></div>
-            <SliderEvent />
-          </div>
-          <div className="text-center mt-8">
-            <Link to="/events" className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-full transition duration-300">
-              View All Events
-            </Link>
-          </div>
-        </div>
+      {/* Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-14 mx-auto">
+        {filteredAndSorted.map(post => (
+          <Link to={`/posts/${post.post_id}`} key={post.post_id}>
+            <div className="bg-white shadow rounded-xl overflow-hidden transition-transform duration-300 hover:shadow-xl hover:scale-105 hover:ring-2 hover:ring-green-700 w-full h-80 pt-4">
+              <div className="w-full h-2/3 flex items-center justify-center bg-white">
+                {post.image ? (
+                  <img
+                    src={`data:image/jpeg;base64,${post.image}`}
+                    alt={post.title}
+                    className="object-cover w-2/3 h-full rounded-lg transition-transform duration-300"
+                  />
+                ) : (
+                  <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="1.5"
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 
+                        002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                )}
+              </div>
+              <div className="p-4">
+                <h3 className="text-lg font-semibold truncate">{post.title}</h3>
+                <p className="text-sm text-zinc-600">
+                  <span className="font-medium">Location:</span> {extractCity(post.location)}
+                </p>
+                <p className="text-sm text-gray-400">
+                  <span className="font-medium">Posted:</span> {new Date(post.created_at).toLocaleString()}
+                </p>
+              </div>
+            </div>
+          </Link>
+        ))}
       </div>
-         {/*End Events Section */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-14 mx-auto">
-            {filteredAndSorted.map(post => (
-              <Link to={`/posts/${post.post_id}`} key={post.post_id}>
-                <div className="bg-white shadow rounded-xl overflow-hidden transition-transform duration-2000 ease-in-out hover:shadow-xl hover:scale-105 hover:ring-2 hover:ring-green-700 w-full h-80 pt-4">
-                  <div className="w-full h-2/3 bg-white flex items-center justify-center">
-                    {post.image ? (
-                      <img
-                        src={`data:image/jpeg;base64,${post.image}`}
-                        alt={post.title}
-                        className="object-cover w-2/3 h-full rounded-lg transition-transform duration-2000 ease-in-out"
-                      />
-                    ) : (
-                      <svg
-                        className="w-12 h-12 text-gray-400"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth="1.5"
-                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 
-                             002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                        />
-                      </svg>
-                    )}
-                  </div>
-                  <div className="p-4">
-                    <h3 className="text-lg font-semibold truncate">{post.title}</h3>
-                    <p className="text-sm text-zinc-600">
-                      <span className="font-medium">Location:</span> {extractCity(post.location)}
-                    </p>
-                    <p className="text-sm text-gray-400">
-                      <span className="font-medium">Posted:</span> {new Date(post.created_at).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
 
-          {hasMore && (
-            <div ref={loadMoreRef}>
-              <LoadingSpinner />
-            </div>
-          )}
-
-          {!hasMore && filteredAndSorted.length === 0 && !isLoading && (
-            <div className="text-center py-8 text-gray-600">
-              No posts found matching your criteria.
-            </div>
-          )}
-        </>
-      )}
+      {/* Load More / No Results */}
+      {hasMore ? (
+        <div ref={loadMoreRef}>
+          <LoadingSpinner />
+        </div>
+      ) : !isLoading && filteredAndSorted.length === 0 ? (
+        <div className="text-center py-8 text-gray-600">
+          No posts found matching your criteria.
+        </div>
+      ) : null}
     </section>
   );
 }
