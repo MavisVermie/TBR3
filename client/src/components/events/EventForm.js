@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useDropzone } from 'react-dropzone';
 import LocationMap from '../../components/contactInfo/locationMap';
+import { jwtDecode } from 'jwt-decode'; // ⬅️ make sure this is installed
 
 export default function EventForm() {
   const navigate = useNavigate();
@@ -17,6 +18,19 @@ export default function EventForm() {
     start_time: '',
     end_time: ''
   });
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return navigate("/login");
+
+    try {
+      const decoded = jwtDecode(token);
+      if (!decoded.isAdmin) return navigate("/not-authorized");
+    } catch (err) {
+      console.error("Invalid token:", err);
+      return navigate("/login");
+    }
+  }, [navigate]);
 
   const onDrop = useCallback((acceptedFiles) => {
     const validFiles = acceptedFiles.filter(file =>

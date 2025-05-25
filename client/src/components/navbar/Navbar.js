@@ -1,61 +1,60 @@
-import { Link } from "react-router-dom";
-import { Disclosure, Menu, Transition } from '@headlessui/react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import logo from '../../assets/T.png';
-import profile from '../../assets/profilepic.png';
-import React, { Fragment, useState, useEffect } from "react";
-import { toast } from 'react-toastify';
+import { Link, useNavigate } from "react-router-dom";
+import { Disclosure, Menu, Transition } from "@headlessui/react";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import logo from "../../assets/T.png";
+import profile from "../../assets/profilepic.png";
+import React, { Fragment, useEffect, useState } from "react";
+import { toast } from "react-toastify";
+import { jwtDecode } from "jwt-decode";
 
 function classNames(...classes) {
-  return classes.filter(Boolean).join(' ');
+  return classes.filter(Boolean).join(" ");
 }
 
 export default function Navbar({ setAuth, isAuthenticated }) {
-  const [name, setName] = useState("");
+  const [username, setUsername] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    const getProfile = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:5000/Posting/", {
-          method: "GET",
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const parseData = await res.json();
-        setName(parseData[0]?.username || "");
-        // Check if user is admin
-        setIsAdmin(parseData[0]?.is_admin || false);
-      } catch (err) {
-        console.error(err.message);
-      }
-    };
-    getProfile();
-  }, []);
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    setIsAdmin(false);  // Reset admin state
+    return;
+  }
+
+  try {
+    const decoded = jwtDecode(token);
+
+    setIsAdmin(Boolean(decoded.isAdmin) === true);
+  } catch (err) {
+    console.error("Failed to decode token:", err);
+    setIsAdmin(false); // Reset on error
+  }
+}, [isAuthenticated]);
+
+
 
   const logout = (e) => {
     e.preventDefault();
-    try {
-      localStorage.removeItem("token");
-      setAuth(false);
-      toast.success("Successfully logged out");
-    } catch (err) {
-      console.error(err.message);
-    }
+    localStorage.removeItem("token");
+    setIsAdmin(false); 
+    setAuth(false);
+    toast.success("Successfully logged out");
+    navigate("authentication/login");
   };
 
   const navigation = [
-    { name: 'Home', href: '/' },
-    { name: 'My Feed', href: '/feed' },
-    { name: 'Events', href: '/events' },
-    { name: 'Create Post', href: '/create_post' },
-    ...(isAuthenticated ? [{ name: 'My Posts', href: '/myposts' }] : []),
-    ...(isAdmin ? [{ name: 'Admin Panel', href: '/admin' }] : []),
-    { name: 'About Us', href: '/about' },
+    { name: "Home", href: "/" },
+    { name: "My Feed", href: "/feed" },
+    { name: "Events", href: "/events" },
+    { name: "Create Post", href: "/create_post" },
+    ...(isAuthenticated ? [{ name: "My Posts", href: "/myposts" }] : []),
+    { name: "About Us", href: "/about" },
   ];
 
   return (
-    <Disclosure as="nav" className="w-full  bg-green-700">
+    <Disclosure as="nav" className="w-full bg-green-700">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 font-sans">
@@ -72,7 +71,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                 </Disclosure.Button>
               </div>
 
-              {/* Logo and nav */}
+              {/* Logo and navigation */}
               <div className="flex flex-1 items-center justify-between sm:justify-start">
                 <img className="h-20 w-auto" src={logo} alt="TBR3" />
                 <div className="hidden sm:flex sm:ml-10 space-x-8">
@@ -88,7 +87,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                 </div>
               </div>
 
-              {/* Auth buttons / profile */}
+              {/* Auth section */}
               <div className="flex items-center space-x-4">
                 {isAuthenticated ? (
                   <Menu as="div" className="relative">
@@ -96,7 +95,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                       <img
                         className="h-8 w-8 rounded-full border border-white"
                         src={profile}
-                        alt="User Profile"
+                        alt="User"
                       />
                     </Menu.Button>
                     <Transition
@@ -114,11 +113,11 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                             <Link
                               to="/profile"
                               className={classNames(
-                                active ? 'bg-green-500' : '',
-                                'block px-4 py-2 text-sm'
+                                active ? "bg-green-500" : "",
+                                "block px-4 py-2 text-sm"
                               )}
                             >
-                              👤 {name || "User"} Profile
+                              👤 {username} Profile
                             </Link>
                           )}
                         </Menu.Item>
@@ -127,8 +126,8 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                             <Link
                               to="/myposts"
                               className={classNames(
-                                active ? 'bg-green-500' : '',
-                                'block px-4 py-2 text-sm'
+                                active ? "bg-green-500" : "",
+                                "block px-4 py-2 text-sm"
                               )}
                             >
                               📝 My Posts
@@ -139,13 +138,13 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                           <Menu.Item>
                             {({ active }) => (
                               <Link
-                                to="/admin/events"
+                                to="/admin"
                                 className={classNames(
-                                  active ? 'bg-green-500' : '',
-                                  'block px-4 py-2 text-sm'
+                                  active ? "bg-green-500" : "",
+                                  "block px-4 py-2 text-sm"
                                 )}
                               >
-                                🎫 Manage Events
+                                🛠️ Admin Panel
                               </Link>
                             )}
                           </Menu.Item>
@@ -155,8 +154,8 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                             <button
                               onClick={logout}
                               className={classNames(
-                                active ? 'bg-green-500' : '',
-                                'w-full text-left px-4 py-2 text-sm'
+                                active ? "bg-green-500" : "",
+                                "w-full text-left px-4 py-2 text-sm"
                               )}
                             >
                               Sign out

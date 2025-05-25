@@ -35,12 +35,7 @@ const Events = () => {
         <h1 className="text-4xl font-semibold text-green-700">
           <span className="text-red-700">Upcoming</span> Events
         </h1>
-        <Link
-          to="/create-event"
-          className="bg-green-600 text-white px-5 py-2 rounded-full shadow hover:bg-green-700 transition duration-200"
-        >
-          + Create New Event
-        </Link>
+
       </div>
 
       {/* Info Box */}

@@ -59,7 +59,7 @@ const RegistrationPage = ({ setAuth }) => {
         localStorage.setItem('token', parseRes.jwtToken);
         setAuth(true);
         toast.success('Registered Successfully');
-        navigate('/');
+        navigate('/feed');
       } else {
         setAuth(false);
         toast.error('Error: Unable to register');
