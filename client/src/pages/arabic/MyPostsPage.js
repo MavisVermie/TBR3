@@ -17,7 +17,7 @@ const MyPostsPage = () => {
         setMyPosts(res.data);
         setLoading(false);
       } catch (err) {
-        console.error("خطأ في جلب المنشورات:", err.message);
+        console.error("خطأ في جلب المنشورات", err.message);
         setLoading(false);
       }
     };
@@ -33,8 +33,8 @@ const MyPostsPage = () => {
       });
       setMyPosts(myPosts.filter((post) => post.post_id !== postId));
     } catch (err) {
-      alert("فشل في حذف المنشور.");
-      console.error("خطأ في الحذف:", err.message);
+      alert("فشل في حذف المنشور");
+      console.error("خطأ في الحذف", err.message);
     }
   };
 

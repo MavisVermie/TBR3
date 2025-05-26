@@ -10,12 +10,12 @@ router.post("/", authorize, async (req, res) => {
 
     // منع المستخدم من تقييم نفسه
     if (giverId === receiver_id) {
-      return res.status(400).json({ message: "لا يمكنك تقييم نفسك." });
+      return res.status(400).json({ message: "لا يمكنك تقييم نفسك" });
     }
 
     // التحقق من صحة البيانات المُدخلة
     if (!receiver_id || typeof rating !== "number" || rating < 1 || rating > 5) {
-      return res.status(400).json({ message: "تقييم أو معرف مستلم غير صالح." });
+      return res.status(400).json({ message: "تقييم أو معرف مستلم غير صالح" });
     }
 
     // التحقق من عدم وجود تقييم سابق
@@ -27,7 +27,7 @@ router.post("/", authorize, async (req, res) => {
     if (existing.rows.length > 0) {
       return res
         .status(400)
-        .json({ message: "لقد قمت مسبقاً بإرسال تقييم لهذا المستخدم." });
+        .json({ message: "لقد قمت مسبقاً بإرسال تقييم لهذا المستخدم" });
     }
 
     // إدخال التقييم في قاعدة البيانات
@@ -38,11 +38,11 @@ router.post("/", authorize, async (req, res) => {
     );
 
     res.json({
-      message: "تم إرسال التقييم بنجاح.",
+      message: "تم إرسال التقييم بنجاح",
       feedback: newFeedback.rows[0],
     });
   } catch (err) {
-    console.error("خطأ أثناء إرسال التقييم:", err.message);
+    console.error("خطأ أثناء إرسال التقييم", err.message);
     res.status(500).send("خطأ في الخادم");
   }
 });
@@ -80,7 +80,7 @@ router.get("/:userId", async (req, res) => {
       feedbacks: feedbacks.rows,
     });
   } catch (err) {
-    console.error("خطأ أثناء جلب التقييمات:", err.message);
+    console.error("خطأ أثناء جلب التقييمات", err.message);
     res.status(500).send("خطأ في الخادم");
   }
 });
@@ -97,12 +97,12 @@ router.delete("/:receiverId", authorize, async (req, res) => {
     );
 
     if (deleted.rowCount === 0) {
-      return res.status(404).json({ message: "لم يتم العثور على التقييم." });
+      return res.status(404).json({ message: "لم يتم العثور على التقييم" });
     }
 
     res.json({ message: "تم حذف التقييم بنجاح." });
   } catch (err) {
-    console.error("خطأ أثناء حذف التقييم:", err.message);
+    console.error("خطأ أثناء حذف التقييم", err.message);
     res.status(500).send("خطأ في الخادم");
   }
 });

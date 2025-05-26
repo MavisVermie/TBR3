@@ -7,7 +7,7 @@ export default function ContactUs() {
         <h1 className="text-3xl font-semibold mb-6 text-green-700">اتصل بنا</h1>
 
         <p className="mb-6 text-black">
-          نود سماع رأيك! يرجى تعبئة النموذج أدناه وسنتواصل معك في أقرب وقت.
+          نود سماع رأيك! يرجى تعبئة النموذج أدناه وسنتواصل معك في أقرب وقت
         </p>
 
         <form className="space-y-4">

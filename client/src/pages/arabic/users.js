@@ -21,7 +21,7 @@ router.get("/:userId", async (req, res) => {
     res.json(userQuery.rows[0]);
 
   } catch (err) {
-    console.error("خطأ أثناء جلب بيانات المستخدم:", err.message);
+    console.error("خطأ أثناء جلب بيانات المستخدم", err.message);
     res.status(500).send("خطأ في الخادم");
   }
 });

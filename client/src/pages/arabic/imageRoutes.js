@@ -29,7 +29,7 @@ router.get('/:postId', async (req, res) => {
     res.end(imageData, 'binary');
 
   } catch (error) {
-    console.error('خطأ أثناء جلب الصورة:', error);
+    console.error('خطأ أثناء جلب الصورة', error);
     res.status(500).json({ message: 'خطأ في الخادم' });
   }
 });

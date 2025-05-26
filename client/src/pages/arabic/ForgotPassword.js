@@ -17,7 +17,7 @@ const ForgotPassword = () => {
       const { message } = await response.json();
       response.ok ? toast.success(message) : toast.error(message);
     } catch (error) {
-      console.error("خطأ في طلب إعادة تعيين كلمة المرور:", error);
+      console.error("خطأ في طلب إعادة تعيين كلمة المرور", error);
       toast.error("فشل إرسال رابط إعادة التعيين");
     }
   };

@@ -25,7 +25,7 @@ export default function PrivacyPolicy() {
           كيف نستخدم معلوماتك
         </h2>
         <p className="mb-4 leading-relaxed text-black">
-          نستخدم معلوماتك من أجل:
+          :نستخدم معلوماتك من اجل
         </p>
         <ul className="list-disc list-inside space-y-2 text-black">
           <li>تقديم وتشغيل وصيانة موقعنا الإلكتروني</li>

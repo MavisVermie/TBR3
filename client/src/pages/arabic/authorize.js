@@ -7,13 +7,13 @@ module.exports = function (req, res, next) {
     const authHeader = req.header("Authorization");
 
     if (!authHeader) {
-      return res.status(403).json({ msg: "تم رفض الوصول. لم يتم العثور على رمز التوثيق." });
+      return res.status(403).json({ msg: "تم رفض الوصول. لم يتم العثور على رمز التوثيق" });
     }
 
     const token = authHeader.split(' ')[1]; // "Bearer <token>"
 
     if (!token) {
-      return res.status(403).json({ msg: "رمز التوثيق مفقود." });
+      return res.status(403).json({ msg: "رمز التوثيق مفقود" });
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -31,7 +31,7 @@ module.exports = function (req, res, next) {
 
     next(); // الانتقال إلى الميدل وير التالي
   } catch (err) {
-    console.error('خطأ في التوثيق:', err.message);
+    console.error('خطأ في التوثيق', err.message);
     return res.status(401).json({ msg: "رمز التوثيق غير صالح" });
   }
 };

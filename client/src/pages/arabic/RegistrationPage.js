@@ -20,7 +20,7 @@ export default function RegistrationPage({ setAuth }) {
 
     const jordanPhoneRegex = /^(?:\+9627\d{8}|07\d{8})$/;
     if (!jordanPhoneRegex.test(phone_number)) {
-      toast.error("يجب أن يكون رقم الهاتف بالتنسيق +9627XXXXXXXX أو 07XXXXXXXX");
+      toast.error("+يجب أن يكون رقم الهاتف بالتنسيق 07 ا,9627");
       return;
     }
 

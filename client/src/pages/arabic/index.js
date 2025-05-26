@@ -1,318 +1,309 @@
 require('dotenv').config();
-console.log("تم تحميل مفتاح JWT:", process.env.JWT_SECRET);
+console.log("تم تحميل سر JWT:", process.env.JWT_SECRET);
 
 const express = require("express");
-const التطبيق = express();
+const app = express();
 const cors = require("cors");
-const قاعدة_البيانات = require("./db");
-const رفع_الملفات = require("express-fileupload");
+const pool = require("./db");
+const fileUpload = require("express-fileupload");
 const bcrypt = require("bcrypt");
-const jwt = require('jsonwebtoken');
-const تحقق_الصلاحية = require("./middleware/authorize");
-const إرسال_بريد = require("./middleware/mailer");
-const مفتاحJWT = process.env.JWT_SECRET;
-const crypto = require('crypto');
-const NodeCache = require('node-cache');
-const الذاكرة_المؤقتة = new NodeCache();
-// const sharp = require('sharp');
-const موجه_الآراء = require("./routes/feedback");
+const jwt = require("jsonwebtoken");
+const authorize = require("./middleware/authorize");
+const sendemail = require("./middleware/mailer"); // وحدة إرسال البريد
+const jwtSecret = process.env.JWT_SECRET;
+const crypto = require("crypto");
+const NodeCache = require("node-cache");
+const cache = new NodeCache();
 
-// وسائط
-التطبيق.use(cors());
-التطبيق.use(express.json());
-التطبيق.use(رفع_الملفات());
+// التوجيهات
+const feedbackRouter = require("./routes/feedback");
+
+// Middleware
+app.use(cors());
+app.use(express.json());
+app.use(fileUpload());
 
 // المسارات
-التطبيق.use("/api/users", require("./routes/users")); // المستخدمون
-التطبيق.use("/api/feedback", موجه_الآراء); // الآراء
-التطبيق.use("/admin", require("./routes/adminroutes")); // لوحة الإدارة
-التطبيق.use("/authentication", require("./routes/jwtAuth")); // المصادقة
-التطبيق.use("/Posting", require("./routes/itemPost")); // النشر
+app.use("/events", require("./routes/eventroutes"));
+app.use("/api/users", require("./routes/users")); // /api/users/:userId
+app.use("/api/feedback", feedbackRouter); // ملاحظات المستخدمين
+app.use("/admin", require("./routes/adminroutes"));
+app.use("/authentication", require("./routes/jwtAuth"));
+app.use("/Posting", require("./routes/itemPost"));
 
-// عرض الصور حسب معرف المنشور
-التطبيق.get('/images/:postId', async (طلب, رد) => {
+// مسار عرض الصور حسب postId
+app.get('/images/:postId', async (req, res) => {
   try {
-    const { postId } = طلب.params;
+    const { postId } = req.params;
+    const result = await pool.query('SELECT attached_photo FROM posts WHERE post_id = $1', [postId]);
 
-    const نتيجة = await قاعدة_البيانات.query('SELECT attached_photo FROM posts WHERE post_id = $1', [postId]);
-
-    if (نتيجة.rows.length === 0) {
-      return رد.status(404).json({ message: 'الصورة غير موجودة' });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'الصورة غير موجودة' });
     }
 
-    const الصورة = نتيجة.rows[0].attached_photo;
-    const صورةBase64 = الصورة.toString('base64');
-    const محتوىHTML = `
+    const imageData = result.rows[0].attached_photo;
+    const base64ImageData = imageData.toString('base64');
+    const htmlContent = `
       <!DOCTYPE html>
       <html lang="ar">
       <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>عرض صورة</title>
+        <title>صورة مدمجة</title>
       </head>
       <body>
-        <h1>الصورة المدمجة</h1>
-        <img src="data:image/;base64,${صورةBase64}" alt="الصورة">
+        <h1>عرض الصورة</h1>
+        <img src="data:image/;base64,${base64ImageData}" alt="صورة">
       </body>
       </html>
     `;
 
-    رد.writeHead(200, {
+    res.writeHead(200, {
       'Content-Type': 'text/html',
       'Worked': 'yes'
     });
-    رد.end(محتوىHTML);
+    res.end(htmlContent);
 
-  } catch (خطأ) {
-    console.error('خطأ أثناء جلب الصورة:', خطأ);
-    رد.status(500).json({ message: 'خطأ في الخادم' });
+  } catch (error) {
+    console.error('خطأ في جلب الصورة:', error);
+    res.status(500).json({ message: 'خطأ في الخادم' });
   }
 });
 
 // توليد رمز JWT
-function توليدJWT(userId) {
-  return jwt.sign({ userId }, مفتاحJWT, { expiresIn: '1h' });
+function generateJWTToken(userId) {
+  return jwt.sign({ userId }, jwtSecret, { expiresIn: '1h' });
 }
 
 // تحديث بيانات المستخدم
-التطبيق.put("/update-credentials", تحقق_الصلاحية, async (طلب, رد) => {
+app.put("/update-credentials", authorize, async (req, res) => {
   try {
-    const user_id = طلب.user.id;
-    const { username, email, phone_number, newPassword } = طلب.body;
+    const user_id = req.user.id;
+    const { username, email, phone_number, newPassword } = req.body;
 
-    const الحقول = [];
-    const القيم = [];
-    let المؤشر = 1;
+    const fields = [];
+    const values = [];
+    let index = 1;
 
     if (username) {
-      الحقول.push(`username = $${المؤشر++}`);
-      القيم.push(username);
+      fields.push(`username = $${index++}`);
+      values.push(username);
     }
 
     if (email) {
-      الحقول.push(`email = $${المؤشر++}`);
-      القيم.push(email);
+      fields.push(`email = $${index++}`);
+      values.push(email);
     }
 
     if (phone_number) {
-      الحقول.push(`phone_number = $${المؤشر++}`);
-      القيم.push(phone_number);
+      fields.push(`phone_number = $${index++}`);
+      values.push(phone_number);
     }
 
     if (newPassword && newPassword.length >= 6) {
-      const مشفر = await bcrypt.hash(newPassword, 10);
-      الحقول.push(`password = $${المؤشر++}`);
-      القيم.push(مشفر);
-    } else if (newPassword) {
-      return رد.status(400).json({ message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" });
+      const hashed = await bcrypt.hash(newPassword, 10);
+      fields.push(`password = $${index++}`);
+      values.push(hashed);
+    } else if (newPassword && newPassword.length < 6) {
+      return res.status(400).json({ message: "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل" });
     }
 
-    if (الحقول.length === 0) {
-      return رد.status(400).json({ message: "لم يتم توفير حقول للتحديث." });
+    if (fields.length === 0) {
+      return res.status(400).json({ message: "لم يتم تقديم بيانات صالحة للتحديث." });
     }
 
-    const استعلام = `
+    const query = `
       UPDATE users 
-      SET ${الحقول.join(', ')} 
-      WHERE id = $${المؤشر}
+      SET ${fields.join(', ')} 
+      WHERE id = $${index}
       RETURNING username, email, phone_number
     `;
-    القيم.push(user_id);
+    values.push(user_id);
 
-    const محدث = await قاعدة_البيانات.query(استعلام, القيم);
+    const updated = await pool.query(query, values);
 
-    if (محدث.rows.length === 0) {
-      return رد.status(404).json({ message: "المستخدم غير موجود" });
+    if (updated.rows.length === 0) {
+      return res.status(404).json({ message: "المستخدم غير موجود" });
     }
 
-    رد.json(محدث.rows[0]);
-  } catch (خطأ) {
-    console.error("خطأ أثناء التحديث:", خطأ.message);
-    رد.status(500).send("خطأ في الخادم");
+    res.json(updated.rows[0]);
+  } catch (err) {
+    console.error("خطأ أثناء تحديث بيانات المستخدم:", err.message);
+    res.status(500).send("خطأ في الخادم");
   }
 });
 
-// تسجيل مستخدم جديد
-التطبيق.post("/authentication/registration", async (طلب, رد) => {
+// تسجيل المستخدم
+app.post("/authentication/registration", async (req, res) => {
   try {
-    const { username, password, email, zip_code, phone_number } = طلب.body;
+    const { username, password, email, zip_code, phone_number } = req.body;
+    const hashedPassword = await bcrypt.hash(password, 10);
 
-    const كلمة_المرور_المشفرة = await bcrypt.hash(password, 10);
-
-    const { rows } = await قاعدة_البيانات.query(
+    const { rows } = await pool.query(
       "INSERT INTO users (username, password, email, zip_code, phone_number) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-      [username, كلمة_المرور_المشفرة, email, zip_code, phone_number]
+      [username, hashedPassword, email, zip_code, phone_number]
     );
 
-    const معرف_المستخدم = rows[0].id;
-    const رمزJWT = توليدJWT(معرف_المستخدم);
+    const userId = rows[0].id;
+    const jwtToken = generateJWTToken(userId);
 
-    رد.json({ jwtToken: رمزJWT });
-
+    res.json({ jwtToken });
   } catch (err) {
     console.error(err.message);
-    رد.status(500).send("خطأ في الخادم");
+    res.status(500).send("خطأ في الخادم");
   }
 });
 
-// نسيان كلمة المرور
-التطبيق.post("/forgot-password", async (طلب, رد) => {
+// إرسال رابط استعادة كلمة المرور
+app.post("/forgot-password", async (req, res) => {
   try {
-    const { email } = طلب.body;
+    const { email } = req.body;
+    const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
 
-    const مستخدم = await قاعدة_البيانات.query('SELECT * FROM users WHERE email = $1', [email]);
-    if (مستخدم.rows.length === 0) {
-      return رد.status(404).json({ message: "المستخدم غير موجود" });
+    if (user.rows.length === 0) {
+      return res.status(404).json({ message: "المستخدم غير موجود" });
     }
 
-    const معرف_المستخدم = مستخدم.rows[0].id;
-    const رمز = crypto.randomBytes(32).toString('hex');
-    const صلاحية = new Date(Date.now() + 15 * 60 * 1000);
+    const userId = user.rows[0].id;
+    const token = crypto.randomBytes(32).toString('hex');
+    const expires = new Date(Date.now() + 15 * 60 * 1000); // 15 دقيقة
 
-    await قاعدة_البيانات.query('DELETE FROM password_resets WHERE user_id = $1', [معرف_المستخدم]);
+    await pool.query('DELETE FROM password_resets WHERE user_id = $1', [userId]);
 
-    await قاعدة_البيانات.query(
+    await pool.query(
       'INSERT INTO password_resets (user_id, token, expires) VALUES ($1, $2, $3)',
-      [معرف_المستخدم, رمز, صلاحية]
+      [userId, token, expires]
     );
 
-    const رابط_إعادة_التعيين = `http://localhost:3000/reset-password?token=${رمز}`;
-    await إرسال_بريد(email, رابط_إعادة_التعيين);
+    const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+    await sendemail(email, resetLink);
 
-    رد.json({ message: "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني." });
+    res.json({ message: "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني." });
 
   } catch (err) {
-    console.error("خطأ في نسيان كلمة المرور:", err);
-    رد.status(500).send("خطأ في الخادم");
+    console.error("خطأ في طلب إعادة تعيين كلمة المرور:", err);
+    res.status(500).send("خطأ في الخادم");
   }
 });
 
-// إعادة تعيين كلمة المرور
-التطبيق.post('/reset-password', async (طلب, رد) => {
+// تنفيذ إعادة تعيين كلمة المرور
+app.post('/reset-password', async (req, res) => {
   try {
-    const { token, new_password } = طلب.body;
+    const { token, new_password } = req.body;
 
     if (!new_password || new_password.length < 6) {
-      return رد.status(400).json({ message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" });
+      return res.status(400).json({ message: "كلمة المرور يجب أن تكون 6 أحرف على الأقل" });
     }
 
-    const التحقق = await قاعدة_البيانات.query(
+    const tokenRes = await pool.query(
       'SELECT user_id, expires FROM password_resets WHERE token = $1',
       [token]
     );
 
-    if (التحقق.rows.length === 0 || new Date() > التحقق.rows[0].expires) {
-      return رد.status(400).json({ message: 'الرمز غير صالح أو منتهي الصلاحية' });
+    if (tokenRes.rows.length === 0 || new Date() > tokenRes.rows[0].expires) {
+      return res.status(400).json({ message: 'رمز غير صالح أو منتهي الصلاحية' });
     }
 
-    const معرف_المستخدم = التحقق.rows[0].user_id;
-    const مشفر = await bcrypt.hash(new_password, 10);
+    const userId = tokenRes.rows[0].user_id;
+    const hashedPassword = await bcrypt.hash(new_password, 10);
 
-    await قاعدة_البيانات.query(
-      'UPDATE users SET password = $1 WHERE id = $2',
-      [مشفر, معرف_المستخدم]
-    );
+    await pool.query('UPDATE users SET password = $1 WHERE id = $2', [hashedPassword, userId]);
+    await pool.query('DELETE FROM password_resets WHERE token = $1', [token]);
 
-    await قاعدة_البيانات.query('DELETE FROM password_resets WHERE token = $1', [token]);
-
-    رد.json({ message: 'تم تعيين كلمة المرور بنجاح!' });
+    res.json({ message: 'تمت إعادة تعيين كلمة المرور بنجاح' });
 
   } catch (err) {
-    console.error('خطأ في تعيين كلمة المرور:', err.message);
-    رد.status(500).send('خطأ في الخادم');
+    console.error('خطأ أثناء إعادة تعيين كلمة المرور:', err.message);
+    res.status(500).send('خطأ في الخادم');
   }
 });
 
 // إنشاء منشور جديد
-التطبيق.post("/create_post", async (طلب, رد) => {
+app.post("/create_post", async (req, res) => {
   try {
-    const token = طلب.header("jwt_token");
-    if (!token) return رد.status(401).json({ message: "لم يتم توفير رمز الدخول" });
+    const token = req.header("jwt_token");
+    if (!token) return res.status(401).json({ message: "لم يتم تقديم الرمز" });
 
-    const مفكوك = jwt.verify(token, مفتاحJWT);
-    const معرف_المستخدم = مفكوك.userId;
+    const decoded = jwt.verify(token, jwtSecret);
+    const userId = decoded.userId;
 
-    if (!طلب.files || !طلب.files.images || !طلب.body.title || !طلب.body.description) {
-      return رد.status(400).send("العنوان والوصف وصورة واحدة على الأقل مطلوبة.");
+    if (!req.files || !req.files.images || !req.body.title || !req.body.description) {
+      return res.status(400).send("العنوان والوصف وصورة واحدة على الأقل مطلوبة.");
     }
 
-    const { title, description, features, email, phone, location } = طلب.body;
+    const { title, description, features, email, phone, location } = req.body;
 
-    const الصور = Array.isArray(طلب.files.images) ? طلب.files.images : [طلب.files.images];
-    const الصورة_الرئيسية = الصور[0].data;
-    const صور_إضافية = الصور.slice(1);
+    const imageFiles = Array.isArray(req.files.images) ? req.files.images : [req.files.images];
+    const primaryPhoto = imageFiles[0].data;
+    const extraImages = imageFiles.slice(1);
 
-    let المميزات_محللة = [];
+    let parsedFeatures = [];
     try {
-      المميزات_محللة = features ? JSON.parse(features) : [];
+      parsedFeatures = features ? JSON.parse(features) : [];
     } catch (err) {
-      console.warn("فشل في تحليل المميزات:", err.message);
+      console.warn("فشل في تحليل الميزات:", err.message);
     }
 
-    const إدخال_المنشور = await قاعدة_البيانات.query(
+    const postInsert = await pool.query(
       `INSERT INTO posts (title, description, primary_photo, user_id, email, phone, features, location)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
        RETURNING post_id`,
       [
         title,
         description,
-        الصورة_الرئيسية,
-        معرف_المستخدم,
+        primaryPhoto,
+        userId,
         email || null,
         phone || null,
-        المميزات_محللة.length ? المميزات_محللة : null,
+        parsedFeatures.length ? parsedFeatures : null,
         location || null
       ]
     );
 
-    const postId = إدخال_المنشور.rows[0].post_id;
+    const postId = postInsert.rows[0].post_id;
 
-    for (const ملف of صور_إضافية) {
-      await قاعدة_البيانات.query(
-        "INSERT INTO post_images (post_id, image) VALUES ($1, $2)",
-        [postId, ملف.data]
-      );
+    for (const file of extraImages) {
+      await pool.query("INSERT INTO post_images (post_id, image) VALUES ($1, $2)", [postId, file.data]);
     }
 
-    // حذف الكاش بعد الإنشاء
-    الذاكرة_المؤقتة.keys().forEach(مفتاح => {
-      if (مفتاح.startsWith('posts_') || مفتاح === 'total_posts_count') {
-        الذاكرة_المؤقتة.del(مفتاح);
+    cache.keys().forEach(key => {
+      if (key.startsWith('posts_') || key === 'total_posts_count') {
+        cache.del(key);
       }
     });
 
-    رد.json({ message: "تم إنشاء المنشور بنجاح", post_id: postId });
+    res.json({ message: "تم إنشاء المنشور بنجاح", post_id: postId });
+
   } catch (err) {
-    console.error("خطأ في إنشاء منشور:", err);
-    رد.status(500).json({ message: "خطأ في الخادم" });
+    console.error("خطأ في إنشاء المنشور:", err);
+    res.status(500).json({ message: "خطأ في الخادم" });
   }
 });
-
-// نقطة نهاية لجلب المنشورات مع دعم التصفح والذاكرة المؤقتة
+// ✅ جلب المنشورات مع معلومات المستخدم والتخزين المؤقت
 app.get('/posts', async (req, res) => {
   try {
-    const الصفحة = parseInt(req.query.page) || 1;
-    const الحد = parseInt(req.query.limit) || 12;
-    const البداية = (الصفحة - 1) * الحد;
-    const مفتاح_الذاكرة = `posts_${الصفحة}_${الحد}`;
-    const مفتاح_عدد_المنشورات = 'total_posts_count';
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 12;
+    const offset = (page - 1) * limit;
+    const cacheKey = `posts_${page}_${limit}`;
+    const countCacheKey = 'total_posts_count';
 
-    // ✅ تحقق من الذاكرة المؤقتة أولاً
-    const بيانات_مخزنة = cache.get(مفتاح_الذاكرة);
-    if (بيانات_مخزنة) {
-      return res.json(بيانات_مخزنة);
+    // ✅ التحقق من التخزين المؤقت أولاً
+    const cachedData = cache.get(cacheKey);
+    if (cachedData) {
+      return res.json(cachedData);
     }
 
-    // ✅ جلب العدد الكلي (محفوظ في الذاكرة المؤقتة)
-    let إجمالي_المنشورات = cache.get(مفتاح_عدد_المنشورات);
-    if (!إجمالي_المنشورات) {
-      const نتيجة_العد = await pool.query('SELECT COUNT(*) FROM posts');
-      إجمالي_المنشورات = parseInt(نتيجة_العد.rows[0].count);
-      cache.set(مفتاح_عدد_المنشورات, إجمالي_المنشورات, 60); // حفظ لمدة 60 ثانية
+    // ✅ جلب العدد الإجمالي من المنشورات (مع التخزين المؤقت)
+    let totalPosts = cache.get(countCacheKey);
+    if (!totalPosts) {
+      const countResult = await pool.query('SELECT COUNT(*) FROM posts');
+      totalPosts = parseInt(countResult.rows[0].count);
+      cache.set(countCacheKey, totalPosts, 60); // التخزين لمدة 60 ثانية
     }
 
     // ✅ جلب المنشورات مع معلومات المستخدم
-    const النتيجة = await pool.query(`
+    const result = await pool.query(`
       SELECT 
         p.post_id, 
         p.title, 
@@ -328,51 +319,51 @@ app.get('/posts', async (req, res) => {
       LEFT JOIN users u ON p.user_id = u.id
       ORDER BY p.created_at DESC
       LIMIT $1 OFFSET $2
-    `, [الحد, البداية]);
+    `, [limit, offset]);
 
-    if (!النتيجة.rows) {
-      throw new Error('لم يتم العثور على نتائج من قاعدة البيانات');
+    if (!result.rows) {
+      throw new Error('استعلام قاعدة البيانات لم يُرجع نتائج');
     }
 
     // ✅ معالجة الصور بالتوازي
-    const منشورات_مع_صور = await Promise.all(النتيجة.rows.map(async منشور => {
+    const postsWithPhotos = await Promise.all(result.rows.map(async post => {
       try {
-        const صورة = منشور.primary_photo;
-        let صورة_محسنة = null;
+        const imageBuffer = post.primary_photo;
+        let optimizedImage = null;
 
-        if (صورة) {
+        if (imageBuffer) {
           try {
-            صورة_محسنة = await optimizeImage(صورة);
-          } catch (خطأ_صورة) {
-            console.error('خطأ في تحسين الصورة:', خطأ_صورة);
+            optimizedImage = await optimizeImage(imageBuffer);
+          } catch (imageError) {
+            console.error('خطأ في تحسين الصورة:', imageError);
           }
         }
 
         return {
-          post_id: منشور.post_id,
-          title: منشور.title,
-          email: منشور.email,
-          description: منشور.description,
-          userId: منشور.user_id,
-          zip_code: منشور.zip_code,
-          features: منشور.features || ["Other"],
-          attached_photo: صورة_محسنة ? صورة_محسنة.toString('base64') : null,
-          created_at: منشور.created_at,
-          location: منشور.post_location || "غير معروف"
+          post_id: post.post_id,
+          title: post.title,
+          email: post.email,
+          description: post.description,
+          userId: post.user_id,
+          zip_code: post.zip_code,
+          features: post.features || ["Other"],
+          attached_photo: optimizedImage ? optimizedImage.toString('base64') : null,
+          created_at: post.created_at,
+          location: post.post_location || "Unknown"
         };
-      } catch (خطأ_منشور) {
-        console.error('خطأ في معالجة المنشور:', خطأ_منشور);
+      } catch (postError) {
+        console.error('خطأ في معالجة المنشور:', postError);
         return null;
       }
     }));
 
-    const منشورات_صالحة = منشورات_مع_صور.filter(منشور => منشور !== null);
+    const validPosts = postsWithPhotos.filter(post => post !== null);
 
-    if (منشورات_صالحة.length === 0) {
+    if (validPosts.length === 0) {
       return res.json({
         posts: [],
         pagination: {
-          currentPage: الصفحة,
+          currentPage: page,
           totalPages: 0,
           totalPosts: 0,
           hasMore: false
@@ -380,120 +371,120 @@ app.get('/posts', async (req, res) => {
       });
     }
 
-    const رد = {
-      posts: منشورات_صالحة,
+    const response = {
+      posts: validPosts,
       pagination: {
-        currentPage: الصفحة,
-        totalPages: Math.ceil(إجمالي_المنشورات / الحد),
-        totalPosts: إجمالي_المنشورات,
-        hasMore: البداية + الحد < إجمالي_المنشورات
+        currentPage: page,
+        totalPages: Math.ceil(totalPosts / limit),
+        totalPosts,
+        hasMore: offset + limit < totalPosts
       }
     };
 
-    // ✅ حفظ الرد في الذاكرة المؤقتة لمدة 60 ثانية
-    cache.set(مفتاح_الذاكرة, رد, 60);
-    res.json(رد);
-  } catch (خطأ) {
-    console.error('خطأ في /posts:', خطأ);
+    // ✅ تخزين النتيجة مؤقتاً
+    cache.set(cacheKey, response, 60);
+    res.json(response);
+  } catch (error) {
+    console.error('خطأ في نقطة النهاية /posts:', error);
     res.status(500).json({ 
       message: 'خطأ في الخادم',
-      error: process.env.NODE_ENV === 'development' ? خطأ.message : undefined
+      error: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 });
 
-// نقطة نهاية لجلب ملف المستخدم
+// ✅ جلب بيانات المستخدم
 app.get("/profile", authorize, async (req, res) => {
   try {
-    const معرف_المستخدم = req.user.id;
+    const userId = req.user.id;
 
-    const نتيجة_الملف = await pool.query(
+    const profileResult = await pool.query(
       `SELECT username, email, phone_number FROM users WHERE id = $1`,
-      [معرف_المستخدم]
+      [userId]
     );
 
-    if (نتيجة_الملف.rows.length === 0) {
+    if (profileResult.rows.length === 0) {
       return res.status(404).json({ message: "المستخدم غير موجود" });
     }
 
-    const المستخدم = نتيجة_الملف.rows[0];
+    const user = profileResult.rows[0];
 
-    // ✅ عدد المنشورات فقط بدون صور
-    const نتيجة_عدد_المنشورات = await pool.query(
+    // ✅ عدد المنشورات بدون صور
+    const postsCountResult = await pool.query(
       `SELECT COUNT(*) FROM posts WHERE user_id = $1`,
-      [معرف_المستخدم]
+      [userId]
     );
-    المستخدم.active_posts = parseInt(نتيجة_عدد_المنشورات.rows[0].count, 10);
+    user.active_posts = parseInt(postsCountResult.rows[0].count, 10);
 
     // ✅ التقييم المتوسط
-    const نتيجة_التقييم = await pool.query(
+    const ratingResult = await pool.query(
       `SELECT ROUND(AVG(rating)::numeric, 1) AS rating FROM feedback WHERE receiver_id = $1`,
-      [معرف_المستخدم]
+      [userId]
     );
-    المستخدم.rating = نتيجة_التقييم.rows[0].rating !== null
-      ? parseFloat(نتيجة_التقييم.rows[0].rating)
+    user.rating = ratingResult.rows[0].rating !== null
+      ? parseFloat(ratingResult.rows[0].rating)
       : null;
 
-    // ✅ الآراء
-    const نتيجة_الآراء = await pool.query(
+    // ✅ التعليقات
+    const feedbackResult = await pool.query(
       `SELECT f.giver_id, f.rating, f.comment, f.created_at, u.username AS giver_username
        FROM feedback f
        JOIN users u ON f.giver_id = u.id
        WHERE f.receiver_id = $1
        ORDER BY f.created_at DESC`,
-      [معرف_المستخدم]
+      [userId]
     );
-    المستخدم.feedbacks = نتيجة_الآراء.rows;
+    user.feedbacks = feedbackResult.rows;
 
-    res.json([المستخدم]);
+    res.json([user]);
   } catch (err) {
     console.error("خطأ في /profile:", err.message);
     res.status(500).json({ message: "خطأ في الخادم" });
   }
 });
 
-// نقطة نهاية لجلب منشورات المستخدم الحالي
+// ✅ جلب منشورات مستخدم معين
 app.get('/posts/user', authorize, async (req, res) => {
   try {
-    const معرف_المستخدم = req.user.id;
-    
-    const النتيجة = await pool.query('SELECT * FROM posts WHERE user_id = $1', [معرف_المستخدم]);
+    const user_id = req.user.id;
 
-    if (النتيجة.rows.length === 0) {
+    const result = await pool.query('SELECT * FROM posts WHERE user_id = $1', [user_id]);
+
+    if (result.rows.length === 0) {
       return res.status(404).json({ message: 'لا توجد منشورات لهذا المستخدم' });
     }
 
-    res.json(النتيجة.rows.map(منشور => ({
-      ...منشور,
-      attached_photo: منشور.attached_photo.toString('base64')
+    res.json(result.rows.map(post => ({
+      ...post,
+      attached_photo: post.attached_photo.toString('base64')
     })));
-  } catch (خطأ) {
-    console.error('خطأ في جلب منشورات المستخدم:', خطأ.message);
+  } catch (error) {
+    console.error('خطأ في جلب منشورات المستخدم:', error.message);
     res.status(500).json({ message: 'خطأ في الخادم' });
   }
 });
 
-// نقطة نهاية لحذف منشور
+// ✅ حذف منشور
 app.delete('/posts/:postId', authorize, async (req, res) => {
   try {
     const { postId } = req.params;
-    const معرف_المستخدم = req.user.id;
+    const user_id = req.user.id;
 
-    const استعلام_الحذف = 'DELETE FROM posts WHERE post_id = $1 AND user_id = $2 RETURNING *';
-    const النتيجة = await pool.query(استعلام_الحذف, [postId, معرف_المستخدم]);
+    const deleteQuery = 'DELETE FROM posts WHERE post_id = $1 AND user_id = $2 RETURNING *';
+    const result = await pool.query(deleteQuery, [postId, user_id]);
 
-    if (النتيجة.rows.length === 0) {
-      return res.status(404).json({ message: 'لم يتم العثور على المنشور أو ليس لديك صلاحية الحذف' });
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'المنشور غير موجود أو لا تملك صلاحية حذفه' });
     }
 
     res.json({ message: 'تم حذف المنشور' });
-  } catch (خطأ) {
-    console.error('خطأ في حذف المنشور:', خطأ);
+  } catch (error) {
+    console.error('خطأ في حذف المنشور:', error);
     res.status(500).json({ message: 'خطأ في الخادم' });
   }
 });
 
-// دالة تحسين الصور (بسيطة حالياً)
+// ✅ تحسين الصورة (نسخة بسيطة)
 async function optimizeImage(imageBuffer) {
   try {
     return imageBuffer;
@@ -503,7 +494,7 @@ async function optimizeImage(imageBuffer) {
   }
 }
 
-// معالج أخطاء عام
+// ✅ معالج أخطاء عام
 app.use((err, req, res, next) => {
   console.error('خطأ غير معالج:', err);
   res.status(500).json({
@@ -512,22 +503,22 @@ app.use((err, req, res, next) => {
   });
 });
 
-// التعامل مع الأخطاء غير الملتقطة
+// ✅ التعامل مع أخطاء غير معالجة
 process.on('uncaughtException', (err) => {
   console.error('استثناء غير معالج:', err);
   process.exit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('رفض غير معالج عند:', promise, 'السبب:', reason);
+  console.error('رفض غير معالج في:', promise, 'السبب:', reason);
 });
 
-// اتصال دوري للحفاظ على الاتصال بقاعدة البيانات
+// ✅ منع إغلاق الاتصال بقاعدة البيانات
 setInterval(() => {
   pool.query('SELECT 1').catch(() => {});
 }, 300000);
 
-// بدء تشغيل الخادم
 app.listen(5000, () => {
-  console.log("تم بدء تشغيل الخادم على المنفذ 5000");
+  console.log("تم تشغيل الخادم على المنفذ 5000");
 });
+

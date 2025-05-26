@@ -5,78 +5,77 @@ import { useNavigate } from 'react-router-dom';
 import ContactInfo from '../../components/contactInfo/contactInfo';
 import LocationMap from '../../components/contactInfo/locationMap';
 
-function صفحة_إنشاء_منشور({ عندإنشاء_المنشور }) {
-  const تنقل = useNavigate();
-  const [العنوان, تعيين_العنوان] = useState("");
-  const [الوصف, تعيين_الوصف] = useState("");
-  const [الصور, تعيين_الصور] = useState([]);
-  const [جار_الرفع, تعيين_جار_الرفع] = useState(false);
-  const [تقدم_الرفع, تعيين_تقدم_الرفع] = useState(0);
-  const [البريد, تعيين_البريد] = useState('');
-  const [الهاتف, تعيين_الهاتف] = useState('');
-  const [الموقع, تعيين_الموقع] = useState('');
-  const [الفئة, تعيين_الفئة] = useState('');
-  const [المميزات, تعيين_المميزات] = useState(['']);
+function CreatePostPage({ onPostCreated }) {
+  const navigate = useNavigate();
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [images, setImages] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [location, setLocation] = useState('');
+  const [category, setCategory] = useState('');
+  const [features, setFeatures] = useState(['']);
 
-  const خيارات_الفئات = [
+  const categoryOptions = [
     "أثاث", "إلكترونيات", "ألعاب", "ملابس", "كتب",
     "أجهزة منزلية", "دمى", "أدوات", "معدات رياضية", "طعام", "أخرى"
   ];
 
-  const عند_الإسقاط = useCallback((الملفات_المقبولة) => {
-    const ملفات_صحيحة = الملفات_المقبولة.filter(ملف =>
-      ملف.type.startsWith('image/') && ملف.size <= 5 * 1024 * 1024
+  const onDrop = useCallback((acceptedFiles) => {
+    const validFiles = acceptedFiles.filter(file =>
+      file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024
     );
-    if (ملفات_صحيحة.length !== الملفات_المقبولة.length) {
-      toast.warning("تم رفض بعض الملفات. فقط الصور تحت 5 ميجابايت مسموح بها.");
+    if (validFiles.length !== acceptedFiles.length) {
+      toast.warning("تم رفض بعض الملفات. يُسمح فقط بالصور التي تقل عن 5 ميجابايت");
     }
-    تعيين_الصور(السابق => [...السابق, ...ملفات_صحيحة]);
+    setImages(prev => [...prev, ...validFiles]);
   }, []);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: عند_الإسقاط,
+    onDrop,
     accept: { 'image/*': ['.jpeg', '.jpg', '.png', '.gif'] },
     maxSize: 5 * 1024 * 1024
   });
 
-  const إزالة_صورة = (الفهرس) => {
-    تعيين_الصور(السابق => السابق.filter((_, i) => i !== الفهرس));
+  const removeImage = (index) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
   };
 
-  const معالجة_الإرسال = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!الفئة) {
-      toast.error("يرجى اختيار الفئة");
+    if (!category) {
+      toast.error("يرجى اختيار تصنيف");
       return;
     }
 
-    if (الصور.length === 0) {
+    if (images.length === 0) {
       toast.error("يرجى رفع صورة واحدة على الأقل");
       return;
     }
 
     const formData = new FormData();
-    formData.append("title", العنوان);
-    formData.append("description", الوصف);
-    //formData.append("features", JSON.stringify(المميزات.filter(f => f.trim() !== '')));
-    formData.append("email", البريد);
-    formData.append("phone", الهاتف);
-    formData.append("location", الموقع);
-    //formData.append("category", الفئة);
-    const مميزات_مصفاة = المميزات.filter(f => f.trim() !== '');
-    const كل_المميزات = [الفئة, ...مميزات_مصفاة];
-    formData.append("features", JSON.stringify(كل_المميزات));
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("email", email);
+    formData.append("phone", phone);
+    formData.append("location", location);
 
-    الصور.forEach((صورة) => {
-      formData.append("images", صورة);
+    const filteredFeatures = features.filter(f => f.trim() !== '');
+    const allFeatures = [category, ...filteredFeatures];
+    formData.append("features", JSON.stringify(allFeatures));
+
+    images.forEach((img) => {
+      formData.append("images", img);
     });
 
-    تعيين_جار_الرفع(true);
-    تعيين_تقدم_الرفع(0);
+    setIsUploading(true);
+    setUploadProgress(0);
 
     try {
-      const استجابة = await fetch("http://localhost:5000/create_post", {
+      const response = await fetch("http://localhost:5000/create_post", {
         method: "POST",
         headers: {
           jwt_token: localStorage.getItem("token"),
@@ -84,67 +83,67 @@ function صفحة_إنشاء_منشور({ عندإنشاء_المنشور }) {
         body: formData,
       });
 
-      if (استجابة.ok) {
-        const بيانات = await استجابة.json();
+      if (response.ok) {
+        const data = await response.json();
         toast.success("تم إنشاء المنشور بنجاح");
 
-        تعيين_العنوان("");
-        تعيين_الوصف("");
-        تعيين_الصور([]);
-        تعيين_المميزات(['']);
-        تعيين_الفئة("");
-        تعيين_البريد("");
-        تعيين_الهاتف("");
-        تعيين_الموقع("");
-        تعيين_تقدم_الرفع(0);
+        setTitle("");
+        setDescription("");
+        setImages([]);
+        setFeatures(['']);
+        setCategory("");
+        setEmail("");
+        setPhone("");
+        setLocation("");
+        setUploadProgress(0);
 
-        if (بيانات.post_id) {
-          تنقل(`/posts/${بيانات.post_id}`);
+        if (data.post_id) {
+          navigate(`/posts/${data.post_id}`);
         } else {
-          تنقل('/');
+          navigate('/');
         }
 
-        if (عندإنشاء_المنشور) عندإنشاء_المنشور();
+        if (onPostCreated) onPostCreated();
       } else {
-        const نص_الخطأ = await استجابة.text();
+        const errorText = await response.text();
         try {
-          const بيانات_الخطأ = JSON.parse(نص_الخطأ);
-          toast.error(بيانات_الخطأ.message || "غير قادر على إنشاء المنشور");
+          const errorData = JSON.parse(errorText);
+          toast.error(errorData.message || "فشل في إنشاء المنشور");
         } catch {
-          toast.error(نص_الخطأ || "غير قادر على إنشاء المنشور");
+          toast.error(errorText || "حدث خطأ أثناء إنشاء المنشور");
         }
       }
     } catch (err) {
-      console.error("خطأ في الإرسال:", err);
-      toast.error("حدث خطأ أثناء إنشاء المنشور.");
+      console.error("Submit Error:", err);
+      toast.error("حدث خطأ أثناء إنشاء المنشور");
     } finally {
-      تعيين_جار_الرفع(false);
+      setIsUploading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col font-sans ">
-      <div className="w-full  py-6 px-4 md:px-12 lg:px-24 xl:px-40 mt-3 ">
-        <h1 className="text-4xl font-semibold text-red-700 text-center ">
+    <div className="min-h-screen bg-gray-100 flex flex-col font-sans">
+      <div className="w-full py-6 px-4 md:px-12 lg:px-24 xl:px-40 mt-3">
+        <h1 className="text-4xl font-semibold text-red-700 text-center">
           إنشاء منشور جديد
         </h1>
 
-        {جار_الرفع && (
+        {isUploading && (
           <div className="mb-6">
             <div className="w-full bg-gray-200 rounded-full h-3">
               <div
                 className="bg-green-600 h-3 rounded-full transition-all duration-300"
-                style={{ width: `${تقدم_الرفع}%` }}
+                style={{ width: `${uploadProgress}%` }}
               />
             </div>
             <p className="text-center text-sm text-green-800 mt-2">
-              جاري الرفع... {تقدم_الرفع}%
+              ...جاري الرفع {uploadProgress}%
             </p>
           </div>
         )}
 
         <form
-          onSubmit={معالجة_الإرسال}
+          onSubmit={handleSubmit}
           encType="multipart/form-data"
           className="grid grid-cols-1 md:grid-cols-2 gap-6"
         >
@@ -155,11 +154,11 @@ function صفحة_إنشاء_منشور({ عندإنشاء_المنشور }) {
               <label className="block text-lg font-semibold text-green-800 mb-1">العنوان</label>
               <input
                 type="text"
-                value={العنوان}
-                onChange={(e) => تعيين_العنوان(e.target.value)}
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
                 required
                 placeholder="أدخل عنوان العنصر"
-                className="w-full border border-gray-300 rounded-md px-4 py-2 "
+                className="w-full border border-gray-300 rounded-md px-4 py-2"
               />
             </div>
 
@@ -167,35 +166,35 @@ function صفحة_إنشاء_منشور({ عندإنشاء_المنشور }) {
             <div>
               <label className="block text-lg font-semibold text-green-800 mb-1">الوصف</label>
               <textarea
-                value={الوصف}
-                onChange={(e) => تعيين_الوصف(e.target.value)}
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
                 rows={5}
                 required
                 placeholder="اكتب وصفًا تفصيليًا"
-                className="w-full border border-gray-300 rounded-md px-4 py-2 resize-none" 
+                className="w-full border border-gray-300 rounded-md px-4 py-2 resize-none"
               />
             </div>
 
-            {/* الفئة */}
+            {/* التصنيف */}
             <div>
-              <label className="block text-lg font-semibold text-green-800 mb-1">الفئة</label>
+              <label className="block text-lg font-semibold text-green-800 mb-1">التصنيف</label>
               <select
-                value={الفئة}
-                onChange={(e) => تعيين_الفئة(e.target.value)}
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
                 required
                 className="w-full border border-gray-300 rounded-md px-4 py-2 focus:ring-2 focus:ring-green-500"
               >
-                <option value="">-- اختر فئة --</option>
-                {خيارات_الفئات.map((خيار, فهرس) => (
-                  <option key={فهرس} value={خيار}>
-                    {خيار}
+                <option value="">-- اختر تصنيفًا --</option>
+                {categoryOptions.map((option, index) => (
+                  <option key={index} value={option}>
+                    {option}
                   </option>
                 ))}
               </select>
             </div>
 
-            {/* معلومات التواصل */}
-            <ContactInfo email={البريد} setEmail={تعيين_البريد} phone={الهاتف} setPhone={تعيين_الهاتف} />
+            {/* معلومات الاتصال */}
+            <ContactInfo email={email} setEmail={setEmail} phone={phone} setPhone={setPhone} />
           </div>
 
           {/* العمود الأيمن */}
@@ -212,28 +211,28 @@ function صفحة_إنشاء_منشور({ عندإنشاء_المنشور }) {
                 <input {...getInputProps()} />
                 <p className="text-gray-600">
                   {isDragActive
-                    ? 'أسقط الصور هنا...'
-                    : 'اسحب وأفلت الصور أو انقر لاختيار الملفات'}
+                    ? '..أسقط الصور هنا'
+                    : 'اسحب وأسقط الصور هنا أو انقر لاختيار الملفات'}
                 </p>
                 <p className="text-sm text-gray-500 mt-1">
-                  JPEG، PNG، GIF (حتى 5 ميجابايت لكل صورة)
+                  JPEG, PNG, GIF (الحد الأقصى 5MB لكل صورة)
                 </p>
               </div>
             </div>
 
-            {/* معاينة الصور */}
-            {الصور.length > 0 && (
+            {/* عرض الصور */}
+            {images.length > 0 && (
               <div className="grid grid-cols-2 gap-4">
-                {الصور.map((صورة, فهرس) => (
-                  <div key={فهرس} className="relative group">
+                {images.map((image, index) => (
+                  <div key={index} className="relative group">
                     <img
-                      src={URL.createObjectURL(صورة)}
-                      alt={`معاينة ${فهرس + 1}`}
+                      src={URL.createObjectURL(image)}
+                      alt={`Preview ${index + 1}`}
                       className="w-full h-32 object-cover rounded-lg"
                     />
                     <button
                       type="button"
-                      onClick={() => إزالة_صورة(فهرس)}
+                      onClick={() => removeImage(index)}
                       className="absolute top-1 right-1 bg-red-600 text-white text-xs rounded-full px-2 py-1 opacity-0 group-hover:opacity-100 transition"
                     >
                       ×
@@ -243,18 +242,19 @@ function صفحة_إنشاء_منشور({ عندإنشاء_المنشور }) {
               </div>
             )}
 
-            {/* اختيار الموقع */}
-            <LocationMap onLocationSelect={تعيين_الموقع} />
-            {الموقع && <p className="text-sm text-green-800 mt-1">{الموقع}</p>}
+            {/* تحديد الموقع */}
+            <LocationMap onLocationSelect={setLocation} />
+            {location && <p className="text-sm text-green-800 mt-1">{location}</p>}
           </div>
 
+          {/* زر الإرسال */}
           <div className="col-span-1 md:col-span-2">
             <button
               type="submit"
-              disabled={جار_الرفع || الصور.length === 0}
-              className="w-full bg-red-700  text-white py-3 px-4 rounded-lg text-lg font-semibold hover:bg-green-700 disabled:opacity-50"
+              disabled={isUploading || images.length === 0}
+              className="w-full bg-red-700 text-white py-3 px-4 rounded-lg text-lg font-semibold hover:bg-green-700 disabled:opacity-50"
             >
-              {جار_الرفع ? 'جارٍ الرفع...' : 'إنشاء المنشور'}
+              {isUploading ?'..جاري الرفع' : 'إنشاء المنشور'}
             </button>
           </div>
         </form>
@@ -263,4 +263,5 @@ function صفحة_إنشاء_منشور({ عندإنشاء_المنشور }) {
   );
 }
 
-export default صفحة_إنشاء_منشور;
+export default CreatePostPage;
+

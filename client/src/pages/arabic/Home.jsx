@@ -31,7 +31,7 @@ const Homepage = () => {
       <div className="w-full mx-auto flex flex-col md:flex-row gap-8">
         <section className="flex flex-col md:flex-row items-center bg-green-600 p-10 mt-20 shadow-lg gap-10">
           <div className="md:w-1/2">
-            <h2 className="text-4xl font-medium text-white mb-4 text-center md:text-left">وجهة نظرنا..</h2>
+            <h2 className="text-4xl font-medium text-white mb-4 text-center md:text-left">..وجهة نظرنا</h2>
             <p className="text-lg text-white leading-loose text-center md:text-left">
               TBR3 هي منصة أردنية وُلِدت من الكلمة العربية تَبَرّع 
               والتي تعكس مهمة قائمة على العطاء، والاستدامة، ورعاية المجتمع. <br /><br />

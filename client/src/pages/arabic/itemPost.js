@@ -14,7 +14,7 @@ router.get("/", authorize, async (req, res) => {
 
     res.json(user.rows);
   } catch (err) {
-    console.error("خطأ في جلب الملف الشخصي:", err.message);
+    console.error("خطأ في جلب الملف الشخصي", err.message);
     res.status(500).send("خطأ في الخادم");
   }
 });
@@ -38,7 +38,7 @@ router.put("/update-post/:id", authorize, async (req, res) => {
     try {
       parsedFeatures = features ? JSON.parse(features) : [];
     } catch (err) {
-      console.warn("فشل في تحويل المزايا:", err.message);
+      console.warn("فشل في تحويل المزايا", err.message);
     }
 
     const files = req.files?.images;
@@ -93,7 +93,7 @@ router.put("/update-post/:id", authorize, async (req, res) => {
     return res.json({ message: "تم تحديث المنشور بنجاح" });
 
   } catch (err) {
-    console.error("خطأ أثناء تحديث المنشور:", err.message);
+    console.error("خطأ أثناء تحديث المنشور", err.message);
     res.status(500).send("خطأ في الخادم");
   }
 });
@@ -109,12 +109,12 @@ router.delete("/delete-post/:id", authorize, async (req, res) => {
     );
 
     if (deletePost.rows.length === 0) {
-      return res.json("هذا المنشور ليس لك أو غير موجود.");
+      return res.json("هذا المنشور ليس لك أو غير موجود");
     }
 
-    res.json("تم حذف المنشور بنجاح.");
+    res.json("تم حذف المنشور بنجاح");
   } catch (err) {
-    console.error("خطأ أثناء حذف المنشور:", err.message);
+    console.error("خطأ أثناء حذف المنشور", err.message);
     res.status(500).send("خطأ في الخادم");
   }
 });
@@ -186,7 +186,7 @@ router.get("/posts/:id", async (req, res) => {
     });
 
   } catch (err) {
-    console.error("خطأ أثناء جلب المنشور:", err.message);
+    console.error("خطأ أثناء جلب المنشور", err.message);
     res.status(500).send("خطأ في الخادم");
   }
 });
@@ -195,7 +195,7 @@ router.get("/posts/:id", async (req, res) => {
 router.get("/my-posts", authorize, async (req, res) => {
   try {
     const userId = req.user.id;
-    console.log("جلب منشورات المستخدم:", userId);
+    console.log("جلب منشورات المستخدم", userId);
 
     const myPosts = await pool.query(
       "SELECT post_id, title, description, primary_photo, location, created_at FROM posts WHERE user_id = $1 ORDER BY created_at DESC",
@@ -211,7 +211,7 @@ router.get("/my-posts", authorize, async (req, res) => {
 
     res.json(formattedPosts);
   } catch (err) {
-    console.error("خطأ أثناء جلب منشورات المستخدم:", err.message);
+    console.error("خطأ أثناء جلب منشورات المستخدم", err.message);
     res.status(500).send("خطأ في الخادم");
   }
 });

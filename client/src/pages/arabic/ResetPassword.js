@@ -29,7 +29,7 @@ export default function ResetPassword() {
         toast.error(data.message || "فشل في إعادة تعيين كلمة المرور");
       }
     } catch (err) {
-      console.error("خطأ في إعادة التعيين:", err);
+      console.error("خطأ في إعادة التعيين", err);
       toast.error("حدث خطأ ما");
     }
   };

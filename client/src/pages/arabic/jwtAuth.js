@@ -32,7 +32,7 @@ router.post("/login", async (req, res) => {
     res.json({ jwtToken });
 
   } catch (err) {
-    console.error("خطأ أثناء تسجيل الدخول:", err.message);
+    console.error("خطأ أثناء تسجيل الدخول", err.message);
     res.status(500).send("خطأ في الخادم");
   }
 });

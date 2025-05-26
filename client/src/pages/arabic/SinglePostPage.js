@@ -127,7 +127,7 @@ export default function ShowDataProduct() {
         [imageToLoad.id]: true
       }));
     } catch (error) {
-      console.error('خطأ في تحميل الصورة:', error);
+      console.error('خطأ في تحميل الصورة', error);
     }
 
     isProcessingQueue.current = false;
@@ -182,19 +182,19 @@ export default function ShowDataProduct() {
 
       processImageQueue();
     } catch (error) {
-      console.error("خطأ في جلب المنشور:", error);
-      let errorMessage = "فشل في تحميل المنشور. ";
+      console.error("خطأ في جلب المنشور", error);
+      let errorMessage = "فشل في تحميل المنشور ";
 
       if (error.message === 'عدم السماح بالدخول') {
-        errorMessage += "يرجى تسجيل الدخول لعرض هذا المنشور.";
+        errorMessage += "يرجى تسجيل الدخول لعرض هذا المنشور";
         navigate('/login');
       } else if (error.message === 'المنشور غير موجود') {
-        errorMessage += "المنشور الذي تبحث عنه غير موجود.";
+        errorMessage += "المنشور الذي تبحث عنه غير موجود";
         navigate('/');
       } else if (error.message === 'خطأ في الخادم') {
-        errorMessage += "الخادم غير متاح حالياً. يرجى المحاولة لاحقاً.";
+        errorMessage += "الخادم غير متاح حالياً. يرجى المحاولة لاحقاً";
       } else {
-        errorMessage += "يرجى المحاولة مرة أخرى.";
+        errorMessage += "يرجى المحاولة مرة أخرى";
       }
 
       setError(errorMessage);
@@ -346,7 +346,7 @@ return (
             نُشِر بواسطة <span className="font-semibold text-gray-800">{post.username}</span>
           </p>
           <p className="text-sm text-gray-500">
-            الموقع: <span className="font-semibold text-gray-800">{post.location}</span>
+            :الموقع<span className="font-semibold text-gray-800">{post.location}</span>
           </p>
         </div>
         <div className="w-1/6">

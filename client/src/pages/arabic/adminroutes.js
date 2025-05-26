@@ -9,7 +9,7 @@ const authorize = require("../middleware/authorize");
 router.use(authorize);
 router.use((req, res, next) => {
   if (!req.user?.isAdmin) {
-    return res.status(403).json({ msg: "للمسؤولين فقط." });
+    return res.status(403).json({ msg: ".للمسؤولين فقط" });
   }
   next();
 });
@@ -20,7 +20,7 @@ router.get("/users", async (req, res) => {
     const result = await pool.query("SELECT id, username, email, is_admin FROM users");
     res.json(result.rows);
   } catch (err) {
-    console.error("خطأ في جلب المستخدمين من قبل المسؤول:", err.message);
+    console.error("خطأ في جلب المستخدمين من قبل المسؤول", err.message);
     res.status(500).json({ msg: "خطأ في الخادم" });
   }
 });
@@ -35,7 +35,7 @@ router.put("/users/:id/toggle-admin", async (req, res) => {
     );
     res.json(result.rows[0]);
   } catch (err) {
-    console.error("خطأ في تبديل حالة المسؤول:", err.message);
+    console.error("خطأ في تبديل حالة المسؤول", err.message);
     res.status(500).json({ msg: "خطأ في الخادم" });
   }
 });
@@ -47,7 +47,7 @@ router.delete("/users/:id", async (req, res) => {
     await pool.query("DELETE FROM users WHERE id = $1", [id]);
     res.json({ msg: "تم حذف المستخدم" });
   } catch (err) {
-    console.error("خطأ في حذف المستخدم من قبل المسؤول:", err.message);
+    console.error("خطأ في حذف المستخدم من قبل المسؤول", err.message);
     res.status(500).json({ msg: "خطأ في الخادم" });
   }
 });
@@ -75,7 +75,7 @@ router.get("/posts", async (req, res) => {
 
     res.json(posts);
   } catch (err) {
-    console.error("خطأ في جلب المنشورات من قبل المسؤول:", err.message);
+    console.error("خطأ في جلب المنشورات من قبل المسؤول", err.message);
     res.status(500).json({ msg: "خطأ في الخادم" });
   }
 });
@@ -87,7 +87,7 @@ router.delete("/posts/:postId", async (req, res) => {
     await pool.query("DELETE FROM posts WHERE post_id = $1", [postId]);
     res.json({ msg: "تم حذف المنشور" });
   } catch (err) {
-    console.error("خطأ في حذف المنشور من قبل المسؤول:", err.message);
+    console.error("خطأ في حذف المنشور من قبل المسؤول", err.message);
     res.status(500).json({ msg: "خطأ في الخادم" });
   }
 });

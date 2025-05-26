@@ -104,7 +104,7 @@ export default function AdminPosts() {
               <div className="p-4">
                 <h3 className="text-lg font-semibold text-gray-800 mb-1">{post.title}</h3>
                 <p className="text-sm text-gray-600 mb-2">
-                  نُشر بواسطة: <span className="font-medium">{post.username}</span> ({post.email})
+                  :نُشر بواسطة <span className="font-medium">{post.username}</span> ({post.email})
                 </p>
                 <button
                   onClick={() => deletePost(post.post_id)}

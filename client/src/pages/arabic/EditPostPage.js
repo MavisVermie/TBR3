@@ -83,7 +83,7 @@ function EditPostPage() {
           navigate('/');
         }
       } catch (error) {
-        console.error("خطأ في تحميل المنشور:", error);
+        console.error("خطأ في تحميل المنشور", error);
         toast.error("حدث خطأ ما");
         navigate('/');
       } finally {
@@ -99,7 +99,7 @@ function EditPostPage() {
       file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024
     );
     if (validFiles.length !== acceptedFiles.length) {
-      toast.warning("تم رفض بعض الصور. الحد الأقصى للحجم هو 5 ميغابايت لكل صورة.");
+      toast.warning("تم رفض بعض الصور. الحد الأقصى للحجم هو 5 ميغابايت لكل صورة");
     }
     setImages(prev => [...prev, ...validFiles]);
   }, []);
@@ -157,8 +157,8 @@ function EditPostPage() {
         toast.error(errorText || "فشل في تحديث المنشور");
       }
     } catch (err) {
-      console.error("خطأ في التحديث:", err);
-      toast.error("حدث خطأ أثناء تحديث المنشور.");
+      console.error("خطأ في التحديث", err);
+      toast.error("حدث خطأ أثناء تحديث المنشور");
     } finally {
       setIsUploading(false);
     }
@@ -171,10 +171,10 @@ function EditPostPage() {
       <div className="container mx-auto bg-white p-6 w-2/3 shadow-md rounded-lg mt-5">
         <h1 className="text-4xl text-red-700 font-semibold text-center mb-6">تعديل منشورك</h1>
         {loadingData ? (
-          <p>جاري تحميل بيانات المنشور...</p>
+          <p>...جاري تحميل بيانات المنشور</p>
         ) : !isOwner /* && !isAdmin */ ? (
           <p className="text-red-600 text-center font-semibold">
-            ❌ لا تملك الصلاحية لتعديل هذا المنشور.
+            ❌ لا تملك الصلاحية لتعديل هذا المنشور
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -191,7 +191,7 @@ function EditPostPage() {
 
             <div {...getRootProps()} className="border-dashed border-2 p-4 text-center rounded cursor-pointer text-slate-600">
               <input {...getInputProps()} />
-              {isDragActive ? <p>قم بإفلات الصور هنا...</p> : <p>اضغط أو اسحب الصور للرفع (الحد الأقصى 5MB لكل صورة)</p>}
+              {isDragActive ? <p>قم بإفلات الصور هنا</p> : <p>اضغط أو اسحب الصور للرفع (الحد الأقصى 5MB لكل صورة)</p>}
             </div>
 
             {(existingImages.length > 0 || images.length > 0) && (
@@ -221,12 +221,12 @@ function EditPostPage() {
             )}
 
             <LocationMap onLocationSelect={setLocation} initialLocation={initialLocation} />
-            {location && <p className="text-sm text-gray-600">الموقع المختار: {location}</p>}
+            {location && <p className="text-sm text-gray-600">:الموقع المختار {location}</p>}
 
             <ContactInfo email={email} setEmail={setEmail} phone={phone} setPhone={setPhone} />
 
             <button type="submit" disabled={isUploading} className="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-red-700">
-              {isUploading ? "جارٍ التحديث..." : "تحديث المنشور"}
+              {isUploading ? "...جارٍ التحديث" : "تحديث المنشور"}
             </button>
           </form>
         )}

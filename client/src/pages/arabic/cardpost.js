@@ -72,7 +72,7 @@ export default function CardPost() {
       });
     } catch (err) {
       console.error('خطأ في تحميل المنشورات', err);
-      setError('فشل في تحميل المنشورات. حاول مرة أخرى.');
+      setError('فشل في تحميل المنشورات. حاول مرة أخرى');
     } finally {
       setIsLoading(false);
     }
@@ -170,10 +170,10 @@ export default function CardPost() {
                   <div className="p-4">
                     <h3 className="text-lg font-semibold truncate">{post.title}</h3>
                     <p className="text-sm text-zinc-600">
-                      <span className="font-medium">الموقع:</span> {extractCity(post.location)}
+                      <span className="font-medium">:الموقع</span> {extractCity(post.location)}
                     </p>
                     <p className="text-sm text-gray-400">
-                      <span className="font-medium">تاريخ النشر:</span> {new Date(post.created_at).toLocaleString()}
+                      <span className="font-medium">:تاريخ النشر</span> {new Date(post.created_at).toLocaleString()}
                     </p>
                   </div>
                 </div>
@@ -189,7 +189,7 @@ export default function CardPost() {
 
           {!hasMore && filteredAndSorted.length === 0 && !isLoading && (
             <div className="text-center py-8 text-gray-600">
-              لم يتم العثور على منشورات تطابق معاييرك.
+              لم يتم العثور على منشورات تطابق معاييرك
             </div>
           )}
         </>

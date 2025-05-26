@@ -18,7 +18,7 @@ const transporter = nodemailer.createTransport({
         await transporter.verify(); // سيتحقق من الحساب ويطبع في حال وجود خطأ
         console.log("تم تسجيل الدخول بنجاح");
     } catch (err) {
-        console.error("فشل التحقق من البريد الإلكتروني :", err);
+        console.error("فشل التحقق من البريد الإلكتروني ", err);
     }
 })();
 
@@ -38,7 +38,7 @@ async function sendemail(to, resetlink) {
         await transporter.sendMail(mailOptions);
         console.log('تم إرسال البريد الإلكتروني');
     } catch (error) {
-        console.error('حدثت مشكلة أثناء إرسال البريد الإلكتروني:', error);
+        console.error('حدثت مشكلة أثناء إرسال البريد الإلكتروني', error);
     }
 }
 
@@ -55,7 +55,7 @@ async function SendeCustomEmail(to, htmlmsg) {
         await transporter.sendMail(mailOptions);
         console.log('تم إرسال البريد الإلكتروني المخصص');
     } catch (error) {
-        console.error('حدثت مشكلة أثناء إرسال البريد الإلكتروني المخصص:', error);
+        console.error('حدثت مشكلة أثناء إرسال البريد الإلكتروني المخصص', error);
     }
 }
 
