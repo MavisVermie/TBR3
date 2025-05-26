@@ -104,7 +104,7 @@ function App() {
             <Route path="/" element={<NewHome />}/>
             <Route path="/feed" element={isAuthenticated ? <HomePage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/ar/feed" element={isAuthenticated ? <ArabicFeed /> : <SignInPage setAuth={setAuth} />} />
-            <Route path="/ar/home" element={isAuthenticated ? <ArabicHome /> : <SignInPage setAuth={setAuth} />} />
+            <Route path="/ar/home" element={<ArabicHome /> } />
 
             <Route path="/about" element={<AboutPage />} />
             <Route path="/create_post" element={isAuthenticated ? <CreatePostPage /> : <SignInPage setAuth={setAuth} />} />
