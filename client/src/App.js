@@ -28,6 +28,7 @@ import UserProfilePage from './pages/UserProfilePage';
 import EventForm from './components/events/EventForm';
 import ShowEvent from './components/events/showEvent';
 import Events from './pages/Events';
+
 const SlowFade = cssTransition({
   enter: 'fadeIn',
   exit: 'fadeOut',
@@ -37,6 +38,16 @@ const SlowFade = cssTransition({
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  // Dark mode state
+  const [darkMode, setDarkMode] = useState(() => {
+    // Initialize from localStorage or default false
+    return localStorage.getItem('darkMode') === 'true' || false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('darkMode', darkMode);
+  }, [darkMode]);
 
   const checkAuthenticated = async () => {
     try {
@@ -82,7 +93,8 @@ function App() {
   }
 
   return (
-    <div className="App">
+    // Wrap whole app to toggle dark mode classes
+    <div className={darkMode ? 'dark' : ''}>
       <ToastContainer 
         position="top-right"
         autoClose={2000}
@@ -93,6 +105,21 @@ function App() {
         pauseOnHover={false}
         transition={SlowFade}
       />
+
+      {/* Dark mode toggle button */}
+      <button
+        onClick={() => setDarkMode(!darkMode)}
+        className="fixed top-4 right-4 z-50 p-2 rounded-md
+          bg-gray-300 dark:bg-gray-700
+          text-black dark:text-white
+          shadow-md
+          hover:bg-gray-400 dark:hover:bg-gray-600
+          transition-colors duration-300"
+        aria-label="Toggle dark mode"
+      >
+        {darkMode ? 'Light Mode' : 'Dark Mode'}
+      </button>
+
       <BrowserRouter>
         <Layout setAuth={setAuth} isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated}>
           <Routes>
@@ -106,11 +133,11 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             {/* <Route path="/myposts" element={isAuthenticated ? <MyPosts /> : <SignInPage setAuth={setAuth} />} /> */}
-           <Route path="/edit_post/:id" element={isAuthenticated ? <EditPostPage /> : <SignInPage setAuth={setAuth} />} />
+            <Route path="/edit_post/:id" element={isAuthenticated ? <EditPostPage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/admin" element={<AdminPanel />} />
             <Route path="/admin/posts" element={<AdminPosts />} />
             <Route path="/posts/:id" element={<SinglePost />} />
-            <Route path="/myposts" element={<MyPostsPage />} /> //rama posts
+            <Route path="/myposts" element={<MyPostsPage />} /> {/* rama posts */}
             <Route path="/*" element={<PageNotFound />} />
             <Route path="/home" element={<NewHome />} />
             <Route path="/user/:userId" element={<UserProfilePage />} />

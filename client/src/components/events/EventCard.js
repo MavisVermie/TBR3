@@ -6,7 +6,7 @@ const EventCard = ({ event }) => {
 
   return (
     <div
-      className="bg-white rounded-md shadow-md overflow-hidden cursor-pointer hover:shadow-xl transition duration-300 group"
+      className="bg-white dark:bg-gray-800 rounded-md shadow-md dark:shadow-gray-700 overflow-hidden cursor-pointer hover:shadow-xl dark:hover:shadow-gray-600 transition duration-300 group"
       onClick={() => navigate(`/events/${event.id}`)}
     >
       {/* Image with overlay */}
@@ -27,9 +27,9 @@ const EventCard = ({ event }) => {
 
       {/* Content */}
       <div className="p-4">
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{event.description}</p>
-        <div className="flex items-center text-sm text-gray-500">
-          <svg className="w-4 h-4 mr-1.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <p className="text-gray-600 dark:text-gray-300 text-sm mb-3 line-clamp-2">{event.description}</p>
+        <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+          <svg className="w-4 h-4 mr-1.5 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
           <span className="truncate">{event.owner_name}</span>

@@ -75,3 +75,12 @@
 .cardPostTop{
   margin-top: 50px;
 }
+
+css
+Copy
+Edit
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}

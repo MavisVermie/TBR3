@@ -33,33 +33,33 @@ const people = [
 export default function AboutPage() {
   const [message, setMessage] = useState('');
 
-  // Split people into two rows
+  // تقسيم الفريق إلى صفين
   const firstRow = people.slice(0, 3);
   const secondRow = people.slice(3);
 
   return (
-    <div className="bg-gray-100 min-h-screen py-16 px-4">
-      {/* Team Section */}
+    <div className="bg-gray-100 dark:bg-gray-900 min-h-screen py-16 px-4 transition-colors duration-500">
+      {/* قسم الفريق */}
       <section className="max-w-6xl mx-auto mb-20">
         <div className="text-center mb-12">
-          <h1 className="text-6xl font-semibold text-red-700">Meet Our Team</h1>
-          <p className="mt-2 text-grey-600 text-lg">Passionate minds behind TBR3</p>
+          <h1 className="text-6xl font-semibold text-red-700 dark:text-red-400">Meet Our Team</h1>
+          <p className="mt-2 text-gray-600 dark:text-gray-300 text-lg">Passionate minds behind TBR3</p>
         </div>
 
-        {/* First Row */}
+        {/* الصف الأول */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           {firstRow.map((person, index) => (
             <div
               key={index}
-              className="group bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center transform transition duration-500 ease hover:bg-green-700 hover:shadow-lg hover:scale-105"
+              className="group bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col items-center text-center transform transition duration-500 ease hover:bg-green-700 hover:shadow-lg hover:scale-105"
             >
-              <h3 className="text-xl font-semibold text-gray-900 group-hover:text-white">{person.name}</h3>
-              <p className="text-green-700 mt-2 text-sm group-hover:text-gray-200 ">{person.role}</p>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 group-hover:text-white">{person.name}</h3>
+              <p className="text-green-700 dark:text-green-400 mt-2 text-sm group-hover:text-gray-200 ">{person.role}</p>
               <a
                 href={person.linkedinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-4 text-green-600 group-hover:text-zinc-400 transition"
+                className="mt-4 text-green-600 dark:text-green-300 group-hover:text-zinc-400 transition"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -75,20 +75,20 @@ export default function AboutPage() {
           ))}
         </div>
 
-        {/* Second Row (Centered) */}
+        {/* الصف الثاني (مركز) */}
         <div className="flex justify-center gap-6 flex-wrap">
           {secondRow.map((person, index) => (
             <div
               key={index}
-              className="group bg-white rounded-xl shadow-md p-6 flex flex-col items-center text-center transform transition duration-500 ease hover:bg-green-700 hover:shadow-lg hover:scale-105 w-full sm:w-1/2 lg:w-1/3"
+              className="group bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 flex flex-col items-center text-center transform transition duration-500 ease hover:bg-green-700 hover:shadow-lg hover:scale-105 w-full sm:w-1/2 lg:w-1/3"
             >
-              <h3 className="text-xl font-semibold text-gray-900 group-hover:text-white">{person.name}</h3>
-              <p className="text-green-700 mt-2 text-sm group-hover:text-gray-200 ">{person.role}</p>
+              <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100 group-hover:text-white">{person.name}</h3>
+              <p className="text-green-700 dark:text-green-400 mt-2 text-sm group-hover:text-gray-200 ">{person.role}</p>
               <a
                 href={person.linkedinUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-4 text-green-600 group-hover:text-zinc-400 transition"
+                className="mt-4 text-green-600 dark:text-green-300 group-hover:text-zinc-400 transition"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -105,12 +105,12 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* About Section */}
-      <section className="bg-red-700 w-full py-12 px-6 mb-20 rounded-lg pt-0">
+      {/* قسم من نحن */}
+      <section className="bg-red-700 dark:bg-red-900 w-full py-12 px-6 mb-20 rounded-lg pt-0 transition-colors duration-500">
         <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-24">
           <div>
-            <h1 className="text-4xl font-bold text-white">About Us</h1>
-            <p className="text-zinc-100 text-lg leading-loose">
+            <h1 className="text-4xl font-bold text-white dark:text-red-300">About Us</h1>
+            <p className="text-zinc-100 dark:text-zinc-300 text-lg leading-loose">
               We are five students from the College of Technology at Al al-Bayt University, from different majors but
               united by one goal.
               <br />
