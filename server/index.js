@@ -22,6 +22,7 @@ app.use(express.json());
 app.use(fileUpload());
 
 // ROUTES
+app.use("/events", require("./routes/eventroutes"));
 app.use("/api/users", require("./routes/users")); // Mounts /api/users/:userId
 app.use("/api/feedback", require("./routes/feedback")); // Mounts /api/feedback endpoints
 app.use("/admin", require("./routes/adminroutes"));
