@@ -33,7 +33,7 @@ const Homepage = () => {
           <div className="md:w-1/2">
             <h2 className="text-4xl font-medium text-white mb-4 text-center md:text-left">وجهة نظرنا..</h2>
             <p className="text-lg text-white leading-loose text-center md:text-left">
-              TBR3 "هي منصة أردنية وُلِدت من الكلمة العربية "تَبَرّع 
+              TBR3 هي منصة أردنية وُلِدت من الكلمة العربية تَبَرّع 
               والتي تعكس مهمة قائمة على العطاء، والاستدامة، ورعاية المجتمع. <br /><br />
               تتيح هذه المنصة للناس مشاركة الأغراض المستعملة بدلاً من التخلص منها،
               مما يقلل من النفايات ويوفر الدعم لمن هم في حاجة.<br /><br />
