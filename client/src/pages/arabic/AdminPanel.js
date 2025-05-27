@@ -42,7 +42,7 @@ export default function لوحة_الإدارة() {
 
   const تبديل_مدير = async (id) => {
     try {
-      const استجابة = await fetch(`http://localhost:5000/admin/users/${id}/toggle-admin`, {
+      const استجابة = await fetch(`${process.env.REACT_APP_API_URL}/admin/users/${id}/toggle-admin`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -62,7 +62,7 @@ export default function لوحة_الإدارة() {
   const حذف_المستخدم = async (id) => {
     if (!window.confirm("هل أنت متأكد أنك تريد حذف هذا المستخدم؟")) return;
     try {
-      await fetch(`http://localhost:5000/admin/users/${id}`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/admin/users/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,

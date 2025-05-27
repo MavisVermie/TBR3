@@ -10,7 +10,7 @@ export default function ShowEvent() {
   useEffect(() => {
     const fetchEvent = async () => {
       try {
-        const response = await fetch(`http://localhost:5000/events/${id}`);
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/events/${id}`);
         if (!response.ok) {
           throw new Error('Failed to fetch event');
         }

@@ -138,7 +138,7 @@ export default function EventForm() {
       formData.images.forEach(img => payload.append("images", img));
 
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5000/events", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/events`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

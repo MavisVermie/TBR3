@@ -22,7 +22,7 @@ export default function AdminUsers() {
 
     const fetchUsers = async () => {
       try {
-        const res = await fetch("http://localhost:5000/admin/users", {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/admin/users`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -40,7 +40,7 @@ export default function AdminUsers() {
 
   const toggleAdmin = async (id) => {
     try {
-      const res = await fetch(`http://localhost:5000/admin/users/${id}/toggle-admin`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/admin/users/${id}/toggle-admin`, {
         method: "PUT",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
@@ -56,7 +56,7 @@ export default function AdminUsers() {
   const deleteUser = async (id) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
     try {
-      await fetch(`http://localhost:5000/admin/users/${id}`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/admin/users/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });

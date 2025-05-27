@@ -28,7 +28,7 @@ const MyPostsPage = () => {
   const handleDelete = async (postId) => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
     try {
-      await axios.delete(`http://localhost:5000/Posting/delete-post/${postId}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/Posting/delete-post/${postId}`, {
         headers: { Authorization: "Bearer " + localStorage.getItem("token") },
       });
       setMyPosts(myPosts.filter((post) => post.post_id !== postId));

@@ -42,7 +42,7 @@ export default function لوحة_الإدارة_المنشورات() {
     if (!window.confirm("هل أنت متأكد أنك تريد حذف هذا المنشور؟")) return;
 
     try {
-      const استجابة = await fetch(`http://localhost:5000/admin/posts/${معرف_المنشور}`, {
+      const استجابة = await fetch(`${process.env.REACT_APP_API_URL}/admin/posts/${معرف_المنشور}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,

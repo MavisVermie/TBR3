@@ -52,7 +52,7 @@ function App() {
         return;
       }
 
-      const res = await fetch("http://localhost:5000/authentication/verify", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/authentication/verify`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`

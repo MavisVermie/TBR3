@@ -10,7 +10,7 @@ export default function AdminPosts() {
   // Fetch posts from backend
   const fetchPosts = async () => {
     try {
-      const res = await fetch("http://localhost:5000/admin/posts", {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/admin/posts`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -42,7 +42,7 @@ export default function AdminPosts() {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/admin/posts/${postId}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/admin/posts/${postId}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,

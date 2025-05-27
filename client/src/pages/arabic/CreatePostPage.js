@@ -76,7 +76,7 @@ function صفحة_إنشاء_منشور({ عندإنشاء_المنشور }) {
     تعيين_تقدم_الرفع(0);
 
     try {
-      const استجابة = await fetch("http://localhost:5000/create_post", {
+      const استجابة = await fetch(`${process.env.REACT_APP_API_URL}/create_post`, {
         method: "POST",
         headers: {
           jwt_token: localStorage.getItem("token"),
