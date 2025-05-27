@@ -554,6 +554,6 @@ process.on('unhandledRejection', (reason, promise) => {
 setInterval(() => {
   pool.query('SELECT 1').catch(() => {});
 }, 300000);
-app.listen(5000, () => {
+app.listen(5000,'0.0.0.0', () => {
     console.log("Server has started on port 5000");
 });
