@@ -38,8 +38,13 @@ export default function AboutPage() {
   const secondRow = people.slice(3);
 
   return (
+<<<<<<< Updated upstream
     <div className="bg-gray-100 dark:bg-gray-900 min-h-screen py-16 px-4 transition-colors duration-500">
       {/* قسم الفريق */}
+=======
+    <div className="bg-gray-100 min-h-screen py-16 px-4 ">
+      {/* Team Section */}
+>>>>>>> Stashed changes
       <section className="max-w-6xl mx-auto mb-20">
         <div className="text-center mb-12">
           <h1 className="text-6xl font-semibold text-red-700 dark:text-red-400">Meet Our Team</h1>
@@ -105,12 +110,21 @@ export default function AboutPage() {
         </div>
       </section>
 
+<<<<<<< Updated upstream
       {/* قسم من نحن */}
       <section className="bg-red-700 dark:bg-red-900 w-full py-12 px-6 mb-20 rounded-lg pt-0 transition-colors duration-500">
         <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-24">
           <div>
             <h1 className="text-4xl font-bold text-white dark:text-red-300">About Us</h1>
             <p className="text-zinc-100 dark:text-zinc-300 text-lg leading-loose">
+=======
+      {/* About Section */}
+      <section className="bg-red-700 w-full py-12 px-6 rounded-lg pt-0">
+        <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-24">
+          <div>
+            <h1 className="text-4xl font-bold text-white mb-2">About Us</h1>
+            <p className="text-zinc-100 text-lg leading-loose">
+>>>>>>> Stashed changes
               We are five students from the College of Technology at Al al-Bayt University, from different majors but
               united by one goal.
               <br />

@@ -20,33 +20,33 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 flex flex-col items-center text-center">
-      <h1 className="text-4xl font-bold mb-8 text-red-700">Admin Panel</h1>
+      <h1 className="text-4xl font-semibold mb-8 text-red-700">Admin Panel</h1>
 
       <div className="flex flex-col gap-6 w-full max-w-sm">
         <button
           onClick={() => navigate("/admin/users")}
-          className="bg-green-700 hover:bg-green-800 text-white py-3 px-6 rounded-lg font-semibold text-lg"
+          className="bg-green-600 hover:bg-green-800 text-white py-3 px-6 rounded-lg font-semibold text-lg"
         >
           Manage Users
         </button>
 
         <button
           onClick={() => navigate("/admin/posts")}
-          className="bg-blue-700 hover:bg-blue-800 text-white py-3 px-6 rounded-lg font-semibold text-lg"
+          className="bg-blue-500 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold text-lg"
         >
           Manage Posts
         </button>
 
         <button
           onClick={() => navigate("/admin/events")}
-          className="bg-yellow-600 hover:bg-yellow-700 text-white py-3 px-6 rounded-lg font-semibold text-lg"
+          className="bg-black/80 hover:bg-black text-white py-3 px-6 rounded-lg font-semibold text-lg"
         >
           Manage Events
         </button>
 
         <button
           onClick={() => navigate("/admin/create-event")}
-          className="bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-semibold text-lg"
+          className="bg-red-500 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-semibold text-lg"
         >
           + Create New Event
         </button>
