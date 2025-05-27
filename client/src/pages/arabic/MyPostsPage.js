@@ -8,7 +8,7 @@ const MyPostsPage = () => {
   useEffect(() => {
     const fetchMyPosts = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/Posting/my-posts", {
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/Posting/my-posts`, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),
           },
@@ -28,7 +28,7 @@ const MyPostsPage = () => {
   const handleDelete = async (postId) => {
     if (!window.confirm("هل أنت متأكد أنك تريد حذف هذا المنشور؟")) return;
     try {
-      await axios.delete(`http://localhost:5000/Posting/delete-post/${postId}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/Posting/delete-post/${postId}`, {
         headers: { Authorization: "Bearer " + localStorage.getItem("token") },
       });
       setMyPosts(myPosts.filter((post) => post.post_id !== postId));

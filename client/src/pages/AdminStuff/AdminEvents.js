@@ -22,7 +22,7 @@ export default function AdminEvents() {
 
     const fetchEvents = async () => {
       try {
-        const res = await fetch("http://localhost:5000/events", {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/events`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         const data = await res.json();
@@ -47,7 +47,7 @@ export default function AdminEvents() {
 
     try {
       const token = localStorage.getItem("token");
-      await fetch(`http://localhost:5000/events/${id}`, {
+      await fetch(`${process.env.REACT_APP_API_URL}/events/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });

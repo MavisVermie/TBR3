@@ -51,7 +51,7 @@ const decoded = jwtDecode(token);
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/Posting/posts/${id}`);
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/Posting/posts/${id}`);
         const data = await res.json();
 
         if (res.ok && data) {
@@ -144,7 +144,7 @@ const decoded = jwtDecode(token);
     setIsUploading(true);
 
     try {
-      const response = await fetch(`http://localhost:5000/Posting/update-post/${id}`, {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/Posting/update-post/${id}`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`

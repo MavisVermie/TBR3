@@ -38,7 +38,7 @@ const RegistrationPage = ({ setAuth }) => {
       };
 
       const response = await fetch(
-        'http://localhost:5000/authentication/registration',
+        `${process.env.REACT_APP_API_URL}/authentication/registration`,
         {
           method: 'POST',
           headers: {

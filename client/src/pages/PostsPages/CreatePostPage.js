@@ -76,7 +76,7 @@ formData.append("features", JSON.stringify(allFeatures));
     setUploadProgress(0);
 
     try {
-      const response = await fetch("http://localhost:5000/create_post", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/create_post`, {
         method: "POST",
         headers: {
           jwt_token: localStorage.getItem("token"),

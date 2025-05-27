@@ -9,7 +9,7 @@ const Events = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await fetch('http://localhost:5000/events');
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/events`);
         const data = await res.json();
 
         const formatted = data.map((event) => ({

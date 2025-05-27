@@ -149,7 +149,7 @@ export default function ShowDataProduct() {
         return;
       }
 
-      const data = await fetchWithRetry(`http://localhost:5000/Posting/posts/${id}`);
+      const data = await fetchWithRetry(`${process.env.REACT_APP_API_URL}/Posting/posts/${id}`);
       
       if (!data || typeof data !== 'object') {
         throw new Error('Invalid response format');

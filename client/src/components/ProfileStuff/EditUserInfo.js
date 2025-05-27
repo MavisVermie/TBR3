@@ -26,7 +26,7 @@ const EditUserInfo = () => {
           return;
         }
 
-        const response = await fetch("http://localhost:5000/profile", {
+        const response = await fetch(`${process.env.REACT_APP_API_URL}/profile`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -62,7 +62,7 @@ const EditUserInfo = () => {
         return;
       }
 
-      const response = await fetch("http://localhost:5000/update-credentials", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/update-credentials`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -91,7 +91,7 @@ const EditUserInfo = () => {
 
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch("http://localhost:5000/change-password", {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/change-password`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

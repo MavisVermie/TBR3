@@ -17,7 +17,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
     const getProfile = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:5000/Posting/", {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/Posting/`, {
           method: "GET",
           headers: { Authorization: `Bearer ${token}` },
         });

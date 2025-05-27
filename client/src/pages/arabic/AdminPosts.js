@@ -10,7 +10,7 @@ export default function لوحة_الإدارة_المنشورات() {
   // جلب المنشورات من السيرفر
   const جلب_المنشورات = async () => {
     try {
-      const استجابة = await fetch("http://localhost:5000/admin/posts", {
+      const استجابة = await fetch(`${process.env.REACT_APP_API_URL}/admin/posts`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

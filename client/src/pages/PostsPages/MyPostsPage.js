@@ -8,7 +8,7 @@ const MyPostsPage = () => {
   useEffect(() => {
     const fetchMyPosts = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/Posting/my-posts", {
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/Posting/my-posts`, {
           headers: {
             Authorization: "Bearer " + localStorage.getItem("token"),
           },

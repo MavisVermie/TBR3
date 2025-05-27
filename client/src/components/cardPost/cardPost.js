@@ -30,7 +30,7 @@ export default function CardPost() {
   useEffect(() => {
     const checkEvents = async () => {
       try {
-        const res = await fetch('http://localhost:5000/events');
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/events`);
         const data = await res.json();
         setHasEvents(Array.isArray(data) && data.length > 0);
       } catch (err) {
@@ -46,7 +46,7 @@ export default function CardPost() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const res = await fetch("http://localhost:5000/Posting/", {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/Posting/`, {
           headers: { "Authorization": `Bearer ${token}` }
         });
         if (res.ok) {

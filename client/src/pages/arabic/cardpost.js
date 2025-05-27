@@ -29,7 +29,7 @@ export default function CardPost() {
       try {
         const token = localStorage.getItem('token');
         if (!token) return;
-        const res = await fetch("http://localhost:5000/Posting/", {
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/Posting/`, {
           headers: { "Authorization": `Bearer ${token}` }
         });
         if (res.ok) {
@@ -55,7 +55,7 @@ export default function CardPost() {
         ...(token && { 'Authorization': `Bearer ${token}` })
       };
       const res = await fetch(
-        `http://localhost:5000/posts?page=${pageNum}&limit=${POSTS_PER_PAGE}`,
+        `${process.env.REACT_APP_API_URL}/posts?page=${pageNum}&limit=${POSTS_PER_PAGE}`,
         { headers }
       );
       if (!res.ok) throw new Error(`حالة الخطأ ${res.status}`);
