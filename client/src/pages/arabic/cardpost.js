@@ -155,7 +155,7 @@ export default function CardPost() {
         <>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-14 mx-auto">
             {filteredAndSorted.map(post => (
-              <Link to={`/posts/${post.post_id}`} key={post.post_id}>
+              <Link to={`/ar/posts/${post.post_id}`} key={post.post_id}>
                 <div className="bg-white shadow rounded overflow-hidden transition-shadow duration-700 ease hover:shadow-xl hover:scale-110 hover:ring-2 hover:ring-green-700 w-l h-80">
                   <div className="w-full h-2/3 bg-gray-200 flex items-center justify-center">
                     {post.image

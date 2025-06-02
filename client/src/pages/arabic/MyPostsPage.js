@@ -73,7 +73,7 @@ const MyPostsPage = () => {
                       حذف
                     </button>
                     <a
-                      href={`/edit_post/${post.post_id}`}
+                      href={`/ar/edit_post/${post.post_id}`}
                       className="bg-gray-700 text-white px-4 py-1 rounded hover:bg-blue-700"
                     >
                       تعديل

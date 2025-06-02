@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import logo from '../../assets/T.png';
@@ -10,8 +10,10 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function Navbar({ setAuth, isAuthenticated }) {
+export default function ArabicNavbar({ setAuth, isAuthenticated }) {
   const [name, setName] = useState("");
+  const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getProfile = async () => {
@@ -41,21 +43,28 @@ export default function Navbar({ setAuth, isAuthenticated }) {
     }
   };
 
+  const toggleLanguage = () => {
+    const path = location.pathname;
+    const newPath = path.startsWith("/ar") ? path.replace("/ar", "") || "/" : "/ar" + path;
+    navigate(newPath);
+  };
+
   const navigation = [
-    { name: 'الرئيسية', href: '/' },
-    { name: 'مخصص لي', href: '/feed' },
-    { name: 'إنشاء حساب', href: '/create_post' },
-    ...(isAuthenticated ? [{ name: 'منشوراتي', href: '/myposts' }] : []),
-    { name: 'معلومات عنا', href: '/about' },
+    { name: 'الرئيسية', href: '/ar/home' },
+    { name: 'مخصص لي', href: '/ar/feed' },
+    { name: 'الفعاليات', href: '/ar/events' },
+    { name: 'إنشاء منشور', href: '/ar/create_post' },
+    ...(isAuthenticated ? [{ name: 'منشوراتي', href: '/ar/myposts' }] : []),
+    { name: 'معلومات عنا', href: '/ar/about' },
   ];
 
   return (
-    <Disclosure as="nav" className="bg-green-700 z-50">
+    <Disclosure as="nav" className="bg-green-700 z-50" dir="rtl">
       {({ open }) => (
         <>
           <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 font-sans">
             <div className="flex h-16 items-center justify-between">
-              {/* زر القائمة في الجوال */}
+              {/* Mobile menu button */}
               <div className="flex sm:hidden">
                 <Disclosure.Button className="p-2 rounded-md text-white hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white">
                   <span className="sr-only">تبديل القائمة</span>
@@ -67,11 +76,11 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                 </Disclosure.Button>
               </div>
 
-              {/* الشعار والقائمة */}
+              {/* Logo and nav */}
               <div className="flex flex-1 items-center justify-between sm:justify-start">
                 <img className="h-20 w-auto" src={logo} alt="تبرع" />
 
-                <div className="hidden sm:flex sm:ml-10 space-x-8">
+                <div className="hidden sm:flex sm:mr-10 space-x-8 space-x-reverse">
                   {navigation.map((item) => (
                     <Link
                       key={item.name}
@@ -84,8 +93,15 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                 </div>
               </div>
 
-              {/* أزرار الدخول/الحساب */}
-              <div className="flex items-center space-x-4">
+              {/* Auth buttons and language toggle */}
+              <div className="flex items-center space-x-4 space-x-reverse">
+                <button
+                  onClick={toggleLanguage}
+                  className="rounded-full bg-white text-green-700 px-3 py-1.5 font-semibold hover:bg-green-100 transition"
+                >
+                  English
+                </button>
+
                 {isAuthenticated ? (
                   <Menu as="div" className="relative">
                     <Menu.Button className="flex items-center text-sm focus:outline-none">
@@ -108,7 +124,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                         <Menu.Item>
                           {({ active }) => (
                             <Link
-                              to="/profile"
+                              to="/ar/profile"
                               className={classNames(
                                 active ? 'bg-green-100 text-green-700' : 'text-green-600',
                                 'block px-4 py-2 text-sm'
@@ -121,7 +137,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                         <Menu.Item>
                           {({ active }) => (
                             <Link
-                              to="/create_post"
+                              to="/ar/create_post"
                               className={classNames(
                                 active ? 'bg-green-100 text-green-700' : 'text-green-600',
                                 'block px-4 py-2 text-sm'
@@ -150,13 +166,13 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                 ) : (
                   <>
                     <Link
-                      to="/authentication/login"
+                      to="/ar/authentication/login"
                       className="rounded-full text-white border border-white px-4 py-1.5 font-semibold hover:bg-white hover:text-green-600 transition"
                     >
                       تسجيل الدخول
                     </Link>
                     <Link
-                      to="/authentication/registration"
+                      to="/ar/authentication/registration"
                       className="rounded-full bg-green-600 text-white px-4 py-1.5 font-semibold hover:bg-green-700 transition"
                     >
                       إنشاء حساب
@@ -167,7 +183,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
             </div>
           </div>
 
-          {/* قائمة الجوال */}
+          {/* Mobile menu */}
           <Disclosure.Panel className="sm:hidden px-4 pb-3 pt-2 backdrop-blur-md bg-white/10">
             {navigation.map((item) => (
               <Disclosure.Button

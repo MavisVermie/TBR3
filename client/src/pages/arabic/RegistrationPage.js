@@ -107,7 +107,7 @@ export default function RegistrationPage({ setAuth }) {
         </form>
         <p className="text-sm text-center mt-3 text-gray-700">
           هل لديك حساب بالفعل؟{' '}
-          <a href="/authentication/login" className="underline font-medium text-green-600">
+          <a href="/ar/authentication/login" className="underline font-medium text-green-600">
             تسجيل الدخول
           </a>
         </p>

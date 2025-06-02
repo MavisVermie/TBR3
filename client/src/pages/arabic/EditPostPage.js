@@ -80,12 +80,12 @@ function EditPostPage() {
           setExistingImages(base64Images);
         } else {
           toast.error("فشل في تحميل المنشور");
-          navigate('/');
+          navigate('/ar/home');
         }
       } catch (error) {
         console.error("خطأ في تحميل المنشور:", error);
         toast.error("حدث خطأ ما");
-        navigate('/');
+        navigate('/ar/home');
       } finally {
         setLoadingData(false);
       }
@@ -151,7 +151,7 @@ function EditPostPage() {
 
       if (response.ok) {
         toast.success("تم تحديث المنشور بنجاح");
-        navigate(`/posts/${id}`);
+        navigate(`/ar/posts/${id}`);
       } else {
         const errorText = await response.text();
         toast.error(errorText || "فشل في تحديث المنشور");

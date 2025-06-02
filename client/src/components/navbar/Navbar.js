@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import logo from "../../assets/T.png";
@@ -15,33 +15,37 @@ export default function Navbar({ setAuth, isAuthenticated }) {
   const [username, setUsername] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
 
-useEffect(() => {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    setIsAdmin(false);  // Reset admin state
-    return;
-  }
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setIsAdmin(false);
+      return;
+    }
 
-  try {
-    const decoded = jwtDecode(token);
-
-    setIsAdmin(Boolean(decoded.isAdmin) === true);
-  } catch (err) {
-    console.error("Failed to decode token:", err);
-    setIsAdmin(false); // Reset on error
-  }
-}, [isAuthenticated]);
-
-
+    try {
+      const decoded = jwtDecode(token);
+      setIsAdmin(Boolean(decoded.isAdmin) === true);
+    } catch (err) {
+      console.error("Failed to decode token:", err);
+      setIsAdmin(false);
+    }
+  }, [isAuthenticated]);
 
   const logout = (e) => {
     e.preventDefault();
     localStorage.removeItem("token");
-    setIsAdmin(false); 
+    setIsAdmin(false);
     setAuth(false);
     toast.success("Successfully logged out");
     navigate("authentication/login");
+  };
+
+  const toggleLanguage = () => {
+    const path = location.pathname;
+    const newPath = path.startsWith("/ar") ? path.replace("/ar", "") || "/" : "/ar" + path;
+    navigate(newPath);
   };
 
   const navigation = [
@@ -87,8 +91,15 @@ useEffect(() => {
                 </div>
               </div>
 
-              {/* Auth section */}
+              {/* Auth section + Language toggle */}
               <div className="flex items-center space-x-4">
+                <button
+                  onClick={toggleLanguage}
+                  className="rounded-full bg-white text-green-700 px-3 py-1.5 font-semibold hover:bg-green-100 transition"
+                >
+                  العربية
+                </button>
+
                 {isAuthenticated ? (
                   <Menu as="div" className="relative">
                     <Menu.Button className="flex items-center text-sm focus:outline-none">

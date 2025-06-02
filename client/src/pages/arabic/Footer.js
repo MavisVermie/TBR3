@@ -4,7 +4,7 @@ export default function Footer() {
   return (
     <footer className="bg-gray-800" dir="rtl">
       <div className="mx-auto w-full max-w-screen-md p-4 flex items-center justify-center space-x-reverse space-x-6 text-sm font-medium text-gray-400">
-        <a href="/about" className="hover:underline">
+        <a href="/ar/about" className="hover:underline">
           من نحن
         </a>
         <a

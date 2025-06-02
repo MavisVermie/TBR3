@@ -32,6 +32,19 @@ import ShowEvent from './components/events/showEvent';
 import Events from './pages/Events';
 import ArabicFeed from './pages/arabic/myFeed';
 import ArabicHome from './pages/arabic/Home';
+import ArabicAboutPage from './pages/arabic/Aboutpage';
+import ArabicCreatePostPage from './pages/arabic/CreatePostPage';
+import ArabicProfilePage from './pages/ProfilePage';
+import ArabicMyPostsPage from './pages/arabic/MyPostsPage';
+import ArabicSinglePost from './pages/arabic/SinglePostPage';
+import ArabicEditPostPage from './pages/arabic/EditPostPage';
+import ArabicPrivacyPolicy from './pages/arabic/PrivacyPolicy';
+import ArabicTermsOfService from './pages/arabic/TermsOfService';
+import ArabicContactUs from './pages/arabic/ContactUs';
+import ArabicEvents from './pages/Events';
+import ArabicShowEvent from './components/events/showEvent';
+import ArabicSignIn from './pages/arabic/SignInPage';
+import ArabicRegistration from './pages/arabic/RegistrationPage';
 
 const SlowFade = cssTransition({
   enter: 'fadeIn',
@@ -105,7 +118,7 @@ function App() {
             <Route path="/feed" element={isAuthenticated ? <HomePage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/ar/feed" element={isAuthenticated ? <ArabicFeed /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/ar/home" element={<ArabicHome /> } />
-
+             <Route path="/ar" element={<ArabicHome /> } />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/create_post" element={isAuthenticated ? <CreatePostPage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/profile" element={isAuthenticated ? <ProfilePage isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated} /> : <SignInPage setAuth={setAuth} />} />
@@ -130,7 +143,19 @@ function App() {
             <Route path="/events/:id" element={<ShowEvent />} />
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/events" element={<AdminEvents />} />
-
+            <Route path="/ar/about" element={<ArabicAboutPage />} />
+            <Route path="/ar/create_post" element={isAuthenticated ? <ArabicCreatePostPage /> : <SignInPage setAuth={setAuth} />} />
+            <Route path="/ar/profile" element={isAuthenticated ? <ArabicProfilePage isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated} /> : <SignInPage setAuth={setAuth} />} />
+            <Route path="/ar/myposts" element={<ArabicMyPostsPage />} />
+            <Route path="/ar/posts/:id" element={<ArabicSinglePost />} />
+            <Route path="/ar/edit_post/:id" element={isAuthenticated ? <ArabicEditPostPage /> : <SignInPage setAuth={setAuth} />} />
+            <Route path="/ar/privacy-policy" element={<ArabicPrivacyPolicy />} />
+            <Route path="/ar/terms" element={<ArabicTermsOfService />} />
+            <Route path="/ar/contact" element={<ArabicContactUs />} />
+            <Route path="/ar/events" element={<ArabicEvents />} />
+            <Route path="/ar/events/:id" element={<ArabicShowEvent />} />
+              <Route path="/ar/authentication/login" element={isAuthenticated ? <Navigate to="/ar/home" /> : <ArabicSignIn setAuth={setAuth} />} />
+            <Route path="/ar/authentication/registration" element={isAuthenticated ? <Navigate to="/ar/home" /> : <ArabicRegistration setAuth={setAuth} />} />
           </Routes>
         </Layout>
       </BrowserRouter>
