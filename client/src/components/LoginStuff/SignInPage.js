@@ -8,7 +8,7 @@ export default function SignInPage({ setAuth }) {
     email: "",
     password: ""
   });
-
+console.log("API URL:", process.env.REACT_APP_API_URL);
   const navigate = useNavigate(); // ⬅️ Hook added
 
   const { email, password } = inputs;
