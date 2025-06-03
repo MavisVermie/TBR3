@@ -73,7 +73,7 @@ const RegistrationPage = ({ setAuth }) => {
   return (
     <div className="flex min-h-screen">
       {/* Left side (Form) */}
-      <div className="w-full md:w-2/3 flex flex-col items-center justify-center bg-gray-100 px-4 py-8 bg-gradient-to-br from-green-200 via-gray-100 to-green-100 font-sans">
+      <div className="w-full md:w-2/3 flex flex-col items-center justify-center bg-gray-100 px-4 py-8  font-sans">
         <h2 className="text-3xl font-bold text-green-600 mb-10">Registration</h2>
         <form onSubmit={onSubmitForm} className="w-full max-w-md space-y-3">
           {['username', 'email', 'password', 'phone_number'].map((field, index) => (

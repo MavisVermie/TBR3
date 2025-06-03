@@ -57,20 +57,20 @@ const Homepage = () => {
           <img src="/images/list.jpg" alt="Who we are" className="shadow-lg w-full h-[400px] object-cover rounded-lg" />
         </div>
         <div className="md:w-1/2">
-          <h2 className="text-4xl font-bold text-[#10b981] mb-2 text-center md:text-left">
+          <h2 className="text-4xl font-bold text-[#10b981] mb-2 text-center mb-7 md:text-left">
             what can you donate?
           </h2>
           <p className="text-lg text-white leading-loose text-center md:text-left whitespace-pre-line">
             Items
-            Clothing – gently used or new clothes, shoes, coats.<br></br>
+            Clothing – gently used or new clothes, shoes, coats.<br></br><br></br>
 
-            Furniture – beds, sofas, tables, etc.<br></br>
+            Furniture – beds, sofas, tables, etc.<br></br><br></br>
 
-            Electronics – phones, laptops, tablets (in working condition).<br></br>
+            Electronics – phones, laptops, tablets (in working condition).<br></br><br></br>
 
-            Books and Toys – for children or general community use.<br></br>
+            Books and Toys – for children or general community use.<br></br><br></br>
 
-            Household items – kitchenware, linens, appliances.<br></br>
+            Household items – kitchenware, linens, appliances.<br></br><br></br>
           </p>
         </div>
       </section>

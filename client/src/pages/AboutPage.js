@@ -38,9 +38,9 @@ export default function AboutPage() {
   const secondRow = people.slice(3);
 
   return (
-    <div className="bg-gray-100 min-h-screen py-16 px-4">
+    <section className="bg-gray-100 min-h-screen px-4">
       {/* Team Section */}
-      <section className="max-w-6xl mx-auto mb-20">
+      <section className="max-w-6xl mx-auto mb-20 mt-10">
         <div className="text-center mb-12">
           <h1 className="text-6xl font-semibold text-red-700">Meet Our Team</h1>
           <p className="mt-2 text-grey-600 text-lg">Passionate minds behind TBR3</p>
@@ -106,20 +106,20 @@ export default function AboutPage() {
       </section>
 
       {/* About Section */}
-      <section className="bg-red-700 w-full py-12 px-6 mb-20 rounded-lg pt-0">
+      <section className="bg-red-700 w-full py-12 px-6 mb-10 rounded-lg pt-0">
         <div className="grid grid-cols-1 md:grid-cols-2 items-center gap-24">
           <div>
-            <h1 className="text-4xl font-bold text-white">About Us</h1>
-            <p className="text-zinc-100 text-lg leading-loose">
-              We are five students from the College of Technology at Al al-Bayt University, from different majors but
+            <h1 className="text-4xl font-semibold text-white mb-9">About Us</h1>
+            <p className="text-zinc-100 text-lg leading-loose text-center  ">
+              We are five students from the College of Technology at Al al-Bayt University   <br />from different majors but
               united by one goal.
               <br />
               To help people and protect our environment. We created a website to encourage recycling and donating items
-              we no longer need,
+              we no longer need
               <br />
               giving them a new chance to benefit others and keep the Earth clean.
               <br />
-              We believe every small action makes a big difference, and we work together to make a real impact.
+              We believe every small action makes a big difference and we work together to make a real impact.
             </p>
           </div>
           <div className="flex justify-center md:justify-center md:min-w-fit pt-10">
@@ -131,7 +131,7 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
-    </div>
+    </section>
   );
 }
 

@@ -29,9 +29,9 @@ const Events = () => {
   }, []);
 
   return (
-    <div className="container px-4 py-8  bg-gray-100">
-      {/* Header */}
-      <div className=" mb-8 ">
+    <section className=' bg-gray-100'>
+          {/* Header */}
+      <div className=" mb-8 mt-10 ">
         <h1 className="text-4xl text-center font-semibold text-green-700 ">
           <span className="text-red-700 ">الفعاليات</span> القادمة
         </h1>
@@ -39,7 +39,7 @@ const Events = () => {
       </div>
 
       {/* Info Box */}
-      <div className="bg-white bg-opacity-70 border-l-4 border-green-600 text-green-800 px-6 py-4 text-2xl shadow-md mb-8 mx-0">
+      <div className="bg-white bg-opacity-70 border-l-4 border-green-600 text-green-800 px-6 py-4 text-2xl shadow-md mb-8 mx-2">
         <p className="text-base">
         تريد تنظيم فعالية مجانية؟{' '}
           <Link to="/ar/about" className="text-red-700 hover:underline font-semibold">
@@ -52,8 +52,8 @@ const Events = () => {
       {loading ? (
         <div className="text-center py-16 text-gray-600 text-lg font-medium">Loading events...</div>
       ) : events.length === 0 ? (
-        <div className="text-center py-20">
-          <p className="text-gray-500 text-lg">No events available at the moment.</p>
+        <div className="text-center mb-80 mt-20">
+          <p className="text-gray-500 text-lg">لا يوجد أي فعالية بالوقت الحالي</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-12">
@@ -61,8 +61,8 @@ const Events = () => {
             <EventCard key={event.id} event={event} />
           ))}
         </div>
-      )}
-    </div>
+      )}</section>
+   
   );
 };
 

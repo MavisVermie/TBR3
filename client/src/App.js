@@ -46,6 +46,7 @@ import ArabicShowEvent from './components/events/showEvent';
 import ArabicSignIn from './pages/arabic/SignInPage';
 import ArabicRegistration from './pages/arabic/RegistrationPage';
 
+
 const SlowFade = cssTransition({
   enter: 'fadeIn',
   exit: 'fadeOut',
@@ -154,8 +155,9 @@ function App() {
             <Route path="/ar/contact" element={<ArabicContactUs />} />
             <Route path="/ar/events" element={<ArabicEvents />} />
             <Route path="/ar/events/:id" element={<ArabicShowEvent />} />
-              <Route path="/ar/authentication/login" element={isAuthenticated ? <Navigate to="/ar/home" /> : <ArabicSignIn setAuth={setAuth} />} />
+            <Route path="/ar/authentication/login" element={isAuthenticated ? <Navigate to="/ar/home" /> : <ArabicSignIn setAuth={setAuth} />} />
             <Route path="/ar/authentication/registration" element={isAuthenticated ? <Navigate to="/ar/home" /> : <ArabicRegistration setAuth={setAuth} />} />
+
           </Routes>
         </Layout>
       </BrowserRouter>

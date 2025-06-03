@@ -67,10 +67,10 @@
   animation: fadeOut 1s ease forwards;
 }
 .Toastify__toast {
-  font-size: 12px !important;       /* تصغير حجم الخط */
-  padding: 8px 12px !important;     /* تقليل الحشوة */
-  min-height: auto !important;      /* تقليل ارتفاع التوست */
-  max-width: 300px !important;      /* تقليل عرض التوست */
+  font-size: 12px !important;       
+  padding: 8px 12px !important;    
+  min-height: auto !important;      
+  max-width: 300px !important;    
 }
 .cardPostTop{
   margin-top: 50px;

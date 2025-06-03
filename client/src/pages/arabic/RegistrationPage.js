@@ -20,7 +20,7 @@ export default function RegistrationPage({ setAuth }) {
 
     const jordanPhoneRegex = /^(?:\+9627\d{8}|07\d{8})$/;
     if (!jordanPhoneRegex.test(phone_number)) {
-      toast.error("يجب أن يكون رقم الهاتف بالتنسيق +9627XXXXXXXX أو 07XXXXXXXX");
+      toast.error("رقم الهاتف المدخل غير مقبول");
       return;
     }
 
@@ -70,17 +70,22 @@ export default function RegistrationPage({ setAuth }) {
 
   return (
     <div className="flex min-h-screen">
-      {/* الجانب الأيسر (النموذج) */}
-      <div className="w-full md:w-2/3 flex flex-col items-center justify-center bg-gray-100 px-4 py-8 bg-gradient-to-br from-green-200 via-gray-100 to-green-100 font-sans">
-        <h2 className="text-3xl font-bold text-green-600 mb-10">التسجيل</h2>
-        <form onSubmit={onSubmitForm} className="w-full max-w-md space-y-3">
+      <div className="hidden md:block md:w-1/3 ">
+        <img
+          src="/reg.jpg"
+          alt="جانب"
+          className="w-full h-full object-cover "
+        />
+      </div>
+      <div className="w-full md:w-2/3 flex flex-col items-center justify-center bg-gray-100 px-4 py-8  font-sans">
+        <h2 className="text-3xl font-bold text-green-600 mb-10">إنشاء حساب</h2>
+        <form onSubmit={onSubmitForm} className="w-full max-w-md space-y-3 ">
           {['username', 'email', 'password', 'phone_number', 'zip_code'].map((field, index) => (
             <input
               key={index}
               type={
                 field === 'email' ? 'email' :
                 field === 'password' ? 'password' :
-                field === 'phone_number' ? 'tel' :
                 'text'
               }
               name={field}
@@ -88,13 +93,14 @@ export default function RegistrationPage({ setAuth }) {
               onChange={onChange}
               placeholder={
                 field === 'username' ? 'الاسم الكامل' :
-                field === 'phone_number' ? 'مثال: +9627XXXXXXXX أو 07XXXXXXXX' :
-                field === 'zip_code' ? 'الرمز البريدي' :
+                field === 'phone_number' ? '07xxxxxxxx' :
+                field === 'email' ? 'البريد الإلكتروني' :
+                field === 'password' ? 'كلمة السر' :
                 field.charAt(0).toUpperCase() + field.slice(1)
               }
               className="w-full px-4 py-2 border rounded-full transition duration-200 outline-none
                 focus:border-green-500 focus:ring-2 focus:ring-green-400
-                hover:ring-2 hover:ring-green-400"
+                hover:ring-2 hover:ring-green-400 text-right mr-8"
               required={field !== 'zip_code'}
             />
           ))}
@@ -102,7 +108,7 @@ export default function RegistrationPage({ setAuth }) {
             type="submit"
             className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-full font-semibold transition duration-200"
           >
-            إنشاء حساب
+            إنشاء
           </button>
         </form>
         <p className="text-sm text-center mt-3 text-gray-700">
@@ -113,14 +119,7 @@ export default function RegistrationPage({ setAuth }) {
         </p>
       </div>
 
-      {/* الجانب الأيمن (الصورة) */}
-      <div className="hidden md:block md:w-1/3">
-        <img
-          src="/reg.jpg"
-          alt="جانب"
-          className="w-full h-full object-cover"
-        />
-      </div>
+      
     </div>
   );
 }

@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import logo from "../../assets/TB.png";
+import logo from "../../assets/logosign.png";
 
 export default function SignInPage({ setAuth }) {
   const [inputs, setInputs] = useState({
     email: "",
     password: ""
   });
-  const navigate = useNavigate(); // ⬅️ Hook added
+  const navigate = useNavigate(); 
 useEffect(() => {
   console.log("API URL:", process.env.REACT_APP_API_URL);
 }, []);
@@ -33,7 +33,7 @@ useEffect(() => {
         localStorage.setItem("token", parseRes.jwtToken);
         setAuth(true);
         toast.success("Logged in Successfully");
-        navigate("/ar/feed"); // ⬅️ Redirect to /feed after login
+        navigate("/ar/feed"); 
       } else {
         setAuth(false);
         toast.error(parseRes);
@@ -51,7 +51,7 @@ useEffect(() => {
 
           <form onSubmit={onSubmitForm} className="w-full text-left space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-white mb-2">البريد الألكرتوني</label>
+              <label htmlFor="email" className="block text-sm font-medium mr-5 text-white mb-2 text-right">البريد الإلكرتوني</label>
               <input
                 id="email"
                 name="email"
@@ -65,7 +65,7 @@ useEffect(() => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-white mb-2">كلمة المرور</label>
+              <label htmlFor="password" className="block text-sm font-medium text-white mr-5 mb-2 text-right">كلمة المرور</label>
               <input
                 id="password"
                 name="password"
@@ -93,8 +93,8 @@ useEffect(() => {
 
             <p className="text-sm text-center text-white">
               ليس لديك حساب؟{" "}
-              <a href="/ar/authentication/registration" className="text-green-600 hover:underline transition duration-150">
-                تسجيل حساب
+              <a href="/ar/authentication/registration" className="text-black hover:underline transition duration-150">
+                إنشئ حساب
               </a>
             </p>
           </form>

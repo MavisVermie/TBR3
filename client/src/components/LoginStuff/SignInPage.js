@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import logo from "../../assets/TB.png";
+import logo from "../../assets/logosign.png";
 
 export default function SignInPage({ setAuth }) {
   const [inputs, setInputs] = useState({
     email: "",
     password: ""
   });
-  const navigate = useNavigate(); // ⬅️ Hook added
+  const navigate = useNavigate(); 
 useEffect(() => {
   console.log("API URL:", process.env.REACT_APP_API_URL);
 }, []);
@@ -33,7 +33,7 @@ useEffect(() => {
         localStorage.setItem("token", parseRes.jwtToken);
         setAuth(true);
         toast.success("Logged in Successfully");
-        navigate("/feed"); // ⬅️ Redirect to /feed after login
+        navigate("/feed");
       } else {
         setAuth(false);
         toast.error(parseRes);
