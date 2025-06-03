@@ -41,7 +41,7 @@ import ArabicEditPostPage from './pages/arabic/EditPostPage';
 import ArabicPrivacyPolicy from './pages/arabic/PrivacyPolicy';
 import ArabicTermsOfService from './pages/arabic/TermsOfService';
 import ArabicContactUs from './pages/arabic/ContactUs';
-import ArabicEvents from './pages/Events';
+import ArabicEvents from './pages/arabic/Events';
 import ArabicShowEvent from './components/events/showEvent';
 import ArabicSignIn from './pages/arabic/SignInPage';
 import ArabicRegistration from './pages/arabic/RegistrationPage';

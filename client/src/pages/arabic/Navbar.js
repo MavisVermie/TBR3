@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Disclosure, Menu, Transition } from '@headlessui/react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import logo from '../../assets/T.png';
+import logo from '../../assets/logoo.png';
 import profile from '../../assets/profilepic.png';
 import React, { Fragment, useState, useEffect } from "react";
 import { toast } from 'react-toastify';
@@ -51,11 +51,11 @@ export default function ArabicNavbar({ setAuth, isAuthenticated }) {
 
   const navigation = [
     { name: 'الرئيسية', href: '/ar/home' },
-    { name: 'مخصص لي', href: '/ar/feed' },
+    { name: 'المنشورات', href: '/ar/feed' },
     { name: 'الفعاليات', href: '/ar/events' },
     { name: 'إنشاء منشور', href: '/ar/create_post' },
     ...(isAuthenticated ? [{ name: 'منشوراتي', href: '/ar/myposts' }] : []),
-    { name: 'معلومات عنا', href: '/ar/about' },
+    { name: 'من نحن', href: '/ar/about' },
   ];
 
   return (

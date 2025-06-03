@@ -1,11 +1,9 @@
-// المسارات/مسارات_المسؤول.js
 
 const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 const authorize = require("../middleware/authorize");
 
-// ✅ تطبيق التحقق من الصلاحيات والتحقق من كونه مسؤولًا على جميع المسارات
 router.use(authorize);
 router.use((req, res, next) => {
   if (!req.user?.isAdmin) {
@@ -14,7 +12,6 @@ router.use((req, res, next) => {
   next();
 });
 
-// الحصول على جميع المستخدمين
 router.get("/users", async (req, res) => {
   try {
     const result = await pool.query("SELECT id, username, email, is_admin FROM users");
@@ -25,7 +22,6 @@ router.get("/users", async (req, res) => {
   }
 });
 
-// ترقية/إلغاء ترقية المستخدم كمسؤول
 router.put("/users/:id/toggle-admin", async (req, res) => {
   try {
     const { id } = req.params;
@@ -40,7 +36,6 @@ router.put("/users/:id/toggle-admin", async (req, res) => {
   }
 });
 
-// حذف مستخدم
 router.delete("/users/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -52,7 +47,6 @@ router.delete("/users/:id", async (req, res) => {
   }
 });
 
-// جلب جميع المنشورات
 router.get("/posts", async (req, res) => {
   console.log("✅ تم الوصول إلى المسار /admin/posts");
   try {
@@ -80,7 +74,6 @@ router.get("/posts", async (req, res) => {
   }
 });
 
-// حذف منشور
 router.delete("/posts/:postId", async (req, res) => {
   try {
     const { postId } = req.params;
@@ -92,7 +85,6 @@ router.delete("/posts/:postId", async (req, res) => {
   }
 });
 
-// مسار اختبار
 router.get("/test", (req, res) => {
   res.send("مسار الاختبار للمسؤول يعمل!");
 });

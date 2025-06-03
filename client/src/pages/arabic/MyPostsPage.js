@@ -38,7 +38,7 @@ const MyPostsPage = () => {
     }
   };
 
-  if (loading) return <div className="text-center py-10">جاري التحميل...</div>;
+  if (loading) return <div className="text-center py-10">...جاري التحميل</div>;
 
   return (
     <section className="bg-gray-100 min-h-screen">
@@ -47,7 +47,7 @@ const MyPostsPage = () => {
 
         {myPosts.length === 0 ? (
           <div className="flex items-center justify-center min-h-40">
-            <p className="text-center text-red-600 font-bold text-4xl font-sans">لم تقم بنشر أي شيء بعد.</p>
+            <p className="text-center text-red-600 font-bold text-4xl font-sans">لم تقم بنشر أي شيء بعد</p>
           </div>
         ) : (
           <div className="flex flex-wrap -mx-3">

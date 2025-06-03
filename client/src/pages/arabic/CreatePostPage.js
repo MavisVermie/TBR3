@@ -254,7 +254,7 @@ function صفحة_إنشاء_منشور({ عندإنشاء_المنشور }) {
               disabled={جار_الرفع || الصور.length === 0}
               className="w-full bg-red-700  text-white py-3 px-4 rounded-lg text-lg font-semibold hover:bg-green-700 disabled:opacity-50"
             >
-              {جار_الرفع ? 'جارٍ الرفع...' : 'إنشاء المنشور'}
+              {جار_الرفع ? 'جارٍ الرفع' : 'إنشاء المنشور'}
             </button>
           </div>
         </form>

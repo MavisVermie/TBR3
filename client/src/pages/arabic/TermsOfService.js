@@ -44,7 +44,7 @@ export default function TermsOfService() {
         إذا كان لديك أي استفسارات بخصوص هذه الشروط، يرجى التواصل معنا عبر البريد الإلكتروني{' '}
         <a href="mailto:support@example.com" className="text-green-700 underline">
           tbr3project@gmail.com
-        </a>.
+        </a>
       </p>
     </div>
   );
