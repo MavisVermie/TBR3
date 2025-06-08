@@ -1,5 +1,5 @@
 // export default HomePage;
-import CardPost from "../../components/cardPost/cardPost";
+import CardPost from "../arabic/cardpost";
 export default function MyFeed(){
   return(
     <>

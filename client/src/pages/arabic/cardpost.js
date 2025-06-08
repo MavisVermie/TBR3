@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import './cardPost.css';
+import '../../components/cardPost/cardPost.css';
 
 const POSTS_PER_PAGE = 12;
 
