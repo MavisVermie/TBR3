@@ -23,7 +23,7 @@ const Homepage = () => {
             onClick={() => navigate("/feed")}
            className="bg-green-600 hover:bg-[#34d399] text-white font-bold py-3 px-8 rounded-full text-lg transition shadow-lg"
           >
-           Donate now
+           View More
           </button>
 
         </div>
@@ -32,7 +32,7 @@ const Homepage = () => {
       <div className="w-full mx-auto flex flex-col md:flex-row gap-8">
         <section className="flex flex-col md:flex-row items-center bg-green-600 p-10 mt-20 shadow-lg gap-10">
           <div className="md:w-1/2">
-            <h2 className="text-4xl font-medium text-white mb-4 text-center md:text-left">our perspective..</h2>
+            <h2 className="text-4xl font-medium text-white mb-4 text-center md:text-left">Our perspective..</h2>
             <p className="text-lg text-white leading-loose text-center md:text-left">
               TBR3 is a Jordanian-born platform inspired by the Arabic word "تبَرّع" meaning "to donate" 
               reflecting a mission rooted in giving, sustainability, and community care. 
@@ -58,7 +58,7 @@ const Homepage = () => {
         </div>
         <div className="md:w-1/2">
           <h2 className="text-4xl font-bold text-[#10b981] mb-2 text-center mb-7 md:text-left">
-            what can you donate?
+            What can you donate?
           </h2>
           <p className="text-lg text-white leading-loose text-center md:text-left whitespace-pre-line">
             Items
