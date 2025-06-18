@@ -23,7 +23,7 @@ const Homepage = () => {
             onClick={() => navigate("/feed")}
             className="bg-green-600 hover:bg-[#34d399] text-white font-bold py-3 px-8 rounded-full text-lg transition shadow-lg"
           >
-            تبرّع الآن
+            مشاهدة المزيد 
           </button>
         </div>
       </section>

@@ -19,7 +19,7 @@ const people = [
     linkedinUrl: 'https://www.linkedin.com/in/manar-abu-irsheid-06b352325',
   },
   {
-    name: 'راما فارس العودات',
+    name: 'راما فراس العودات',
     role: 'مطورة الواجهة الخلفية',
     linkedinUrl: 'https://www.linkedin.com/in/rama-alodat-686aa932a/',
   },
