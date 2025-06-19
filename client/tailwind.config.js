@@ -7,7 +7,9 @@ module.exports = {
     extend: {
       backgroundImage:{
      bannerImg: "url(/public/bg1.gif)",
-     
+     phoneimg : "url(/public/smbg.gif)",
+     tabletimg :"url(/public/md.gif)",
+ 
     }
     },
   },
