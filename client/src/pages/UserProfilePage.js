@@ -68,7 +68,7 @@ const UserProfilePage = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`/api/users/${userId}`);
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/${userId}`);
         setUser(res.data);
       } catch (err) {
         setError("Failed to fetch user data");
@@ -77,7 +77,7 @@ const UserProfilePage = () => {
 
     const fetchFeedback = async () => {
       try {
-        const res = await axios.get(`/api/feedback/${userId}`);
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/feedback/${userId}`);
         setFeedbacks(res.data.feedbacks);
         setAverageRating(res.data.average_rating);
       } catch (err) {
@@ -103,7 +103,7 @@ const UserProfilePage = () => {
     try {
       setSubmitting(true);
       await axios.post(
-        "/api/feedback",
+        `${process.env.REACT_APP_API_URL}/api/feedback`,
         { receiver_id: userId, rating, comment },
         { headers: { Authorization: `Bearer ${token}` } }
       );
@@ -127,7 +127,7 @@ const UserProfilePage = () => {
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`/api/feedback/${userId}`, {
+      await axios.delete(`${process.env.REACT_APP_API_URL}/api/feedback/${userId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       toast.info("Feedback deleted.");

@@ -2,7 +2,6 @@ const router = require("express").Router();
 const authorize = require("../middleware/authorize");
 const pool = require("../db");
 
-// POST / - أرسل تقييم لمستخدم
 router.post("/", authorize, async (req, res) => {
   try {
     const giverId = req.user.id;
@@ -16,7 +15,6 @@ router.post("/", authorize, async (req, res) => {
       return res.status(400).json({ message: "Invalid rating or receiver ID" });
     }
 
-    // منع التقييم المكرر
     const existing = await pool.query(
       `SELECT * FROM feedback WHERE giver_id = $1 AND receiver_id = $2`,
       [giverId, receiver_id]
@@ -44,7 +42,6 @@ router.post("/", authorize, async (req, res) => {
   }
 });
 
-// GET /:userId - عرض التقييمات لمستخدم معين
 router.get("/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
@@ -82,7 +79,6 @@ router.get("/:userId", async (req, res) => {
   }
 });
 
-// DELETE /:receiverId - حذف التقييم الذي أرسله المستخدم الحالي لمستخدم معين
 router.delete("/:receiverId", authorize, async (req, res) => {
   try {
     const giverId = req.user.id;
