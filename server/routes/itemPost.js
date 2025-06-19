@@ -218,24 +218,40 @@ router.get("/posts/:id", async (req, res) => {
 router.get("/my-posts", authorize, async (req, res) => {
   try {
     const userId = req.user.id;
-    console.log("Fetching posts for userId:", userId); // Debug log
+    console.log("Fetching posts for userId:", userId);
 
-    // Only get posts for the logged-in user
-    const myPosts = await pool.query(
-      "SELECT post_id, title, description, primary_photo, location, created_at FROM posts WHERE user_id = $1 ORDER BY created_at DESC",
+    // Get all posts created by this user
+    const myPostsRes = await pool.query(
+      `SELECT post_id, title, description, location, created_at 
+       FROM posts 
+       WHERE user_id = $1 
+       ORDER BY created_at DESC`,
       [userId]
     );
-    console.log("Number of posts found:", myPosts.rows.length); // Debug log
 
-    const formattedPosts = myPosts.rows.map(post => ({
-      ...post,
-      primary_photo: post.primary_photo?.toString("base64") || null
-    }));
+    const posts = myPostsRes.rows;
 
-    res.json(formattedPosts);
+    // For each post, fetch its images from post_images table
+    const postsWithImages = await Promise.all(
+      posts.map(async (post) => {
+        const imagesRes = await pool.query(
+          `SELECT image_url FROM post_images WHERE post_id = $1`,
+          [post.post_id]
+        );
+
+        const images = imagesRes.rows.map((row) => row.image_url);
+
+        return {
+          ...post,
+          images, // can rename to extra_images if needed
+        };
+      })
+    );
+
+    res.json(postsWithImages);
   } catch (err) {
     console.error("Error fetching user's posts:", err.message);
-    res.status(500).send("Server error");
+    res.status(500).json({ message: "Server error" });
   }
 });
 
