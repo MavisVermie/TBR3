@@ -213,8 +213,11 @@ export default function ShowDataProduct() {
     fetchPost();
   }, [fetchPost]);
 
- const allImages = useMemo(() => {
-  return post?.images || [];
+const allImages = useMemo(() => {
+  if (!post) return [];
+  const primary = post.primary_photo ? [post.primary_photo] : [];
+  const extras = post.extra_images || [];
+  return [...primary, ...extras];
 }, [post]);
 
 

@@ -142,20 +142,26 @@ router.put("/update-post/:id", authorize, async (req, res) => {
       fs.mkdirSync(uploadDir, { recursive: true });
     }
 
-    for (const file of uploadedImages) {
-      const ext = path.extname(file.name).toLowerCase();
-      const fileName = `${uuidv4()}${ext}`;
-      const filePath = path.join(uploadDir, fileName);
+let insertIndex = 0;
 
-      await file.mv(filePath);
+for (const file of uploadedImages) {
+  const ext = path.extname(file.name).toLowerCase();
+  const fileName = `${uuidv4()}${ext}`;
+  const filePath = path.join(uploadDir, fileName);
 
-      const imageUrl = `${process.env.BASE_URL}/uploads/posts/${fileName}`;
+  await file.mv(filePath);
 
-      await pool.query(
-        `INSERT INTO post_images (post_id, image_url) VALUES ($1, $2)`,
-        [postId, imageUrl]
-      );
-    }
+  const imageUrl = `${process.env.BASE_URL}/uploads/posts/${fileName}`;
+
+  // Optional: make first image "first" by ensuring insertion order
+  await pool.query(
+    `INSERT INTO post_images (post_id, image_url) VALUES ($1, $2)`,
+    [postId, imageUrl]
+  );
+
+  insertIndex++;
+}
+
 
     res.json({ message: "Post updated successfully" });
 
