@@ -20,7 +20,7 @@ const Homepage = () => {
             ساعد المحتاجين وكن صديقًا للبيئة
           </p>
           <button
-            onClick={() => navigate("/feed")}
+            onClick={() => navigate("/ar/feed")}
             className="bg-green-600 hover:bg-[#34d399] text-white font-bold py-3 px-8 rounded-full text-lg transition shadow-lg"
           >
             مشاهدة المزيد 
