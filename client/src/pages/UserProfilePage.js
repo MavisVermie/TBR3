@@ -16,30 +16,28 @@ const StarRating = ({ rating, setRating }) => {
       {[1, 2, 3, 4, 5].map((star) => {
         const isFilled = star <= rating;
         return (
-         <svg
-  key={star}
-  onClick={() => handleClick(star)}
-  xmlns="http://www.w3.org/2000/svg"
-  viewBox="0 0 20 20"
-  fill={isFilled ? "#facc15" : "none"}
-  stroke="#facc15"
-  className="w-10 h-10 cursor-pointer transition-transform duration-200 hover:scale-110"
->
-  <path
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    strokeWidth="1.5"
-    d="M10 1.5c.4 0 .77.24.93.61l1.7 3.67 4.05.59c.98.14 1.38 1.34.66 2.03l-2.93 2.77.69 4.01c.17.98-.86 1.72-1.74 1.26L10 14.77l-3.62 1.9c-.88.46-1.91-.28-1.74-1.26l.69-4.01-2.93-2.77c-.72-.69-.32-1.89.66-2.03l4.05-.59 1.7-3.67c.16-.37.53-.61.93-.61Z"
-  />
-</svg>
-
+          <svg
+            key={star}
+            onClick={() => handleClick(star)}
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 20 20"
+            fill={isFilled ? "#facc15" : "none"}
+            stroke="#facc15"
+            className="w-10 h-10 cursor-pointer transition-transform duration-200 hover:scale-110"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="1.5"
+              d="M10 1.5c.4 0 .77.24.93.61l1.7 3.67 4.05.59c.98.14 1.38 1.34.66 2.03l-2.93 2.77.69 4.01c.17.98-.86 1.72-1.74 1.26L10 14.77l-3.62 1.9c-.88.46-1.91-.28-1.74-1.26l.69-4.01-2.93-2.77c-.72-.69-.32-1.89.66-2.03l4.05-.59 1.7-3.67c.16-.37.53-.61.93-.61Z"
+            />
+          </svg>
         );
       })}
     </div>
   );
 };
 
-// Main component
 const UserProfilePage = () => {
   const { userId } = useParams();
   const [user, setUser] = useState(null);
@@ -69,7 +67,7 @@ const UserProfilePage = () => {
     const fetchUser = async () => {
       try {
         const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/${userId}`);
-        setUser(res.data);
+    setUser({ ...res.data, id: userId }); // 👈 force-add userId to the user object
       } catch (err) {
         setError("Failed to fetch user data");
       }
@@ -145,13 +143,26 @@ const UserProfilePage = () => {
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4">
       <ToastContainer />
-      <div className="max-w-6xl  mx-auto bg-white rounded-2xl shadow-lg p-8 space-y-4">
+      <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-lg p-8 space-y-4">
         <div>
           <h1 className="text-4xl font-semibold leading-loose text-green-700 mb-4">User Info</h1>
-          <p className="text-xl leading-loose "> Username : <span className=" text-red-600">{user.username}</span></p>
-          <p className="text-xl leading-loose">Email : <span className=" text-red-600">{user.email}</span> </p>
-          <p className="text-xl leading-loose">Phone : <span className=" text-red-600"></span> </p>
+          <p className="text-xl leading-loose"> Username : <span className="text-red-600">{user.username}</span></p>
+          <p className="text-xl leading-loose">Email : <span className="text-red-600">{user.email}</span></p>
+          <p className="text-xl leading-loose">Phone : <span className="text-red-600"></span></p>
+
+          {/* 💬 Message Button */}
+          {currentUserId && currentUserId !== user.id && (
+            <div className="mt-4">
+              <button
+                onClick={() => window.location.href = `/dm/${user.id}`}
+                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition shadow"
+              >
+                💬 Message {user.username}
+              </button>
+            </div>
+          )}
         </div>
+
         <div>
           <h2 className="text-2xl font-semibold mb-2 text-left">Feedback:</h2>
           <p className="text-gray-700 mb-4 text-left">Average Rating: <strong>{averageRating}</strong> / 5</p>
@@ -189,7 +200,7 @@ const UserProfilePage = () => {
           {submitError && <p className="text-red-500 text-sm mb-2">{submitError}</p>}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <p className="mb-3 font-medium ">Rating:</p>
+              <p className="mb-3 font-medium">Rating:</p>
               <StarRating rating={rating} setRating={setRating} />
             </div>
             <textarea

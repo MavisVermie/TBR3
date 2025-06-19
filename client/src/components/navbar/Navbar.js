@@ -160,6 +160,19 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                             )}
                           </Menu.Item>
                         )}
+                          <Menu.Item>
+                            {({ active }) => (
+                              <Link
+                                to="/messages"
+                                className={classNames(
+                                  active ? "bg-green-500" : "",
+                                  "block px-4 py-2 text-sm"
+                                )}
+                              >
+                                My Messages
+                              </Link>
+                            )}
+                          </Menu.Item>
                         <Menu.Item>
                           {({ active }) => (
                             <button

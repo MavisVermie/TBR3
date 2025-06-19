@@ -5,7 +5,7 @@ const app = express();
 const cors = require("cors");
 const corsOptions = {
   origin: ['https://tbr3.org','http://localhost:3000'],
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'jwt_token'],
   credentials: true
 };
@@ -39,6 +39,7 @@ app.use("/api/feedback", require("./routes/feedback")); // Mounts /api/feedback 
 app.use("/admin", require("./routes/adminroutes"));
 app.use("/authentication", require("./routes/jwtAuth"));
 app.use("/Posting", require("./routes/itemPost"));
+app.use('/messages', require('./routes/messages'));
 // app.use("/images", require("./routes/imageRoutes"));
 // Backend Route to Fetch Images by postId
 app.get('/images/:postId', async (req, res) => {
@@ -562,6 +563,25 @@ process.on('unhandledRejection', (reason, promise) => {
 setInterval(() => {
   pool.query('SELECT 1').catch(() => {});
 }, 300000);
-app.listen(5000,'0.0.0.0', () => {
-    console.log("Server has started on port 5000");
+const http = require("http");
+const { Server } = require("socket.io");
+
+// Create HTTP server from Express
+const server = http.createServer(app);
+
+// Initialize socket.io server
+const io = new Server(server, {
+  cors: {
+    origin: ['https://tbr3.org', 'http://localhost:3000'],
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
+});
+
+// Load socket logic from separate file
+require("./utils/socket")(io);
+
+// Start HTTP + WebSocket server
+server.listen(5000, '0.0.0.0', () => {
+  console.log("🚀 Server running on port 5000");
 });

@@ -1,17 +1,19 @@
 import './App.css';
 import React, { useState, useEffect } from "react";
 import Layout from './Layout';
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useParams } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import { toast, ToastContainer, cssTransition } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+// Pages & Components
 import HomePage from './pages/myFeed';
 import AboutPage from './pages/AboutPage';
 import CreatePostPage from './pages/PostsPages/CreatePostPage';
 import SignInPage from './components/LoginStuff/SignInPage';
 import RegistrationPage from './components/LoginStuff/RegistrationPage';
-import PageNotFound from './pages/PageNotFound'
+import PageNotFound from './pages/PageNotFound';
 import ProfilePage from './pages/ProfilePage';
-import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import { ToastContainer } from 'react-toastify';
 import ForgotPassword from './components/LoginStuff/ForgotPassword';
 import ResetPassword from './components/LoginStuff/ResetPassword';
 import AdminPanel from './pages/AdminStuff/AdminPanel';
@@ -24,7 +26,6 @@ import SinglePost from './pages/PostsPages/SinglePostPage';
 import EditPostPage from './pages/PostsPages/EditPostPage';
 import MyPostsPage from "./pages/PostsPages/MyPostsPage";
 import PrivacyPolicy from './pages/PrivacyPolicy';
-import { cssTransition } from "react-toastify";
 import TermsOfService from './pages/TermsOfService';
 import ContactUs from './pages/ContactUs';
 import UserProfilePage from './pages/UserProfilePage';
@@ -46,13 +47,42 @@ import ArabicEvents from './pages/arabic/Events';
 import ArabicShowEvent from './components/events/showEvent';
 import ArabicSignIn from './pages/arabic/SignInPage';
 import ArabicRegistration from './pages/arabic/RegistrationPage';
-
+import DirectMessageChat from './components/chat/DirectMessageChat';
+import MessagesPage from './components/chat/MessagesPage';
 
 const SlowFade = cssTransition({
   enter: 'fadeIn',
   exit: 'fadeOut',
-  duration: [300, 100], 
+  duration: [300, 100],
 });
+
+function getCurrentUserId() {
+  const token = localStorage.getItem("token");
+  if (!token) return null;
+
+  try {
+    const decoded = jwtDecode(token);
+    return decoded.userId || null;
+  } catch (err) {
+    console.error("Invalid token:", err);
+    return null;
+  }
+}
+
+
+
+// 🧩 DM wrapper to extract :userId param
+function DirectMessageChatWrapper() {
+  const { userId: otherUserId } = useParams();
+  const currentUserId = getCurrentUserId();
+
+  console.log("👉 DM Route - currentUserId:", currentUserId);
+  console.log("👉 DM Route - otherUserId:", otherUserId);
+
+  if (!currentUserId) return <Navigate to="/authentication/login" />;
+  return <DirectMessageChat currentUserId={currentUserId} otherUserId={otherUserId} />;
+}
+
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -75,12 +105,7 @@ function App() {
       });
 
       const parseRes = await res.json();
-
-      if (parseRes === true) {
-        setIsAuthenticated(true);
-      } else {
-        setIsAuthenticated(false);
-      }
+      setIsAuthenticated(parseRes === true);
       setLoading(false);
     } catch (err) {
       console.error("checkAuthenticated error:", err.message);
@@ -97,13 +122,11 @@ function App() {
     setIsAuthenticated(boolean);
   };
 
-  if (loading) {
-    return <div>Loading...</div>; 
-  }
+  if (loading) return <div>Loading...</div>;
 
   return (
     <div className="App">
-      <ToastContainer 
+      <ToastContainer
         position="top-right"
         autoClose={2000}
         hideProgressBar={true}
@@ -114,13 +137,15 @@ function App() {
         transition={SlowFade}
       />
       <BrowserRouter>
+      
         <Layout setAuth={setAuth} isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated}>
           <Routes>
-            <Route path="/" element={<NewHome />}/>
+                        <Route path="/dm/:userId" element={<DirectMessageChatWrapper />} />
+            <Route path="/" element={<NewHome />} />
             <Route path="/feed" element={isAuthenticated ? <HomePage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/ar/feed" element={isAuthenticated ? <ArabicFeed /> : <SignInPage setAuth={setAuth} />} />
-            <Route path="/ar/home" element={<ArabicHome /> } />
-             <Route path="/ar" element={<ArabicHome /> } />
+            <Route path="/ar/home" element={<ArabicHome />} />
+            <Route path="/ar" element={<ArabicHome />} />
             <Route path="/about" element={<AboutPage />} />
             <Route path="/create_post" element={isAuthenticated ? <CreatePostPage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/profile" element={isAuthenticated ? <ProfilePage isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated} /> : <SignInPage setAuth={setAuth} />} />
@@ -128,12 +153,11 @@ function App() {
             <Route path="/authentication/registration" element={isAuthenticated ? <Navigate to="/" /> : <RegistrationPage setAuth={setAuth} />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            {/* <Route path="/myposts" element={isAuthenticated ? <MyPosts /> : <SignInPage setAuth={setAuth} />} /> */}
-           <Route path="/edit_post/:id" element={isAuthenticated ? <EditPostPage /> : <SignInPage setAuth={setAuth} />} />
+            <Route path="/edit_post/:id" element={isAuthenticated ? <EditPostPage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/admin" element={<AdminPanel />} />
             <Route path="/admin/posts" element={<AdminPosts />} />
             <Route path="/posts/:id" element={<SinglePost />} />
-            <Route path="/myposts" element={<MyPostsPage />} /> //rama posts
+            <Route path="/myposts" element={<MyPostsPage />} />
             <Route path="/*" element={<PageNotFound />} />
             <Route path="/home" element={<NewHome />} />
             <Route path="/user/:userId" element={<UserProfilePage />} />
@@ -159,7 +183,9 @@ function App() {
             <Route path="/ar/authentication/login" element={isAuthenticated ? <Navigate to="/ar/home" /> : <ArabicSignIn setAuth={setAuth} />} />
             <Route path="/ar/authentication/registration" element={isAuthenticated ? <Navigate to="/ar/home" /> : <ArabicRegistration setAuth={setAuth} />} />
             <Route path="/admin/flagged" element={<AdminFlaggedPosts />} />
+            <Route path="/messages" element={<MessagesPage />} />
 
+            {/* ✅ Direct Messaging route */}
           </Routes>
         </Layout>
       </BrowserRouter>
