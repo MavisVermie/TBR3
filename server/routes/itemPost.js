@@ -45,6 +45,11 @@ router.post("/create-post", authorize, async (req, res) => {
 });
 */
 
+const fs = require("fs");
+const path = require("path");
+const { v4: uuidv4 } = require("uuid");
+
+// UPDATE POST
 router.put("/update-post/:id", authorize, async (req, res) => {
   try {
     const { id } = req.params;
@@ -56,9 +61,11 @@ router.put("/update-post/:id", authorize, async (req, res) => {
       email,
       phone,
       location,
-      features
+      features,
+      deletedImages = "[]", // Expecting array of URLs
     } = req.body;
 
+    // Parse features
     let parsedFeatures = [];
     try {
       parsedFeatures = features ? JSON.parse(features) : [];
@@ -66,13 +73,15 @@ router.put("/update-post/:id", authorize, async (req, res) => {
       console.warn("Failed to parse features:", err.message);
     }
 
-    const files = req.files?.images;
-    const imageFiles = Array.isArray(files) ? files : files ? [files] : [];
+    // Parse deleted image URLs
+    let deletedImageUrls = [];
+    try {
+      deletedImageUrls = JSON.parse(deletedImages);
+    } catch (err) {
+      console.warn("Failed to parse deletedImages:", err.message);
+    }
 
-    const primaryPhoto = imageFiles[0]?.data || null;
-    const extraImages = imageFiles.slice(1);
-
-    // 🔄 Step 1: Update the post
+    // Update the post details
     const updateQuery = `
       UPDATE posts
       SET title = $1,
@@ -80,9 +89,8 @@ router.put("/update-post/:id", authorize, async (req, res) => {
           email = $3,
           phone = $4,
           location = $5,
-          features = $6,
-          primary_photo = COALESCE($7, primary_photo)
-      WHERE post_id = $8 AND user_id = $9
+          features = $6
+      WHERE post_id = $7 AND user_id = $8
       RETURNING post_id
     `;
 
@@ -93,7 +101,6 @@ router.put("/update-post/:id", authorize, async (req, res) => {
       phone || null,
       location || null,
       parsedFeatures.length ? parsedFeatures : null,
-      primaryPhoto,
       id,
       userId
     ]);
@@ -104,24 +111,61 @@ router.put("/update-post/:id", authorize, async (req, res) => {
 
     const postId = result.rows[0].post_id;
 
-    // 🔄 Step 2: Optionally delete old extra images
-    await pool.query("DELETE FROM post_images WHERE post_id = $1", [postId]);
-
-    // 🔄 Step 3: Insert new extra images
-    for (const file of extraImages) {
+    // Delete selected images
+    if (deletedImageUrls.length > 0) {
       await pool.query(
-        "INSERT INTO post_images (post_id, image) VALUES ($1, $2)",
-        [postId, file.data]
+        `DELETE FROM post_images 
+         WHERE post_id = $1 AND image_url = ANY($2::text[])`,
+        [postId, deletedImageUrls]
+      );
+
+      // Optionally: delete physical files
+      for (const url of deletedImageUrls) {
+        const filePath = path.join("/var/www/tbr3", new URL(url).pathname);
+        if (fs.existsSync(filePath)) {
+          fs.unlink(filePath, (err) => {
+            if (err) console.warn(`Failed to delete ${filePath}:`, err.message);
+          });
+        }
+      }
+    }
+
+    // Handle new uploaded images
+    const imageFiles = req.files?.images;
+    const uploadedImages = Array.isArray(imageFiles)
+      ? imageFiles
+      : imageFiles ? [imageFiles] : [];
+
+    const uploadDir = path.join("/var/www/tbr3/uploads/posts");
+
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+    }
+
+    for (const file of uploadedImages) {
+      const ext = path.extname(file.name).toLowerCase();
+      const fileName = `${uuidv4()}${ext}`;
+      const filePath = path.join(uploadDir, fileName);
+
+      await file.mv(filePath);
+
+      const imageUrl = `${process.env.BASE_URL}/uploads/posts/${fileName}`;
+
+      await pool.query(
+        `INSERT INTO post_images (post_id, image_url) VALUES ($1, $2)`,
+        [postId, imageUrl]
       );
     }
 
-    return res.json({ message: "Post updated successfully" });
+    res.json({ message: "Post updated successfully" });
 
   } catch (err) {
     console.error("Error updating post:", err.message);
     res.status(500).send("Server error");
   }
 });
+
+module.exports = router;
 
 
 // Delete a post

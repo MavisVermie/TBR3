@@ -25,7 +25,6 @@ function EditPostPage() {
   const [deletedExistingImages, setDeletedExistingImages] = useState([]);
   const [loadingData, setLoadingData] = useState(true);
 
-  // 🔐 User ownership check
   const [currentUserId, setCurrentUserId] = useState(null);
   const [postOwnerId, setPostOwnerId] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -35,11 +34,10 @@ function EditPostPage() {
     "Appliances", "Toys", "Tools", "Sports Equipment", "Food", "Other"
   ];
 
-  // 🔐 Decode user info from token
   useEffect(() => {
     if (token) {
       try {
-const decoded = jwtDecode(token);
+        const decoded = jwtDecode(token);
         setCurrentUserId(decoded.userId);
         setIsAdmin(decoded.isAdmin);
       } catch (e) {
@@ -55,17 +53,15 @@ const decoded = jwtDecode(token);
         const data = await res.json();
 
         if (res.ok && data) {
-
           setTitle(data.title || '');
           setDescription(data.description || '');
           setEmail(data.email || '');
-          setPhone(data.phone_number || '');
+          setPhone(data.phone || '');
           setLocation(data.location || '');
           setInitialLocation(data.location || '');
-          setPostOwnerId(data.user_id); // 🔐 set post owner ID
+          setPostOwnerId(data.user_id);
 
           const parsedFeatures = data.features || [];
-
           const fetchedCategory = (parsedFeatures[0] || '').trim();
           if (categoryOptions.includes(fetchedCategory)) {
             setCategory(fetchedCategory);
@@ -74,13 +70,7 @@ const decoded = jwtDecode(token);
           }
 
           setFeatures(parsedFeatures.slice(1));
-
-          const base64Images = [];
-          if (data.primary_photo) base64Images.push(data.primary_photo);
-          if (data.extra_images && Array.isArray(data.extra_images)) {
-            base64Images.push(...data.extra_images);
-          }
-          setExistingImages(base64Images);
+          setExistingImages(data.images || []);
         } else {
           toast.error("Failed to load post");
           navigate('/');
@@ -139,7 +129,8 @@ const decoded = jwtDecode(token);
       formData.append("images", img);
     });
 
-    formData.append("deletedImages", JSON.stringify(deletedExistingImages));
+    const deletedImageUrls = deletedExistingImages.map(index => existingImages[index]);
+    formData.append("deletedImages", JSON.stringify(deletedImageUrls));
 
     setIsUploading(true);
 
@@ -175,7 +166,7 @@ const decoded = jwtDecode(token);
         <h1 className="text-4xl  text-red-700 font-semibold text-center mb-6">Edit Your Post</h1>
         {loadingData ? (
           <p>Loading post data...</p>
-        ) : !isOwner /* && !isAdmin */ ? ( // <-- Uncomment `&& !isAdmin` if you want admins to bypass
+        ) : !isOwner ? (
           <p className="text-red-600 text-center font-semibold">
             ❌ You are not authorized to edit this post.
           </p>
@@ -199,10 +190,10 @@ const decoded = jwtDecode(token);
 
             {(existingImages.length > 0 || images.length > 0) && (
               <div className="grid grid-cols-3 gap-3">
-                {existingImages.map((img, idx) => (
+                {existingImages.map((url, idx) => (
                   !deletedExistingImages.includes(idx) && (
                     <div key={`existing-${idx}`} className="relative">
-                      <img src={`data:image/jpeg;base64,${img}`} alt={`existing-${idx}`} className="w-full h-24 object-cover rounded" />
+                      <img src={url} alt={`existing-${idx}`} className="w-full h-24 object-cover rounded" />
                       <button
                         type="button"
                         onClick={() => setDeletedExistingImages(prev => [...prev, idx])}
