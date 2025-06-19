@@ -52,15 +52,15 @@ router.delete("/users/:id", async (req, res) => {
   }
 });
 
-// Fetch all posts
+// Fetch all posts with image URLs
 router.get("/posts", async (req, res) => {
   console.log("✅ Reached /admin/posts route");
   try {
+    // Get all posts with user info
     const result = await pool.query(`
       SELECT 
         posts.post_id, 
         posts.title, 
-        posts.primary_photo,
         users.id AS user_id,
         users.username,
         users.email
@@ -68,9 +68,19 @@ router.get("/posts", async (req, res) => {
       JOIN users ON posts.user_id = users.id
     `);
 
-    const posts = result.rows.map(post => ({
-      ...post,
-      primary_photo: post.primary_photo?.toString("base64"),
+    const posts = await Promise.all(result.rows.map(async (post) => {
+      // Fetch first image URL for each post
+      const imgRes = await pool.query(
+        "SELECT image_url FROM post_images WHERE post_id = $1 LIMIT 1",
+        [post.post_id]
+      );
+
+      const primary_image_url = imgRes.rows[0]?.image_url || null;
+
+      return {
+        ...post,
+        primary_image_url,
+      };
     }));
 
     res.json(posts);
@@ -79,6 +89,7 @@ router.get("/posts", async (req, res) => {
     res.status(500).json({ msg: "Server error" });
   }
 });
+
 
 // Delete a post
 router.delete("/posts/:postId", async (req, res) => {

@@ -30,6 +30,11 @@ router.get("/", async (req, res) => {
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
 
+  // ✅ Validate that the id is a number
+  if (!/^\d+$/.test(id)) {
+    return res.status(400).json({ message: "Invalid event ID" });
+  }
+
   try {
     // Fetch the event
     const eventRes = await pool.query("SELECT * FROM events WHERE id = $1", [id]);
@@ -57,6 +62,7 @@ router.get("/:id", async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 });
+
 
 // ✅ Admin-only routes below
 router.use(authorize);

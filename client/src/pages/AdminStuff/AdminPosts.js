@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode"; // ✅ Correct import
+import { jwtDecode } from "jwt-decode";
 
 export default function AdminPosts() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fetch posts from backend
   const fetchPosts = async () => {
     try {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/admin/posts`, {
@@ -37,7 +36,6 @@ export default function AdminPosts() {
     }
   };
 
-  // Delete post handler
   const deletePost = async (postId) => {
     if (!window.confirm("Are you sure you want to delete this post?")) return;
 
@@ -94,9 +92,9 @@ export default function AdminPosts() {
               key={post.post_id}
               className="bg-white shadow-lg rounded-l overflow-hidden border border-gray-200"
             >
-              {post.primary_photo && (
+              {post.primary_image_url && (
                 <img
-                  src={`data:image/jpeg;base64,${post.primary_photo}`}
+                  src={post.primary_image_url}
                   alt="post"
                   className="w-full h-48 object-cover"
                 />
