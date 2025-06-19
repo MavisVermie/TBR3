@@ -416,38 +416,32 @@ const showEditButton = post && (
                   )}
                 </div>
 
-               {/* Thumbnail Gallery - Shows all available images */}
-{allImages.length > 1 && (
-  <div className="thumbnail-gallery mt-4 p-5">
-    <div className="grid grid-cols-5 gap-3">
-      {allImages.map((img, idx) => (
-        <div
-          key={idx}
-          className={`thumbnail-container relative w-[120px] h-[120px] cursor-pointer rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center ${
-            currentImageIndex === idx ? 'ring-2 ring-green-500' : 'hover:ring-2 hover:ring-green-300'
-          }`}
-          onClick={() => handleImageClick(idx)}
-        >
-          <img
-            src={getImageUrl(img)}
-            alt={`Thumbnail ${idx + 1}`}
-            className={`max-w-full max-h-full w-auto h-auto object-contain transition-all duration-300 ${
-              loadedImages[`extra_${idx}`] ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-            }`}
-            loading="lazy"
-            onLoad={() => {
-              setLoadedImages(prev => ({
-                ...prev,
-                [`extra_${idx}`]: true
-              }));
-            }}
-          />
-        </div>
-      ))}
-    </div>
-  </div>
-)}
-
+                {/* Thumbnail Gallery - Shows all available images */}
+                {allImages.length > 1 && (
+                  <div className="thumbnail-gallery mt-4 p-5">
+                    <div className="grid grid-cols-5 gap-3">
+                      {allImages.map((img, idx) => (
+                        <div
+                          key={idx}
+                          className={`thumbnail-container relative w-[120px] h-[120px] cursor-pointer rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center ${
+                            currentImageIndex === idx ? 'ring-2 ring-green-500' : 'hover:ring-2 hover:ring-green-300'
+                          }`}
+                          onClick={() => handleImageClick(idx)}
+                        >
+                          <img
+                            src={getImageUrl(img)}
+                            alt={`Thumbnail ${idx + 1}`}
+                            className={`max-w-full max-h-full w-auto h-auto object-contain transition-all duration-300 ${
+                              loadedImages[`extra_${idx}`] ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+                            }`}
+                            loading="lazy"
+                            onLoad={(e) => {
+                              setLoadedImages(prev => ({
+                                ...prev,
+                                [`extra_${idx}`]: true
+                              }));
+                            }}
+                          />
                           {/* Selected Image Indicator */}
                           {currentImageIndex === idx && (
                             <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
