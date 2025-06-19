@@ -46,9 +46,15 @@ export default function AdminDashboard() {
 
         <button
           onClick={() => navigate("/admin/create-event")}
-          className="bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-semibold text-lg"
+          className="bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-semibold text-lg"
         >
           + Create New Event
+        </button>
+                <button
+          onClick={() => navigate("/admin/flagged")}
+          className="bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-semibold text-lg"
+        >
+          FLAGGED POSTS
         </button>
       </div>
     </div>
