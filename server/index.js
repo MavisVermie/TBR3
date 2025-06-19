@@ -18,7 +18,11 @@ const feedbackRouter = require("./routes/feedback");
 const path = require('path'); 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: 'https://tbr3.org',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 app.use(express.json());
 app.use(fileUpload());
 
