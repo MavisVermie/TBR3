@@ -97,7 +97,6 @@ export default function CardPost() {
 
 const filteredAndSorted = useMemo(() => {
   return posts
-    .filter(p => p.status === 'active') // ✅ Only show active posts
     .filter(p => selectedCategory === 'All' || (p.features?.[0] || 'Other') === selectedCategory)
     .filter(p => selectedLocation === 'All' || extractCity(p.location) === selectedLocation)
     .filter(p => p.title?.toLowerCase().includes(searchQuery.toLowerCase()))

@@ -7,7 +7,7 @@ let model;
 async function loadModelOnce() {
   if (!model) {
     model = await nsfw.load();
-    console.log('Moderation model loaded ✅');
+    console.log('Moderation model loaded');
   }
   return model;
 }
@@ -38,7 +38,7 @@ async function checkImageSafety(imageBuffer) {
   }
 
   const label = riskyProbability > 0.7 ? 'unseemly' : 'normal';
-  return { label: 'unseemly', probability: 0.99 };
+  return { label: className, probability };
 }
 
 module.exports = { checkImageSafety };
