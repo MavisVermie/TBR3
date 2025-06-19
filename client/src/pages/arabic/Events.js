@@ -29,7 +29,7 @@ const Events = () => {
   }, []);
 
   return (
-    <section className=' bg-gray-100'>
+    <section className="min-h-screen bg-gray-100 bg-cover w-full px-5 py-2">
           {/* Header */}
       <div className=" mb-8 mt-10 ">
         <h1 className="text-4xl text-center font-semibold text-green-700 ">
