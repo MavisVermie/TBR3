@@ -3,6 +3,11 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./showDataProduct.css";
 import { jwtDecode } from 'jwt-decode';
+const getImageUrl = (path) => {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  return `${process.env.REACT_APP_API_URL}/${path}`;
+};
 
 /**
  * SinglePost Component
@@ -14,9 +19,9 @@ const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 const IMAGE_LOAD_TIMEOUT = 5000;
 
-const loadImage = (base64String) => {
+const loadImage = (imagePath) => {
   return new Promise((resolve, reject) => {
-    if (!base64String) {
+    if (!imagePath) {
       reject(new Error('Invalid image data'));
       return;
     }
@@ -37,13 +42,14 @@ const loadImage = (base64String) => {
     };
 
     try {
-      img.src = `data:image/jpeg;base64,${base64String}`;
+      img.src = getImageUrl(imagePath);
     } catch (error) {
       clearTimeout(timeoutId);
       reject(new Error('Invalid image format'));
     }
   });
 };
+
 
 const fetchWithRetry = async (url, options = {}, retries = MAX_RETRIES) => {
   try {
@@ -376,25 +382,26 @@ const showEditButton = post && (
                     </button>
                   )}
 
-                  {/* Main Image Display */}
-                  <div className="flex items-center justify-center p-4">
-                    {allImages[currentImageIndex] && (
-                      <img
-                        src={`data:image/jpeg;base64,${allImages[currentImageIndex]}`}
-                        alt="Main"
-                        className={`max-w-full max-h-[500px] w-auto h-auto object-contain rounded-sm transition-opacity duration-300 ${
-                          loadedImages[`extra_${currentImageIndex}`] ? 'opacity-100' : 'opacity-0'
-                        }`}
-                        loading="lazy"
-                        onLoad={(e) => {
-                          setLoadedImages(prev => ({
-                            ...prev,
-                            [`extra_${currentImageIndex}`]: true
-                          }));
-                        }}
-                      />
-                    )}
-                  </div>
+{/* Main Image Display */}
+<div className="flex items-center justify-center p-4">
+  {allImages[currentImageIndex] && (
+    <img
+      src={getImageUrl(allImages[currentImageIndex])}
+      alt="Main"
+      className={`max-w-full max-h-[500px] w-auto h-auto object-contain rounded-sm transition-opacity duration-300 ${
+        loadedImages[`extra_${currentImageIndex}`] ? 'opacity-100' : 'opacity-0'
+      }`}
+      loading="lazy"
+      onLoad={(e) => {
+        setLoadedImages(prev => ({
+          ...prev,
+          [`extra_${currentImageIndex}`]: true
+        }));
+      }}
+    />
+  )}
+</div>
+
 
                   {/* Next Image Button */}
                   {allImages.length > 1 && (
@@ -409,32 +416,38 @@ const showEditButton = post && (
                   )}
                 </div>
 
-                {/* Thumbnail Gallery - Shows all available images */}
-                {allImages.length > 1 && (
-                  <div className="thumbnail-gallery mt-4 p-5">
-                    <div className="grid grid-cols-5 gap-3">
-                      {allImages.map((img, idx) => (
-                        <div
-                          key={idx}
-                          className={`thumbnail-container relative w-[120px] h-[120px] cursor-pointer rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center ${
-                            currentImageIndex === idx ? 'ring-2 ring-green-500' : 'hover:ring-2 hover:ring-green-300'
-                          }`}
-                          onClick={() => handleImageClick(idx)}
-                        >
-                          <img
-                            src={`data:image/jpeg;base64,${img}`}
-                            alt={`Thumbnail ${idx + 1}`}
-                            className={`max-w-full max-h-full w-auto h-auto object-contain transition-all duration-300 ${
-                              loadedImages[`extra_${idx}`] ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
-                            }`}
-                            loading="lazy"
-                            onLoad={(e) => {
-                              setLoadedImages(prev => ({
-                                ...prev,
-                                [`extra_${idx}`]: true
-                              }));
-                            }}
-                          />
+               {/* Thumbnail Gallery - Shows all available images */}
+{allImages.length > 1 && (
+  <div className="thumbnail-gallery mt-4 p-5">
+    <div className="grid grid-cols-5 gap-3">
+      {allImages.map((img, idx) => (
+        <div
+          key={idx}
+          className={`thumbnail-container relative w-[120px] h-[120px] cursor-pointer rounded-lg overflow-hidden bg-gray-100 flex items-center justify-center ${
+            currentImageIndex === idx ? 'ring-2 ring-green-500' : 'hover:ring-2 hover:ring-green-300'
+          }`}
+          onClick={() => handleImageClick(idx)}
+        >
+          <img
+            src={getImageUrl(img)}
+            alt={`Thumbnail ${idx + 1}`}
+            className={`max-w-full max-h-full w-auto h-auto object-contain transition-all duration-300 ${
+              loadedImages[`extra_${idx}`] ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
+            }`}
+            loading="lazy"
+            onLoad={() => {
+              setLoadedImages(prev => ({
+                ...prev,
+                [`extra_${idx}`]: true
+              }));
+            }}
+          />
+        </div>
+      ))}
+    </div>
+  </div>
+)}
+
                           {/* Selected Image Indicator */}
                           {currentImageIndex === idx && (
                             <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center">
