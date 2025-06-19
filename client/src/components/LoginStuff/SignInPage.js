@@ -44,8 +44,8 @@ useEffect(() => {
   };
 
   return (
-    <section className=" bg-phoneimg bg-no-repeat sm:bg-tabletimg  md:bg-bannerImg  bg-cover w-full min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-xs sm:max-w-sm md:max-w-md g:max-w-lg xl:max-w-xl px-6 py-12 shadow-2xl bg-white/10 backdrop-blur-md rounded-2xl transition-all duration-500 ease">
+    <section className=" bg-phoneimg bg-no-repeat md:bg-tabletimg  lg:bg-bannerImg  bg-cover w-full min-h-screen flex items-center justify-center">
+      <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl px-6 py-12 shadow-2xl bg-white/10 backdrop-blur-md rounded-2xl transition-all duration-500 ease">
         <div className="flex flex-col items-center text-center gap-8">
           <img src={logo} alt="TBR3 Logo" className="w-1/2 h-29" />
 
