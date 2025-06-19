@@ -70,8 +70,12 @@ function EditPostPage() {
           }
 
           setFeatures(parsedFeatures.slice(1));
-          setExistingImages(data.images || []);
-        } else {
+const combinedImages = [];
+
+if (data.primary_photo) combinedImages.push(data.primary_photo);
+if (Array.isArray(data.extra_images)) combinedImages.push(...data.extra_images);
+
+setExistingImages(combinedImages);        } else {
           toast.error("Failed to load post");
           navigate('/');
         }
