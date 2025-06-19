@@ -16,6 +16,7 @@ const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 const authorize = require("./middleware/authorize");
 const sendemail = require("./middleware/mailer"); //gimme mailer
+const { checkImageSafety } = require("./utils/moderation"); 
 const jwtSecret = process.env.JWT_SECRET; // Use environment variable
 const crypto = require('crypto');
 const NodeCache = require('node-cache');
@@ -271,6 +272,21 @@ app.post("/create_post", async (req, res) => {
     const primaryFile = imageFiles[0];
     const extraImages = imageFiles.slice(1);
 
+    // ✅ Moderate the primary image BEFORE creating the post
+    const imageBuffer = primaryFile.data;
+
+    try {
+      const { label, probability } = await checkImageSafety(imageBuffer);
+      console.log(`Moderation result: ${label} (${probability})`);
+
+      if (label === 'unseemly') {
+        return res.status(400).json({ message: "Image rejected due to unseemly content." });
+      }
+    } catch (modErr) {
+      console.error("Image moderation error:", modErr);
+      return res.status(500).json({ message: "Error during image moderation." });
+    }
+
     let parsedFeatures = [];
     try {
       parsedFeatures = features ? JSON.parse(features) : [];
@@ -278,7 +294,6 @@ app.post("/create_post", async (req, res) => {
       console.warn("Failed to parse features:", err.message);
     }
 
-    // ✅ Insert new post (no primary_photo anymore)
     const postInsert = await pool.query(
       `INSERT INTO posts (title, description, user_id, email, phone, features, location)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -288,14 +303,11 @@ app.post("/create_post", async (req, res) => {
 
     const postId = postInsert.rows[0].post_id;
 
-const uploadPath = path.join('/var/www/tbr3/uploads/posts');
-
-    // ✅ Ensure uploads/posts folder exists
+    const uploadPath = path.join('/var/www/tbr3/uploads/posts');
     if (!fs.existsSync(uploadPath)) {
       fs.mkdirSync(uploadPath, { recursive: true });
     }
 
-    // ✅ Save image and insert URL into post_images table
     const saveImage = async (file) => {
       const ext = path.extname(file.name).toLowerCase();
       const fileName = `${uuidv4()}${ext}`;
@@ -303,20 +315,17 @@ const uploadPath = path.join('/var/www/tbr3/uploads/posts');
       await file.mv(filePath);
 
       const imageUrl = `${process.env.BASE_URL}/uploads/posts/${fileName}`;
-
       await pool.query(
         `INSERT INTO post_images (post_id, image_url) VALUES ($1, $2)`,
         [postId, imageUrl]
       );
     };
 
-    // ✅ Save primary and extra images
     await saveImage(primaryFile);
     for (const file of extraImages) {
       await saveImage(file);
     }
 
-    // ✅ Invalidate relevant cache keys
     cache.keys().forEach(key => {
       if (key.startsWith('posts_') || key === 'total_posts_count') {
         cache.del(key);
@@ -324,11 +333,13 @@ const uploadPath = path.join('/var/www/tbr3/uploads/posts');
     });
 
     res.json({ message: "Post created successfully", post_id: postId });
+
   } catch (err) {
     console.error("Create post error:", err);
     res.status(500).json({ message: "Server Error" });
   }
 });
+
 
 
 
