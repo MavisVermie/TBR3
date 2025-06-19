@@ -3,6 +3,9 @@ console.log("JWT Secret loaded:", process.env.JWT_SECRET);
 const express = require("express");
 const app = express();
 const cors = require("cors");
+app.use(cors({
+  origin: "https://tbr3.org"
+}));
 const pool = require("./db");
 const fileUpload = require("express-fileupload");
 const bcrypt = require("bcrypt");
@@ -18,11 +21,12 @@ const feedbackRouter = require("./routes/feedback");
 const path = require('path'); 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Middleware
-app.use(cors({
+
+app.options("*", cors({
   origin: 'https://tbr3.org',
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
   credentials: true
 }));
+
 app.use(express.json());
 app.use(fileUpload());
 
