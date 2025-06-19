@@ -25,12 +25,9 @@ export default function AdminEvents() {
         const res = await fetch(`${process.env.REACT_APP_API_URL}/events`, {
           headers: { Authorization: `Bearer ${token}` }
         });
+
         const data = await res.json();
-        const formatted = data.map(event => ({
-          ...event,
-          images: event.images.map(img => `data:image/jpeg;base64,${img}`)
-        }));
-        setEvents(formatted);
+        setEvents(data); // ✅ use direct image URLs
       } catch (err) {
         console.error("Failed to fetch events", err);
         toast.error("Error loading events.");
@@ -47,12 +44,14 @@ export default function AdminEvents() {
 
     try {
       const token = localStorage.getItem("token");
-      await fetch(`${process.env.REACT_APP_API_URL}/events/${id}`, {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/events/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      setEvents(prev => prev.filter(e => e.id !== id));
+      if (!res.ok) throw new Error("Delete failed");
+
+      setEvents((prev) => prev.filter((e) => e.id !== id));
       toast.success("Event deleted.");
     } catch (err) {
       console.error("Delete error:", err);

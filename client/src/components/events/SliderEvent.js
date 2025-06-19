@@ -13,13 +13,7 @@ const SliderEvent = () => {
       try {
         const res = await fetch(`${process.env.REACT_APP_API_URL}/events`);
         const data = await res.json();
-
-        const formatted = data.map((event) => ({
-          ...event,
-          images: event.images.map(img => `data:image/jpeg;base64,${img}`)
-        }));
-
-        setEvents(formatted);
+        setEvents(data); // ✅ Use URLs directly now
       } catch (err) {
         console.error('Error fetching events:', err);
       }
@@ -61,6 +55,7 @@ const SliderEvent = () => {
                     src={event.images[0]}
                     alt={event.title}
                     className="w-full h-full object-cover"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                   <div className="absolute bottom-0 left-0 right-0 p-4">

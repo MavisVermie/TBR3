@@ -11,13 +11,7 @@ const Events = () => {
       try {
         const res = await fetch(`${process.env.REACT_APP_API_URL}/events`);
         const data = await res.json();
-
-        const formatted = data.map((event) => ({
-          ...event,
-          images: event.images.map(img => `data:image/jpeg;base64,${img}`)
-        }));
-
-        setEvents(formatted);
+        setEvents(data); // ✅ use URLs directly
       } catch (err) {
         console.error('Error fetching events:', err);
       } finally {
@@ -35,7 +29,6 @@ const Events = () => {
         <h1 className="text-4xl font-semibold text-green-700">
           <span className="text-red-700">Upcoming</span> Events
         </h1>
-
       </div>
 
       {/* Info Box */}
