@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const pool = require("../db");
 const authorize = require("../middleware/authorize");
-
+const path = require("path");
 // ✅ Public route: Get ALL events with base64 images
 router.get("/", async (req, res) => {
   try {
@@ -11,10 +11,10 @@ router.get("/", async (req, res) => {
 
     const withImages = await Promise.all(events.map(async (event) => {
       const imagesRes = await pool.query(
-        "SELECT image FROM event_images WHERE event_id = $1",
+        "SELECT image_url FROM event_images WHERE event_id = $1",
         [event.id]
       );
-      const images = imagesRes.rows.map(row => row.image.toString("base64"));
+      const images = imagesRes.rows.map(row => row.image_url);
       return { ...event, images };
     }));
 
@@ -25,22 +25,30 @@ router.get("/", async (req, res) => {
   }
 });
 
+
 // ✅ Public route: Get SINGLE event by ID
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
 
   try {
+    // Fetch the event
     const eventRes = await pool.query("SELECT * FROM events WHERE id = $1", [id]);
     if (eventRes.rows.length === 0) {
       return res.status(404).json({ message: "Event not found" });
     }
 
-    const imageRes = await pool.query("SELECT image FROM event_images WHERE event_id = $1", [id]);
-    const images = imageRes.rows.map((row) => row.image.toString("base64"));
+    // Fetch image URLs from event_images table
+    const imageRes = await pool.query(
+      "SELECT image_url FROM event_images WHERE event_id = $1",
+      [id]
+    );
 
+    const imageUrls = imageRes.rows.map(row => row.image_url);
+
+    // Construct full response
     const event = {
       ...eventRes.rows[0],
-      images
+      images: imageUrls
     };
 
     return res.json(event);
@@ -64,7 +72,9 @@ router.get("/ping", (req, res) => {
   res.send("events router is working ✅");
 });
 
-// ✅ Create event (admin only)
+const fs = require("fs");
+const { v4: uuidv4 } = require("uuid");
+
 router.post("/", async (req, res) => {
   try {
     console.log("⚡ Event creation request received");
@@ -95,12 +105,30 @@ router.post("/", async (req, res) => {
     const eventId = result.rows[0].id;
 
     if (req.files?.images) {
+      const uploadPath = path.join("/var/www/tbr3/uploads/events");
+
+      // Ensure the folder exists
+      if (!fs.existsSync(uploadPath)) {
+        fs.mkdirSync(uploadPath, { recursive: true });
+      }
+
       const images = Array.isArray(req.files.images) ? req.files.images : [req.files.images];
+
       for (const image of images) {
-        const buffer = image.data;
+        const ext = path.extname(image.name).toLowerCase();
+        const fileName = `${uuidv4()}${ext}`;
+        const fullPath = path.join(uploadPath, fileName);
+
+        // Save image to disk
+        await image.mv(fullPath);
+
+        // Construct URL
+        const imageUrl = `${process.env.BASE_URL}/uploads/events/${fileName}`;
+
+        // Save URL in DB
         await pool.query(
-          `INSERT INTO event_images (event_id, image) VALUES ($1, $2)`,
-          [eventId, buffer]
+          `INSERT INTO event_images (event_id, image_url) VALUES ($1, $2)`,
+          [eventId, imageUrl]
         );
       }
     }
@@ -112,6 +140,7 @@ router.post("/", async (req, res) => {
     return res.status(500).json({ message: "Server error" });
   }
 });
+
 // DELETE /events/:id - Admin only
 router.delete("/:id", async (req, res) => {
   const { id } = req.params;

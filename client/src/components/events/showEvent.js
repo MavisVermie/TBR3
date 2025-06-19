@@ -15,9 +15,7 @@ export default function ShowEvent() {
           throw new Error('Failed to fetch event');
         }
         const data = await response.json();
-        // Convert base64 images to data URLs
-        const images = data.images.map(img => `data:image/jpeg;base64,${img}`);
-        setEvent({ ...data, images });
+        setEvent(data); // ✅ use direct image URLs
       } catch (error) {
         console.error('Error fetching event:', error);
       } finally {
