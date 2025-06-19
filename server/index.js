@@ -363,35 +363,37 @@ app.get('/posts', async (req, res) => {
     // ✅ Get total count (cached)
     let totalPosts = cache.get(countCacheKey);
     if (!totalPosts) {
-      const countResult = await pool.query('SELECT COUNT(*) FROM posts');
+    const countResult = await pool.query("SELECT COUNT(*) FROM posts WHERE status = 'active'");
       totalPosts = parseInt(countResult.rows[0].count);
       cache.set(countCacheKey, totalPosts, 60);
     }
 
     // ✅ Fetch posts with first image (by id)
-    const result = await pool.query(`
-      SELECT 
-        p.post_id, 
-        p.title, 
-        p.user_id,
-        p.features,
-        p.created_at,
-        p.location AS post_location,
-        u.email,
-        p.description,
-        u.zip_code,
-        (
-          SELECT image_url 
-          FROM post_images 
-          WHERE post_id = p.post_id
-          ORDER BY id ASC
-          LIMIT 1
-        ) AS attached_photo_url
-      FROM posts p
-      LEFT JOIN users u ON p.user_id = u.id
-      ORDER BY p.created_at DESC
-      LIMIT $1 OFFSET $2
-    `, [limit, offset]);
+const result = await pool.query(`
+  SELECT 
+    p.post_id, 
+    p.title, 
+    p.user_id,
+    p.features,
+    p.created_at,
+    p.location AS post_location,
+    u.email,
+    p.description,
+    u.zip_code,
+    (
+      SELECT image_url 
+      FROM post_images 
+      WHERE post_id = p.post_id
+      ORDER BY id ASC
+      LIMIT 1
+    ) AS attached_photo_url
+  FROM posts p
+  LEFT JOIN users u ON p.user_id = u.id
+  WHERE p.status = 'active'
+  ORDER BY p.created_at DESC
+  LIMIT $1 OFFSET $2
+`, [limit, offset]);
+
 
     const postsWithURLs = result.rows.map(post => ({
       post_id: post.post_id,
