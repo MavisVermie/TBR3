@@ -15,9 +15,14 @@ const NodeCache = require('node-cache');
 const cache = new NodeCache();
 // const sharp = require('sharp');
 const feedbackRouter = require("./routes/feedback");
-
+const path = require('path'); 
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: '*', // or whitelist your local frontend if needed
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true
+}));
 app.use(express.json());
 app.use(fileUpload());
 
@@ -239,6 +244,10 @@ app.post('/reset-password', async (req, res) => {
   }
 });
 
+
+const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
+
 app.post("/create_post", async (req, res) => {
   try {
     const token = req.header("jwt_token");
@@ -254,7 +263,7 @@ app.post("/create_post", async (req, res) => {
     const { title, description, features, email, phone, location } = req.body;
 
     const imageFiles = Array.isArray(req.files.images) ? req.files.images : [req.files.images];
-    const primaryPhoto = imageFiles[0].data;
+    const primaryFile = imageFiles[0];
     const extraImages = imageFiles.slice(1);
 
     let parsedFeatures = [];
@@ -264,32 +273,45 @@ app.post("/create_post", async (req, res) => {
       console.warn("Failed to parse features:", err.message);
     }
 
+    // ✅ Insert new post (no primary_photo anymore)
     const postInsert = await pool.query(
-      `INSERT INTO posts (title, description, primary_photo, user_id, email, phone, features, location)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      `INSERT INTO posts (title, description, user_id, email, phone, features, location)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
        RETURNING post_id`,
-      [
-        title,
-        description,
-        primaryPhoto,
-        userId,
-        email || null,
-        phone || null,
-        parsedFeatures.length ? parsedFeatures : null,
-        location || null
-      ]
+      [title, description, userId, email || null, phone || null, parsedFeatures.length ? parsedFeatures : null, location || null]
     );
 
     const postId = postInsert.rows[0].post_id;
 
-    for (const file of extraImages) {
-      await pool.query(
-        "INSERT INTO post_images (post_id, image) VALUES ($1, $2)",
-        [postId, file.data]
-      );
+const uploadPath = path.join('/var/www/tbr3/uploads/posts');
+
+    // ✅ Ensure uploads/posts folder exists
+    if (!fs.existsSync(uploadPath)) {
+      fs.mkdirSync(uploadPath, { recursive: true });
     }
 
-    // ✅ Invalidate relevant cache keys after successful post creation
+    // ✅ Save image and insert URL into post_images table
+    const saveImage = async (file) => {
+      const ext = path.extname(file.name).toLowerCase();
+      const fileName = `${uuidv4()}${ext}`;
+      const filePath = path.join(uploadPath, fileName);
+      await file.mv(filePath);
+
+      const imageUrl = `${process.env.BASE_URL}/uploads/posts/${fileName}`;
+
+      await pool.query(
+        `INSERT INTO post_images (post_id, image_url) VALUES ($1, $2)`,
+        [postId, imageUrl]
+      );
+    };
+
+    // ✅ Save primary and extra images
+    await saveImage(primaryFile);
+    for (const file of extraImages) {
+      await saveImage(file);
+    }
+
+    // ✅ Invalidate relevant cache keys
     cache.keys().forEach(key => {
       if (key.startsWith('posts_') || key === 'total_posts_count') {
         cache.del(key);
@@ -305,8 +327,6 @@ app.post("/create_post", async (req, res) => {
 
 
 
-
-
 app.get('/posts', async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -315,7 +335,7 @@ app.get('/posts', async (req, res) => {
     const cacheKey = `posts_${page}_${limit}`;
     const countCacheKey = 'total_posts_count';
 
-    // ✅ Check cache first
+    // ✅ Check cache
     const cachedData = cache.get(cacheKey);
     if (cachedData) {
       return res.json(cachedData);
@@ -326,80 +346,49 @@ app.get('/posts', async (req, res) => {
     if (!totalPosts) {
       const countResult = await pool.query('SELECT COUNT(*) FROM posts');
       totalPosts = parseInt(countResult.rows[0].count);
-      cache.set(countCacheKey, totalPosts, 60); // Cache for 60 seconds
+      cache.set(countCacheKey, totalPosts, 60);
     }
 
-    // ✅ Fetch paginated posts with user info
+    // ✅ Fetch posts with first image (by id)
     const result = await pool.query(`
       SELECT 
         p.post_id, 
         p.title, 
-        p.primary_photo,
         p.user_id,
         p.features,
         p.created_at,
         p.location AS post_location,
         u.email,
         p.description,
-        u.zip_code
+        u.zip_code,
+        (
+          SELECT image_url 
+          FROM post_images 
+          WHERE post_id = p.post_id
+          ORDER BY id ASC
+          LIMIT 1
+        ) AS attached_photo_url
       FROM posts p
       LEFT JOIN users u ON p.user_id = u.id
       ORDER BY p.created_at DESC
       LIMIT $1 OFFSET $2
     `, [limit, offset]);
 
-    if (!result.rows) {
-      throw new Error('Database query returned no results');
-    }
-
-    // ✅ Process images in parallel
-    const postsWithPhotos = await Promise.all(result.rows.map(async post => {
-      try {
-        const imageBuffer = post.primary_photo;
-        let optimizedImage = null;
-
-        if (imageBuffer) {
-          try {
-            optimizedImage = await optimizeImage(imageBuffer);
-          } catch (imageError) {
-            console.error('Image optimization error:', imageError);
-          }
-        }
-
-        return {
-          post_id: post.post_id,
-          title: post.title,
-          email: post.email,
-          description: post.description,
-          userId: post.user_id,
-          zip_code: post.zip_code,
-          features: post.features || ["Other"],
-          attached_photo: optimizedImage ? optimizedImage.toString('base64') : null,
-          created_at: post.created_at,
-          location: post.post_location || "Unknown"
-        };
-      } catch (postError) {
-        console.error('Error processing post:', postError);
-        return null;
-      }
+    const postsWithURLs = result.rows.map(post => ({
+      post_id: post.post_id,
+      title: post.title,
+      email: post.email,
+      description: post.description,
+      userId: post.user_id,
+      zip_code: post.zip_code,
+      features: post.features || ["Other"],
+      attached_photo_url: post.attached_photo_url || null,
+      created_at: post.created_at,
+      location: post.post_location || "Unknown"
     }));
 
-    const validPosts = postsWithPhotos.filter(post => post !== null);
-
-    if (validPosts.length === 0) {
-      return res.json({
-        posts: [],
-        pagination: {
-          currentPage: page,
-          totalPages: 0,
-          totalPosts: 0,
-          hasMore: false
-        }
-      });
-    }
-
     const response = {
-      posts: validPosts,
+      posts: postsWithURLs,
       pagination: {
         currentPage: page,
         totalPages: Math.ceil(totalPosts / limit),
@@ -408,7 +397,6 @@ app.get('/posts', async (req, res) => {
       }
     };
 
-    // ✅ Cache the response for 60 seconds
     cache.set(cacheKey, response, 60);
     res.json(response);
   } catch (error) {
@@ -419,7 +407,6 @@ app.get('/posts', async (req, res) => {
     });
   }
 });
-
 
 
 

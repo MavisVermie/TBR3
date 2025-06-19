@@ -26,7 +26,6 @@ export default function CardPost() {
 
   const extractCity = (location) => location?.split(' - ')[0]?.trim() || 'Unknown';
 
-  // ✅ Check if there are events to show
   useEffect(() => {
     const checkEvents = async () => {
       try {
@@ -71,15 +70,13 @@ export default function CardPost() {
         'Content-Type': 'application/json',
         ...(token && { 'Authorization': `Bearer ${token}` })
       };
-const res = await fetch(`${process.env.REACT_APP_API_URL}/posts?page=${pageNum}&limit=${POSTS_PER_PAGE}`, { headers });
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/posts?page=${pageNum}&limit=${POSTS_PER_PAGE}`, { headers });
       if (!res.ok) throw new Error(`Status ${res.status}`);
       const { posts: newPosts = [] } = await res.json();
       setHasMore(newPosts.length === POSTS_PER_PAGE);
       setPosts(prev => {
         const ids = new Set(prev.map(p => p.post_id));
-        const uniqueNewPosts = newPosts
-          .filter(p => !ids.has(p.post_id))
-          .map(p => ({ ...p, image: p.attached_photo || null }));
+        const uniqueNewPosts = newPosts.filter(p => !ids.has(p.post_id));
         return [...prev, ...uniqueNewPosts];
       });
     } catch (err) {
@@ -132,7 +129,6 @@ const res = await fetch(`${process.env.REACT_APP_API_URL}/posts?page=${pageNum}&
 
   return (
     <section className="min-h-screen bg-gray-100 py-12 px-4">
-      {/* Error Message */}
       {error && (
         <div className="max-w-6xl mx-auto mb-8 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
           <p>{error}</p>
@@ -142,7 +138,6 @@ const res = await fetch(`${process.env.REACT_APP_API_URL}/posts?page=${pageNum}&
         </div>
       )}
 
-      {/* ✅ Events Section (only if events exist) */}
       {hasEvents && (
         <div className="bg-gray-100 mb-12">
           <div className="container">
@@ -159,7 +154,6 @@ const res = await fetch(`${process.env.REACT_APP_API_URL}/posts?page=${pageNum}&
         </div>
       )}
 
-      {/* Filters */}
       <div className="max-w-6xl mx-auto text-center mt-0 mb-6">
         <div className="flex flex-wrap justify-center gap-6">
           <Select label="Category" value={selectedCategory} onChange={setSelectedCategory} options={categoryOptions} />
@@ -178,17 +172,21 @@ const res = await fetch(`${process.env.REACT_APP_API_URL}/posts?page=${pageNum}&
         </div>
       </div>
 
-      {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-14 mx-auto">
         {filteredAndSorted.map(post => (
           <Link to={`/posts/${post.post_id}`} key={post.post_id}>
             <div className="bg-white shadow rounded-xl overflow-hidden transition-transform duration-300 hover:shadow-xl hover:scale-105 hover:ring-2 hover:ring-green-700 w-full h-80 pt-4">
               <div className="w-full h-2/3 flex items-center justify-center bg-white">
-                {post.image ? (
+                {post.attached_photo_url ? (
                   <img
-                    src={`data:image/jpeg;base64,${post.image}`}
+                    src={post.attached_photo_url}
                     alt={post.title}
                     className="object-cover w-2/3 h-full rounded-lg transition-transform duration-300"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/fallback.jpg";
+                    }}
                   />
                 ) : (
                   <svg className="w-12 h-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -197,7 +195,7 @@ const res = await fetch(`${process.env.REACT_APP_API_URL}/posts?page=${pageNum}&
                       strokeLinejoin="round"
                       strokeWidth="1.5"
                       d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 
-                          002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                     />
                   </svg>
                 )}
@@ -216,7 +214,6 @@ const res = await fetch(`${process.env.REACT_APP_API_URL}/posts?page=${pageNum}&
         ))}
       </div>
 
-      {/* Load More / No Results */}
       {hasMore ? (
         <div ref={loadMoreRef}>
           <LoadingSpinner />
