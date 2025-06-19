@@ -18,11 +18,7 @@ const feedbackRouter = require("./routes/feedback");
 const path = require('path'); 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Middleware
-app.use(cors({
-  origin: '*', // or whitelist your local frontend if needed
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true
-}));
+app.use(cors());
 app.use(express.json());
 app.use(fileUpload());
 
