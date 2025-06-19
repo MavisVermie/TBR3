@@ -5,7 +5,7 @@ const app = express();
 const cors = require("cors");
 const corsOptions = {
   origin: 'https://tbr3.org',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'jwt_token'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
 };
