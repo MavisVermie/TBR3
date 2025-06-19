@@ -6,11 +6,10 @@ export default function RegistrationPage({ setAuth }) {
     username: '',
     email: '',
     password: '',
-    zip_code: '',
     phone_number: ''
   });
 
-  const { username, email, password, zip_code, phone_number } = inputs;
+  const { username, email, password, phone_number } = inputs;
 
   const onChange = e =>
     setInputs({ ...inputs, [e.target.name]: e.target.value });
@@ -32,7 +31,6 @@ export default function RegistrationPage({ setAuth }) {
         username,
         password,
         email,
-        zip_code,
         phone_number: formattedPhone
       };
 
@@ -80,7 +78,7 @@ export default function RegistrationPage({ setAuth }) {
       <div className="w-full md:w-2/3 flex flex-col items-center justify-center bg-gray-100 px-4 py-8  font-sans">
         <h2 className="text-3xl font-bold text-green-600 mb-10">إنشاء حساب</h2>
         <form onSubmit={onSubmitForm} className="w-full max-w-md space-y-3 ">
-          {['username', 'email', 'password', 'phone_number', 'zip_code'].map((field, index) => (
+          {['username', 'email', 'password', 'phone_number'].map((field, index) => (
             <input
               key={index}
               type={
@@ -101,7 +99,6 @@ export default function RegistrationPage({ setAuth }) {
               className="w-full px-4 py-2 border rounded-full transition duration-200 outline-none
                 focus:border-green-500 focus:ring-2 focus:ring-green-400
                 hover:ring-2 hover:ring-green-400 text-right mr-8"
-              required={field !== 'zip_code'}
             />
           ))}
           <button
