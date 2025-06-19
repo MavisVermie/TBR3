@@ -165,7 +165,7 @@ const filteredAndSorted = useMemo(() => {
               type="text"
               value={searchQuery}
               onChange={e => setSearchQuery(e.target.value)}
-              placeholder="e.g. chair"
+              placeholder="e.g.chair"
               className="border px-3 py-1 rounded shadow-sm w-40"
             />
           </div>
@@ -181,7 +181,7 @@ const filteredAndSorted = useMemo(() => {
                   <img
                     src={post.attached_photo_url}
                     alt={post.title}
-                    className="object-cover w-2/3 h-full rounded-lg transition-transform duration-300"
+                    className="object-cover w-3/5 h-full rounded-lg transition-transform duration-300"
                     loading="lazy"
                     onError={(e) => {
                       e.target.onerror = null;

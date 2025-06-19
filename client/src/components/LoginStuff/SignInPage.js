@@ -51,7 +51,7 @@ useEffect(() => {
 
           <form onSubmit={onSubmitForm} className="w-full text-left space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-white mb-2">Email</label>
+              <label htmlFor="email" className="block text-sm  text-black mb-2">Email</label>
               <input
                 id="email"
                 name="email"
@@ -65,7 +65,7 @@ useEffect(() => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-white mb-2">Password</label>
+              <label htmlFor="password" className="block text-sm  text-black mb-2">Password</label>
               <input
                 id="password"
                 name="password"
@@ -79,21 +79,21 @@ useEffect(() => {
             </div>
 
             <p className="text-sm text-center">
-              <a href="/forgot-password" className="text-white hover:underline transition duration-150">
+              <a href="/forgot-password" className="text-black hover:underline transition duration-150">
                 Forgot your password?
               </a>
             </p>
 
             <button
               type="submit"
-              className="w-full rounded-xl bg-green-600 px-5 py-2 text-sm font-semibold text-white shadow-lg transition duration-200 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              className="w-full rounded-xl bg-red-800 px-5 py-2 text-sm font-semibold text-white shadow-lg transition duration-200 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
             >
               Sign in
             </button>
 
-            <p className="text-sm text-center text-white">
+            <p className="text-sm text-center text-black">
               Don't have an account?{" "}
-              <a href="/authentication/registration" className="text-green-600 hover:underline transition duration-150">
+              <a href="/authentication/registration" className="text-red-800 hover:underline transition duration-150">
                 Register
               </a>
             </p>
