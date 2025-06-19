@@ -228,26 +228,29 @@ router.get("/posts/:id", async (req, res) => {
     }
 
     // Get ALL images (primary + extra), already stored as full URLs
-    const imagesResult = await pool.query(
-      "SELECT image_url FROM post_images WHERE post_id = $1 ORDER BY id ASC",
-      [id]
-    );
+  const imagesResult = await pool.query(
+  "SELECT image_url FROM post_images WHERE post_id = $1 ORDER BY id ASC",
+  [id]
+);
 
-    const imageUrls = imagesResult.rows.map(row => row.image_url);
+const imageUrls = imagesResult.rows.map(row => row.image_url);
+const primaryImage = imageUrls[0] || null;
+const extraImages = imageUrls.slice(1);
 
-    // Final response
-    res.json({
-      post_id: post.post_id,
-      title: post.title,
-      description: post.description,
-      images: imageUrls,
-      username: post.username,
-      email: post.email,
-      phone: post.phone,
-      location: post.location || '',
-      features: parsedFeatures,
-      user_id: post.user_id
-    });
+// Final response
+res.json({
+  post_id: post.post_id,
+  title: post.title,
+  description: post.description,
+  primary_photo: primaryImage,
+  extra_images: extraImages,
+  username: post.username,
+  email: post.email,
+  phone: post.phone,
+  location: post.location || '',
+  features: parsedFeatures,
+  user_id: post.user_id
+});
 
   } catch (err) {
     console.error("Error fetching post by ID:", err.message);
