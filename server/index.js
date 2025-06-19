@@ -3,9 +3,13 @@ console.log("JWT Secret loaded:", process.env.JWT_SECRET);
 const express = require("express");
 const app = express();
 const cors = require("cors");
-app.use(cors({
-  origin: "https://tbr3.org"
-}));
+const corsOptions = {
+  origin: 'https://tbr3.org',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+  allowedHeaders: ['Content-Type', 'Authorization']
+};
+app.use(cors(corsOptions));
 const pool = require("./db");
 const fileUpload = require("express-fileupload");
 const bcrypt = require("bcrypt");
