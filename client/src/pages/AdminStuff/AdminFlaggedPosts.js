@@ -1,19 +1,33 @@
-import React, { useEffect, useState } from 'react';
-import { toast } from 'react-toastify';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
 
-function AdminFlaggedPosts() {
-  const [flaggedPosts, setFlaggedPosts] = useState([]);
+export default function AdminFlaggedPosts() {
+  const [posts, setPosts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const fetchFlaggedPosts = async () => {
     try {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/admin/flagged-posts`, {
-        headers: { jwt_token: localStorage.getItem("token") },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
+
       const data = await res.json();
-      setFlaggedPosts(data);
+      if (Array.isArray(data)) {
+        setPosts(data);
+      } else {
+        console.error("Invalid data format:", data);
+        toast.error("Failed to load flagged posts");
+      }
     } catch (err) {
-      console.error(err);
-      toast.error("Failed to load flagged posts");
+      console.error("Fetch error:", err);
+      toast.error("Failed to fetch flagged posts");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -21,7 +35,9 @@ function AdminFlaggedPosts() {
     try {
       await fetch(`${process.env.REACT_APP_API_URL}/admin/posts/${postId}/approve`, {
         method: "PUT",
-        headers: { jwt_token: localStorage.getItem("token") },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
       toast.success("Post approved");
       fetchFlaggedPosts();
@@ -35,7 +51,9 @@ function AdminFlaggedPosts() {
     try {
       await fetch(`${process.env.REACT_APP_API_URL}/admin/posts/${postId}`, {
         method: "DELETE",
-        headers: { jwt_token: localStorage.getItem("token") },
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
       toast.success("Post deleted");
       fetchFlaggedPosts();
@@ -45,32 +63,62 @@ function AdminFlaggedPosts() {
   };
 
   useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return navigate("/login");
+
+    try {
+      const decoded = jwtDecode(token);
+      if (!decoded.isAdmin) return navigate("/not-authorized");
+    } catch (err) {
+      console.error("Invalid token:", err);
+      return navigate("/login");
+    }
+
     fetchFlaggedPosts();
-  }, []);
+  }, [navigate]);
 
   return (
-    <div className="p-6">
-      <h2 className="text-2xl font-bold mb-4">Flagged Posts for Review</h2>
-      {flaggedPosts.length === 0 ? (
-        <p>No flagged posts.</p>
+    <div className="min-h-screen bg-gray-100 p-6">
+      <h2 className="text-3xl font-semibold text-center text-red-700 mb-8">
+        Admin Panel – Flagged Posts
+      </h2>
+
+      {loading ? (
+        <div className="flex justify-center items-center h-32">
+          <div className="w-10 h-10 border-4 border-green-500 border-dashed rounded-full animate-spin"></div>
+        </div>
+      ) : posts.length === 0 ? (
+        <p className="text-center text-gray-600 text-lg">No flagged posts found.</p>
       ) : (
-        <div className="space-y-6">
-          {flaggedPosts.map(post => (
-            <div key={post.post_id} className="bg-white p-4 rounded shadow-md flex items-center justify-between">
-              <div>
-                <h3 className="text-lg font-semibold">{post.title}</h3>
-                <p className="text-sm text-gray-600">By: {post.username} ({post.email})</p>
-                <p className="text-sm text-gray-500 mt-1">{post.description?.slice(0, 100)}...</p>
-              </div>
-              <div className="flex items-center gap-3">
-                {post.primary_image_url && (
-                  <img src={post.primary_image_url} alt="Post" className="w-24 h-24 object-cover rounded" />
-                )}
-                <div className="flex flex-col gap-2">
-                  <button onClick={() => handleApprove(post.post_id)} className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-11">
+          {posts.map((post) => (
+            <div
+              key={post.post_id}
+              className="bg-white shadow-lg rounded-l overflow-hidden border border-gray-200"
+            >
+              {post.primary_image_url && (
+                <img
+                  src={post.primary_image_url}
+                  alt="Flagged post"
+                  className="w-full h-48 object-cover"
+                />
+              )}
+              <div className="p-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-1">{post.title}</h3>
+                <p className="text-sm text-gray-600 mb-2">
+                  Posted by: <span className="font-medium">{post.username}</span> ({post.email})
+                </p>
+                <div className="flex flex-col gap-2 mt-4">
+                  <button
+                    onClick={() => handleApprove(post.post_id)}
+                    className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-md"
+                  >
                     Approve
                   </button>
-                  <button onClick={() => handleReject(post.post_id)} className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">
+                  <button
+                    onClick={() => handleReject(post.post_id)}
+                    className="w-full bg-red-600 hover:bg-red-700 text-white py-2 rounded-md"
+                  >
                     Reject
                   </button>
                 </div>
@@ -82,5 +130,3 @@ function AdminFlaggedPosts() {
     </div>
   );
 }
-
-export default AdminFlaggedPosts;

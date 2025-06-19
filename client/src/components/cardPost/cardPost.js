@@ -95,16 +95,17 @@ export default function CardPost() {
     return ['All', ...new Set(posts.map(p => extractCity(p.location)).filter(Boolean))];
   }, [posts]);
 
-  const filteredAndSorted = useMemo(() => {
-    return posts
-      .filter(p => selectedCategory === 'All' || (p.features?.[0] || 'Other') === selectedCategory)
-      .filter(p => selectedLocation === 'All' || extractCity(p.location) === selectedLocation)
-      .filter(p => p.title?.toLowerCase().includes(searchQuery.toLowerCase()))
-      .sort((a, b) => {
-        const da = new Date(a.created_at), db = new Date(b.created_at);
-        return sortOrder === 'Newest' ? db - da : da - db;
-      });
-  }, [posts, selectedCategory, selectedLocation, searchQuery, sortOrder]);
+const filteredAndSorted = useMemo(() => {
+  return posts
+    .filter(p => p.status === 'active') // ✅ Only show active posts
+    .filter(p => selectedCategory === 'All' || (p.features?.[0] || 'Other') === selectedCategory)
+    .filter(p => selectedLocation === 'All' || extractCity(p.location) === selectedLocation)
+    .filter(p => p.title?.toLowerCase().includes(searchQuery.toLowerCase()))
+    .sort((a, b) => {
+      const da = new Date(a.created_at), db = new Date(b.created_at);
+      return sortOrder === 'Newest' ? db - da : da - db;
+    });
+}, [posts, selectedCategory, selectedLocation, searchQuery, sortOrder]);
 
   const loadMoreRef = useCallback((node) => {
     if (isLoading) return;
