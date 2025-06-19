@@ -144,28 +144,25 @@ router.delete("/delete-post/:id", authorize, async (req, res) => {
     res.status(500).send("Server error");
   }
 });
-// GET single post by ID with extra images
 router.get("/posts/:id", async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Fetch main post details including features and location
+    // Fetch post data
     const postResult = await pool.query(`
       SELECT  
-  posts.post_id,
-  posts.title,
-  posts.description,
-  posts.primary_photo,
-  posts.location,
-  posts.features,
-  posts.user_id,              -- ✅ post owner ID remains as is
-  users.username,
-  users.email,
-  posts.phone
-FROM posts
-LEFT JOIN users ON posts.user_id = users.id
-WHERE posts.post_id = $1
-
+        posts.post_id,
+        posts.title,
+        posts.description,
+        posts.location,
+        posts.features,
+        posts.user_id,
+        users.username,
+        users.email,
+        posts.phone
+      FROM posts
+      LEFT JOIN users ON posts.user_id = users.id
+      WHERE posts.post_id = $1
     `, [id]);
 
     if (postResult.rows.length === 0) {
@@ -174,48 +171,39 @@ WHERE posts.post_id = $1
 
     const post = postResult.rows[0];
 
-
-
-    // ✅ Parse PostgreSQL array string like '{Furniture,Used}'
+    // Parse features if needed
     let parsedFeatures = [];
-
     if (post.features && typeof post.features === 'string') {
       parsedFeatures = post.features
-        .replace(/[{}"]/g, '')      // remove braces and quotes
-        .split(',')                 // split into array
-        .map(f => f.trim())         // trim spaces
-        .filter(f => f);            // remove empty strings
+        .replace(/[{}"]/g, '')
+        .split(',')
+        .map(f => f.trim())
+        .filter(f => f);
     } else if (Array.isArray(post.features)) {
-      // If using text[] type in PostgreSQL, no parsing needed
       parsedFeatures = post.features;
     }
 
- 
-    // Get extra images
-    const extraImagesResult = await pool.query(
-      "SELECT image FROM post_images WHERE post_id = $1",
+    // Get ALL images (primary + extra), already stored as full URLs
+    const imagesResult = await pool.query(
+      "SELECT image_url FROM post_images WHERE post_id = $1 ORDER BY id ASC",
       [id]
     );
 
-    const extraImages = extraImagesResult.rows.map(img =>
-      img.image?.toString("base64")
-    );
+    const imageUrls = imagesResult.rows.map(row => row.image_url);
 
-    // ✅ Final response
-res.json({
-  post_id: post.post_id,
-  title: post.title,
-  description: post.description,
-  primary_photo: post.primary_photo?.toString("base64") || null,
-  extra_images: extraImages,
-  username: post.username,
-  email: post.email,
-  phone: post.phone,
-  location: post.location || '',
-  features: parsedFeatures,
-  user_id: post.user_id  // ✅ still the owner ID
-});
-
+    // Final response
+    res.json({
+      post_id: post.post_id,
+      title: post.title,
+      description: post.description,
+      images: imageUrls,
+      username: post.username,
+      email: post.email,
+      phone: post.phone,
+      location: post.location || '',
+      features: parsedFeatures,
+      user_id: post.user_id
+    });
 
   } catch (err) {
     console.error("Error fetching post by ID:", err.message);

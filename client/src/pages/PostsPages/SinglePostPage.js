@@ -213,13 +213,10 @@ export default function ShowDataProduct() {
     fetchPost();
   }, [fetchPost]);
 
-  const allImages = useMemo(() => {
-    if (!post) return [];
-    return [
-      post.primary_photo,
-      ...(post.extra_images || [])
-    ].filter(Boolean);
-  }, [post]);
+ const allImages = useMemo(() => {
+  return post?.images || [];
+}, [post]);
+
 
   const handleImageClick = useCallback((index) => {
     setCurrentImageIndex(index);
