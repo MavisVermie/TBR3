@@ -272,21 +272,6 @@ app.post("/create_post", async (req, res) => {
     const primaryFile = imageFiles[0];
     const extraImages = imageFiles.slice(1);
 
-    // ✅ Moderate the primary image BEFORE creating the post
-    const imageBuffer = primaryFile.data;
-
-    try {
-      const { label, probability } = await checkImageSafety(imageBuffer);
-      console.log(`Moderation result: ${label} (${probability})`);
-
-      if (label === 'unseemly') {
-        return res.status(400).json({ message: "Image rejected due to unseemly content." });
-      }
-    } catch (modErr) {
-      console.error("Image moderation error:", modErr);
-      return res.status(500).json({ message: "Error during image moderation." });
-    }
-
     let parsedFeatures = [];
     try {
       parsedFeatures = features ? JSON.parse(features) : [];
@@ -294,9 +279,10 @@ app.post("/create_post", async (req, res) => {
       console.warn("Failed to parse features:", err.message);
     }
 
+    // ✅ Create post with default status = 'active'
     const postInsert = await pool.query(
-      `INSERT INTO posts (title, description, user_id, email, phone, features, location)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO posts (title, description, user_id, email, phone, features, location, status)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, 'active')
        RETURNING post_id`,
       [title, description, userId, email || null, phone || null, parsedFeatures.length ? parsedFeatures : null, location || null]
     );
@@ -332,7 +318,24 @@ app.post("/create_post", async (req, res) => {
       }
     });
 
+    // ✅ Respond to frontend right away
     res.json({ message: "Post created successfully", post_id: postId });
+
+    // ✅ Run moderation in background
+    setTimeout(async () => {
+      try {
+        const imageBuffer = primaryFile.data;
+        const { label, probability } = await checkImageSafety(imageBuffer);
+        console.log(`Background moderation for post ${postId}: ${label} (${probability})`);
+
+        if (label === 'unseemly') {
+          await pool.query(`UPDATE posts SET status = 'flagged' WHERE post_id = $1`, [postId]);
+          console.log(`Post ${postId} flagged as unseemly.`);
+        }
+      } catch (modErr) {
+        console.error(`Moderation failed for post ${postId}:`, modErr);
+      }
+    }, 0);
 
   } catch (err) {
     console.error("Create post error:", err);

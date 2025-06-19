@@ -18,6 +18,7 @@ import AdminPanel from './pages/AdminStuff/AdminPanel';
 import AdminPosts from './pages/AdminStuff/AdminPosts';
 import AdminUsers from './pages/AdminStuff/AdminUsers';
 import AdminEvents from './pages/AdminStuff/AdminEvents';
+import AdminFlaggedPosts from './pages/AdminStuff/AdminFlaggedPosts';
 import NewHome from './pages/Home';
 import SinglePost from './pages/PostsPages/SinglePostPage';
 import EditPostPage from './pages/PostsPages/EditPostPage';
@@ -157,6 +158,7 @@ function App() {
             <Route path="/ar/events/:id" element={<ArabicShowEvent />} />
             <Route path="/ar/authentication/login" element={isAuthenticated ? <Navigate to="/ar/home" /> : <ArabicSignIn setAuth={setAuth} />} />
             <Route path="/ar/authentication/registration" element={isAuthenticated ? <Navigate to="/ar/home" /> : <ArabicRegistration setAuth={setAuth} />} />
+            <Route path="/admin/flagged" element={<AdminFlaggedPosts />} />
 
           </Routes>
         </Layout>

@@ -107,5 +107,49 @@ router.delete("/posts/:postId", async (req, res) => {
 router.get("/test", (req, res) => {
   res.send("Admin test route works!");
 });
+router.get("/flagged-posts", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT 
+        posts.post_id,
+        posts.title,
+        posts.description,
+        posts.status,
+        users.id AS user_id,
+        users.username,
+        users.email
+      FROM posts
+      JOIN users ON posts.user_id = users.id
+      WHERE posts.status = 'flagged'
+      ORDER BY posts.post_id DESC
+    `);
+
+    const flaggedPosts = await Promise.all(result.rows.map(async (post) => {
+      const imgRes = await pool.query(
+        "SELECT image_url FROM post_images WHERE post_id = $1 LIMIT 1",
+        [post.post_id]
+      );
+      return {
+        ...post,
+        primary_image_url: imgRes.rows[0]?.image_url || null,
+      };
+    }));
+
+    res.json(flaggedPosts);
+  } catch (err) {
+    console.error("Fetch flagged posts error:", err.message);
+    res.status(500).json({ msg: "Server error" });
+  }
+});
+router.put("/posts/:postId/approve", async (req, res) => {
+  try {
+    const { postId } = req.params;
+    await pool.query(`UPDATE posts SET status = 'active' WHERE post_id = $1`, [postId]);
+    res.json({ msg: "Post approved and reactivated" });
+  } catch (err) {
+    console.error("Approve post error:", err.message);
+    res.status(500).json({ msg: "Server error" });
+  }
+});
 
 module.exports = router;
