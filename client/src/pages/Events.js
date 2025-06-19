@@ -23,7 +23,9 @@ const Events = () => {
   }, []);
 
   return (
-    <div className="container mx-auto px-4 py-8 bg-gray-100">
+    <section className="min-h-screen bg-gray-100 bg-cover w-full px-5 py-2">
+    <div >
+      
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
         <h1 className="text-4xl font-semibold text-green-700">
@@ -56,7 +58,7 @@ const Events = () => {
           ))}
         </div>
       )}
-    </div>
+    </div></section>
   );
 };
 
