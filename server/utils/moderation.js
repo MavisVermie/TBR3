@@ -1,4 +1,5 @@
-const nsfw = require('nsfwjs');
+//MAVIS WAS HEREEEEEE
+const nsfw = require('nsfwjs'); 
 const tf = require('@tensorflow/tfjs-node');
 const jpeg = require('jpeg-js');
 
@@ -18,17 +19,17 @@ async function checkImageSafety(imageBuffer) {
   const predictions = await model.classify(input);
   input.dispose();
 
-  // Define which categories we consider unseemly
+  // define which categories we consider unseemly
   const riskyCategories = ['Explicit1', 'Explicit2', 'Suggestive'];
 
-  // Map original category names to cleaner internal names
+  // map original category names to cleaner internal names
   const categoryMap = {
     'Porn': 'Explicit1',
     'Hentai': 'Explicit2',
     'Sexy': 'Suggestive',
   };
 
-  // Sum probability of all unseemly content
+  // sum probability of all unseemly content
   let riskyProbability = 0;
   for (const prediction of predictions) {
     const cleanName = categoryMap[prediction.className];
@@ -38,7 +39,7 @@ async function checkImageSafety(imageBuffer) {
   }
 
   const label = riskyProbability > 0.7 ? 'unseemly' : 'normal';
-  return { label: className, probability };
+  return { label, probability: riskyProbability };
 }
 
 module.exports = { checkImageSafety };
