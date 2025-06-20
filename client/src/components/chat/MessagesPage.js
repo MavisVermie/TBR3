@@ -1,16 +1,23 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
 export default function MessagesPage() {
   const [contacts, setContacts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [currentUserId, setCurrentUserId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const decoded = jwtDecode(token);
+      setCurrentUserId(decoded.userId);
+    }
+
     const fetchContacts = async () => {
       try {
-        const token = localStorage.getItem('token');
         const res = await axios.get(`${process.env.REACT_APP_API_URL}/messages/contacts`, {
           headers: {
             Authorization: `Bearer ${token}`
@@ -33,11 +40,26 @@ export default function MessagesPage() {
     if (!timestamp) return '';
     const date = new Date(timestamp);
     const now = new Date();
-    const isToday = date.toDateString() === new Date().toDateString();
+    const isToday = date.toDateString() === now.toDateString();
     const isYesterday = date.toDateString() === new Date(Date.now() - 86400000).toDateString();
     if (isToday) return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     if (isYesterday) return 'Yesterday';
     return date.toLocaleDateString();
+  };
+
+  const getStatusIcon = (contact) => {
+    if (contact.last_sender_id !== currentUserId) return null;
+
+    const style = {
+      fontSize: '14px',
+      marginLeft: '6px'
+    };
+
+    if (contact.last_status === 'read') {
+      return <span style={{ ...style, color: '#007bff' }}>✔✔</span>; // Blue for read
+    } else {
+      return <span style={{ ...style, color: '#999' }}>✔</span>; // Gray for sent
+    }
   };
 
   if (loading) return <p>Loading conversations...</p>;
@@ -110,9 +132,11 @@ export default function MessagesPage() {
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                marginTop: '2px'
+                marginTop: '2px',
+                display: 'flex',
+                alignItems: 'center'
               }}>
-                {contact.last_message || 'No messages yet'}
+                {contact.last_message || 'No messages yet'} {getStatusIcon(contact)}
               </div>
             </div>
 

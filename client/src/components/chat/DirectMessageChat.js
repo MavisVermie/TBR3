@@ -8,121 +8,163 @@ export default function DirectMessageChat({ currentUserId, otherUserId }) {
   const [otherUserName, setOtherUserName] = useState(`User ${otherUserId}`);
   const chatContainerRef = useRef(null);
 
-  // 👤 Fetch the other user's name
+  // Fetch user name
   useEffect(() => {
     const fetchUserName = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await axios.get(
-          `${process.env.REACT_APP_API_URL}/api/users/${otherUserId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        if (res.data?.username) {
-          setOtherUserName(res.data.username);
-        }
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/${otherUserId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setOtherUserName(res.data?.username || `User ${otherUserId}`);
       } catch (err) {
         console.error('Error fetching user info:', err);
       }
     };
-
-    if (otherUserId) fetchUserName();
+    fetchUserName();
   }, [otherUserId]);
 
-  // 📨 Fetch chat history & mark messages as read
+  // Fetch messages + notify server we're in the chat
   useEffect(() => {
     const fetchMessages = async () => {
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch(
-          `${process.env.REACT_APP_API_URL}/messages/${otherUserId}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const res = await fetch(`${process.env.REACT_APP_API_URL}/messages/${otherUserId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
         const data = await res.json();
         const formatted = data.map((msg) => ({
+          id: msg.id,
           from: msg.sender_id === currentUserId ? 'me' : 'them',
           text: msg.content,
-          timestamp: msg.timestamp
+          timestamp: msg.timestamp,
+          status: msg.status || 'sent',
         }));
         setChat(formatted);
 
-        // ✅ Mark messages from otherUserId as read
-        await fetch(`${process.env.REACT_APP_API_URL}/messages/${otherUserId}/read`, {
-          method: 'PATCH',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+        // Notify backend we are chatting
+        socket.emit('chat_open', {
+          userId: currentUserId,
+          chattingWith: otherUserId,
         });
+
+        // Mark as read
+const readRes = await axios.patch(
+  `${process.env.REACT_APP_API_URL}/messages/${otherUserId}/read`,
+  {},
+  { headers: { Authorization: `Bearer ${token}` } }
+);
+
+// 🔁 Emit read receipts for each newly read message
+if (Array.isArray(readRes.data?.readMessageIds)) {
+  readRes.data.readMessageIds.forEach((msgId) => {
+    socket.emit('message_read', {
+      readerId: currentUserId,
+      messageId: msgId
+    });
+  });
+}
       } catch (err) {
         console.error('Error fetching messages:', err);
       }
     };
 
     fetchMessages();
+
+    return () => {
+      socket.emit('chat_close', { userId: currentUserId });
+    };
   }, [currentUserId, otherUserId]);
 
-  // 🔌 Socket logic
+  // Socket listeners
   useEffect(() => {
     socket.connect();
     socket.emit('register', currentUserId);
 
-    const handlePrivateMessage = ({ fromUserId, message }) => {
-      if (parseInt(fromUserId) === parseInt(otherUserId)) {
-        setChat((prev) => [...prev, { from: 'them', text: message, timestamp: new Date().toISOString() }]);
-      }
+const handlePrivateMessage = ({ fromUserId, message, timestamp, id, status }) => {
+  if (parseInt(fromUserId) === parseInt(otherUserId)) {
+    setChat((prev) => {
+      const alreadyExists = prev.some(msg => msg.id === id);
+      if (alreadyExists) return prev;
+
+      return [
+        ...prev,
+        {
+          id,
+          from: 'them',
+          text: message,
+          timestamp: timestamp || new Date().toISOString(),
+          status: status || 'delivered',
+        }
+      ];
+    });
+
+    socket.emit('message_read', { readerId: currentUserId, messageId: id });
+  } else {
+    // If the sender is me and this is a status update from the server, update existing message
+    setChat((prev) =>
+      prev.map((msg) =>
+        msg.id === id ? { ...msg, status: status || msg.status } : msg
+      )
+    );
+  }
+};
+
+
+
+    const handleMessageStatusUpdate = ({ messageId, status }) => {
+      setChat((prev) =>
+        prev.map((msg) =>
+          msg.id === messageId ? { ...msg, status } : msg
+        )
+      );
     };
 
     socket.on('private_message', handlePrivateMessage);
+    socket.on('message_status_update', handleMessageStatusUpdate);
 
     return () => {
       socket.off('private_message', handlePrivateMessage);
+      socket.off('message_status_update', handleMessageStatusUpdate);
     };
   }, [currentUserId, otherUserId]);
 
-  // ⬇️ Auto scroll
+  // Auto scroll
   useEffect(() => {
     if (chatContainerRef.current) {
       chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [chat]);
 
-  // 📤 Send message
+  // Send message
   const sendMessage = async () => {
     const trimmed = message.trim();
     if (!trimmed) return;
 
     try {
       const token = localStorage.getItem('token');
-      await fetch(`${process.env.REACT_APP_API_URL}/messages`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          receiver_id: otherUserId,
-          content: trimmed,
-        }),
-      });
+      const res = await axios.post(
+        `${process.env.REACT_APP_API_URL}/messages`,
+        { receiver_id: otherUserId, content: trimmed },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      const newMessage = {
+        id: res.data.id,
+        from: 'me',
+        text: trimmed,
+        timestamp: res.data.timestamp || new Date().toISOString(),
+        status: 'sent',
+      };
+
+      setChat((prev) => [...prev, newMessage]);
 
       socket.emit('private_message', {
         toUserId: otherUserId,
         fromUserId: currentUserId,
         message: trimmed,
+        messageId: res.data.id,
       });
-
-      setChat((prev) => [...prev, {
-        from: 'me',
-        text: trimmed,
-        timestamp: new Date().toISOString()
-      }]);
 
       setMessage('');
     } catch (err) {
@@ -135,14 +177,16 @@ export default function DirectMessageChat({ currentUserId, otherUserId }) {
     return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
+  const getTick = (msg) => {
+    if (msg.from !== 'me') return null;
+    if (msg.status === 'read') return '✓✓';
+    if (msg.status === 'delivered') return '✓✓';
+    return '✓';
+  };
+
   return (
     <div style={{ maxWidth: '600px', margin: '40px auto', padding: '16px' }}>
-      <h2 style={{
-        textAlign: 'center',
-        marginBottom: '20px',
-        fontSize: '22px',
-        color: '#333'
-      }}>
+      <h2 style={{ textAlign: 'center', marginBottom: '20px', fontSize: '22px', color: '#333' }}>
         Chat with {otherUserName}
       </h2>
 
@@ -155,7 +199,7 @@ export default function DirectMessageChat({ currentUserId, otherUserId }) {
           height: '400px',
           overflowY: 'auto',
           background: '#ffffff',
-          boxShadow: '0 0 10px rgba(0, 0, 0, 0.05)'
+          boxShadow: '0 0 10px rgba(0, 0, 0, 0.05)',
         }}
       >
         {chat.map((msg, idx) => (
@@ -164,7 +208,7 @@ export default function DirectMessageChat({ currentUserId, otherUserId }) {
             style={{
               display: 'flex',
               justifyContent: msg.from === 'me' ? 'flex-end' : 'flex-start',
-              marginBottom: '10px'
+              marginBottom: '10px',
             }}
           >
             <div style={{ textAlign: msg.from === 'me' ? 'right' : 'left' }}>
@@ -176,16 +220,24 @@ export default function DirectMessageChat({ currentUserId, otherUserId }) {
                   borderRadius: '18px',
                   maxWidth: '300px',
                   wordWrap: 'break-word',
-                  fontSize: '14px'
+                  fontSize: '14px',
+                  position: 'relative',
                 }}
               >
                 {msg.text}
+                {msg.from === 'me' && (
+                  <span
+                    style={{
+                      fontSize: '11px',
+                      marginLeft: '8px',
+                      color: msg.status === 'read' ? '#4CAF50' : '#ccc',
+                    }}
+                  >
+                    {getTick(msg)}
+                  </span>
+                )}
               </div>
-              <div style={{
-                fontSize: '11px',
-                color: '#999',
-                marginTop: '4px'
-              }}>
+              <div style={{ fontSize: '11px', color: '#999', marginTop: '4px' }}>
                 {formatTime(msg.timestamp)}
               </div>
             </div>
@@ -198,7 +250,7 @@ export default function DirectMessageChat({ currentUserId, otherUserId }) {
           marginTop: '16px',
           display: 'flex',
           alignItems: 'center',
-          gap: '10px'
+          gap: '10px',
         }}
       >
         <input
@@ -212,7 +264,7 @@ export default function DirectMessageChat({ currentUserId, otherUserId }) {
             border: '1px solid #ccc',
             outline: 'none',
             fontSize: '14px',
-            backgroundColor: '#f8f8f8'
+            backgroundColor: '#f8f8f8',
           }}
         />
         <button
@@ -226,10 +278,7 @@ export default function DirectMessageChat({ currentUserId, otherUserId }) {
             fontWeight: 'bold',
             cursor: 'pointer',
             fontSize: '14px',
-            transition: 'background 0.3s'
           }}
-          onMouseOver={e => e.currentTarget.style.backgroundColor = '#0056b3'}
-          onMouseOut={e => e.currentTarget.style.backgroundColor = '#007bff'}
         >
           Send
         </button>

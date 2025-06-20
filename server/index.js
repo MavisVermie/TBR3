@@ -566,10 +566,8 @@ setInterval(() => {
 const http = require("http");
 const { Server } = require("socket.io");
 
-// Create HTTP server from Express
 const server = http.createServer(app);
 
-// Initialize socket.io server
 const io = new Server(server, {
   cors: {
     origin: ['https://tbr3.org', 'http://localhost:3000'],
@@ -578,10 +576,8 @@ const io = new Server(server, {
   }
 });
 
-// Load socket logic from separate file
-require("./utils/socket")(io);
+require("./utils/socket")(io); // your socket logic
 
-// Start HTTP + WebSocket server
 server.listen(5000, '0.0.0.0', () => {
   console.log("🚀 Server running on port 5000");
 });

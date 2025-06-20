@@ -4,15 +4,14 @@ const pool = require('../db');
 const authorize = require('../middleware/authorize');
 
 // Send a message
-// Send a message
 router.post('/', authorize, async (req, res) => {
   const { receiver_id, content } = req.body;
   const sender_id = req.user.id;
 
   try {
     const result = await pool.query(
-      `INSERT INTO messages (sender_id, receiver_id, content, is_read, updated_at)
-       VALUES ($1, $2, $3, FALSE, NOW())
+      `INSERT INTO messages (sender_id, receiver_id, content, is_read, updated_at, status)
+       VALUES ($1, $2, $3, FALSE, NOW(), 'sent')
        RETURNING *`,
       [sender_id, receiver_id, content]
     );
@@ -22,36 +21,45 @@ router.post('/', authorize, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
-// Mark messages from a user as read
-router.patch('/mark-read/:userId', authorize, async (req, res) => {
-  const receiver_id = req.user.id; // the logged-in user
+
+router.patch('/:userId/read', authorize, async (req, res) => {
+  const receiver_id = req.user.id;
   const sender_id = req.params.userId;
 
   try {
-    await pool.query(
+    const result = await pool.query(
       `UPDATE messages
-       SET is_read = TRUE
-       WHERE sender_id = $1 AND receiver_id = $2 AND is_read = FALSE`,
+       SET is_read = TRUE,
+           status = 'read'
+       WHERE sender_id = $1 AND receiver_id = $2 AND is_read = FALSE
+       RETURNING id`,
       [sender_id, receiver_id]
     );
-    res.json({ success: true });
+
+    const readIds = result.rows.map(row => row.id);
+    res.json({ success: true, readMessageIds: readIds });
   } catch (err) {
     console.error('Error marking messages as read:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-// Get users you’ve chatted with, including last message and unread count
+
+// Get users you’ve chatted with
 router.get('/contacts', authorize, async (req, res) => {
   const userId = req.user.id;
 
   try {
     const result = await pool.query(
       `
-      SELECT u.id, u.username,
-             m2.content AS last_message,
-             m2.updated_at AS last_timestamp,
-             COALESCE(unread.count, 0) AS unread_count
+      SELECT 
+        u.id, 
+        u.username,
+        m2.content AS last_message,
+        m2.updated_at AS last_timestamp,
+        m2.sender_id AS last_sender_id,
+        m2.status AS last_status,
+        COALESCE(unread.count, 0) AS unread_count
       FROM (
         SELECT DISTINCT
           CASE
@@ -63,7 +71,7 @@ router.get('/contacts', authorize, async (req, res) => {
       ) contacts
       JOIN users u ON u.id = contacts.contact_id
       LEFT JOIN LATERAL (
-        SELECT content, updated_at
+        SELECT content, updated_at, sender_id, status
         FROM messages
         WHERE (sender_id = u.id AND receiver_id = $1)
            OR (sender_id = $1 AND receiver_id = u.id)
@@ -87,28 +95,8 @@ router.get('/contacts', authorize, async (req, res) => {
   }
 });
 
-router.patch('/:userId/read', authorize, async (req, res) => {
-  const readerId = req.user.id;
-  const senderId = req.params.userId;
 
-  try {
-    await pool.query(
-      `
-      UPDATE messages
-      SET is_read = true
-      WHERE sender_id = $1 AND receiver_id = $2 AND is_read = false
-      `,
-      [senderId, readerId]
-    );
-
-    res.json({ success: true });
-  } catch (err) {
-    console.error('Error marking messages as read:', err);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
-
-// Get messages between two users
+// Get chat messages between two users
 router.get('/:userId', authorize, async (req, res) => {
   const sender_id = req.user.id;
   const receiver_id = req.params.userId;
@@ -116,7 +104,8 @@ router.get('/:userId', authorize, async (req, res) => {
   try {
     const result = await pool.query(
       `
-      SELECT * FROM messages 
+      SELECT *
+      FROM messages 
       WHERE (sender_id = $1 AND receiver_id = $2)
          OR (sender_id = $2 AND receiver_id = $1)
       ORDER BY timestamp ASC
@@ -130,6 +119,61 @@ router.get('/:userId', authorize, async (req, res) => {
   }
 });
 
+// Mark messages as read (legacy route for flexibility)
+router.patch('/mark-read/:userId', authorize, async (req, res) => {
+  const receiver_id = req.user.id;
+  const sender_id = req.params.userId;
+  const io = req.io;
 
+  try {
+    const result = await pool.query(
+      `UPDATE messages
+       SET is_read = TRUE,
+           status = 'read'
+       WHERE sender_id = $1 AND receiver_id = $2 AND is_read = FALSE
+       RETURNING id`,
+      [sender_id, receiver_id]
+    );
+
+    const updatedMessages = result.rows;
+
+    // 🔔 Real-time notify sender(s)
+    if (updatedMessages.length > 0 && io) {
+      const { users } = require('../socket'); // assuming users map is exported
+      const targetSockets = users.get(String(sender_id));
+      if (targetSockets) {
+        for (const socketId of targetSockets) {
+          io.to(socketId).emit('messages_marked_read', {
+            byUserId: receiver_id,
+            messageIds: updatedMessages.map(m => m.id)
+          });
+        }
+      }
+    }
+
+    res.json({ success: true, updated: updatedMessages.length });
+  } catch (err) {
+    console.error('Error marking messages as read:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
+
+
+router.patch('/:messageId/delivered', authorize, async (req, res) => {
+  const { messageId } = req.params;
+
+  try {
+    await pool.query(
+      `UPDATE messages
+       SET status = 'delivered'
+       WHERE id = $1 AND status = 'sent'`,
+      [messageId]
+    );
+    res.json({ success: true });
+  } catch (err) {
+    console.error('Error marking message as delivered:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
 module.exports = router;
