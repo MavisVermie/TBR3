@@ -20,6 +20,7 @@ const { checkImageSafety } = require("./utils/moderation");
 const jwtSecret = process.env.JWT_SECRET; // Use environment variable
 const crypto = require('crypto');
 const NodeCache = require('node-cache');
+const verifyRoutes = require('./routes/phoneverifyroutes');
 const cache = new NodeCache();
 // const sharp = require('sharp');
 const feedbackRouter = require("./routes/feedback");
@@ -40,6 +41,8 @@ app.use("/admin", require("./routes/adminroutes"));
 app.use("/authentication", require("./routes/jwtAuth"));
 app.use("/Posting", require("./routes/itemPost"));
 app.use('/messages', require('./routes/messages'));
+app.use('/api/verify', verifyRoutes);
+
 // app.use("/images", require("./routes/imageRoutes"));
 // Backend Route to Fetch Images by postId
 app.get('/images/:postId', async (req, res) => {
@@ -163,13 +166,13 @@ app.put("/update-credentials", authorize, async (req, res) => {
 // Registration Route
 app.post("/authentication/registration", async (req, res) => {
   try {
-    const { username, password, email, zip_code, phone_number } = req.body;
+    const { username, password, email, phone_number } = req.body;
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
     const { rows } = await pool.query(
-      "INSERT INTO users (username, password, email, zip_code, phone_number) VALUES ($1, $2, $3, $4, $5) RETURNING id",
-      [username, hashedPassword, email, zip_code, phone_number]
+      "INSERT INTO users (username, password, email, phone_number) VALUES ($1, $2, $3, $4) RETURNING id",
+      [username, hashedPassword, email, phone_number]
     );
 
     const userId = rows[0].id;
@@ -380,7 +383,6 @@ const result = await pool.query(`
     p.location AS post_location,
     u.email,
     p.description,
-    u.zip_code,
     (
       SELECT image_url 
       FROM post_images 
@@ -402,7 +404,6 @@ const result = await pool.query(`
       email: post.email,
       description: post.description,
       userId: post.user_id,
-      zip_code: post.zip_code,
       features: post.features || ["Other"],
       attached_photo_url: post.attached_photo_url || null,
       created_at: post.created_at,

@@ -50,7 +50,7 @@ export default function CardPost() {
         });
         if (res.ok) {
           const [profile] = await res.json();
-          if (profile) setUserZipCode(profile.zip_code);
+          if (profile) {}
         } else if (res.status === 401) {
           localStorage.removeItem('token');
         }
