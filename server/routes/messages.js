@@ -22,6 +22,7 @@ router.post('/', authorize, async (req, res) => {
   }
 });
 
+// Mark messages as read (batch)
 router.patch('/:userId/read', authorize, async (req, res) => {
   const receiver_id = req.user.id;
   const sender_id = req.params.userId;
@@ -44,8 +45,7 @@ router.patch('/:userId/read', authorize, async (req, res) => {
   }
 });
 
-
-// Get users you’ve chatted with
+// Get chat contacts
 router.get('/contacts', authorize, async (req, res) => {
   const userId = req.user.id;
 
@@ -95,70 +95,41 @@ router.get('/contacts', authorize, async (req, res) => {
   }
 });
 
-
-// Get chat messages between two users
+// ✅ GET chat messages with pagination
 router.get('/:userId', authorize, async (req, res) => {
   const sender_id = req.user.id;
   const receiver_id = req.params.userId;
+  const { before } = req.query;
+  const limit = 20;
 
   try {
-    const result = await pool.query(
-      `
+    const values = [sender_id, receiver_id, receiver_id, sender_id];
+    let query = `
       SELECT *
-      FROM messages 
-      WHERE (sender_id = $1 AND receiver_id = $2)
-         OR (sender_id = $2 AND receiver_id = $1)
-      ORDER BY timestamp ASC
-      `,
-      [sender_id, receiver_id]
-    );
-    res.json(result.rows);
+      FROM messages
+      WHERE ((sender_id = $1 AND receiver_id = $2)
+          OR (sender_id = $3 AND receiver_id = $4))
+    `;
+
+    if (before) {
+      values.push(before);
+      query += ` AND timestamp < $5`;
+    }
+
+    query += ` ORDER BY timestamp DESC LIMIT ${limit}`;
+
+    const result = await pool.query(query, values);
+    res.json(result.rows.reverse());
   } catch (err) {
     console.error('Error fetching messages:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });
 
-// Mark messages as read (legacy route for flexibility)
-router.patch('/mark-read/:userId', authorize, async (req, res) => {
-  const receiver_id = req.user.id;
-  const sender_id = req.params.userId;
-  const io = req.io;
-
-  try {
-    const result = await pool.query(
-      `UPDATE messages
-       SET is_read = TRUE,
-           status = 'read'
-       WHERE sender_id = $1 AND receiver_id = $2 AND is_read = FALSE
-       RETURNING id`,
-      [sender_id, receiver_id]
-    );
-
-    const updatedMessages = result.rows;
-
-    // 🔔 Real-time notify sender(s)
-    if (updatedMessages.length > 0 && io) {
-      const { users } = require('../socket'); // assuming users map is exported
-      const targetSockets = users.get(String(sender_id));
-      if (targetSockets) {
-        for (const socketId of targetSockets) {
-          io.to(socketId).emit('messages_marked_read', {
-            byUserId: receiver_id,
-            messageIds: updatedMessages.map(m => m.id)
-          });
-        }
-      }
-    }
-
-    res.json({ success: true, updated: updatedMessages.length });
-  } catch (err) {
-    console.error('Error marking messages as read:', err);
-    res.status(500).json({ error: 'Server error' });
-  }
-});
 
 
+
+// Mark a single message as delivered
 router.patch('/:messageId/delivered', authorize, async (req, res) => {
   const { messageId } = req.params;
 

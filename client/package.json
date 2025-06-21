@@ -10,6 +10,7 @@
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.6.8",
     "client": "file:",
+    "emoji-picker-react": "^4.12.2",
     "express-fileupload": "^1.4.3",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.511.0",

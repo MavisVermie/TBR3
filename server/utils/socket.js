@@ -122,6 +122,25 @@ function socketHandler(io) {
       }
       console.log('❌ User disconnected:', socket.id);
     });
+
+    socket.on('typing', ({ fromUserId, toUserId }) => {
+  const recipientSockets = users.get(String(toUserId));
+  if (recipientSockets) {
+    for (const socketId of recipientSockets) {
+      io.to(socketId).emit('typing', { fromUserId });
+    }
+  }
+});
+
+socket.on('stop_typing', ({ fromUserId, toUserId }) => {
+  const recipientSockets = users.get(String(toUserId));
+  if (recipientSockets) {
+    for (const socketId of recipientSockets) {
+      io.to(socketId).emit('stop_typing', { fromUserId });
+    }
+  }
+});
+
   });
 }
 
