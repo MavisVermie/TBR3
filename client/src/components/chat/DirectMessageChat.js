@@ -1,3 +1,4 @@
+//MAVIS WAS HEREEE
 import { useEffect, useRef, useState } from 'react';
 import socket from '../../utils/socket';
 import axios from 'axios';
@@ -35,12 +36,15 @@ export default function DirectMessageChat({ currentUserId, otherUserId }) {
         status: msg.status || 'sent',
       }));
 
-      if (initial) {
-        setChat(newMessages);
-        scrollToBottom();
-      } else {
-        setChat((prev) => [...newMessages, ...prev]);
-      }
+if (initial) {
+  setChat(newMessages);
+  setTimeout(() => {
+    scrollToBottom();
+  }, 0); // added a delay so DOM updates...mavis
+} else {
+  setChat((prev) => [...newMessages, ...prev]);
+}
+
 
       setHasMore(res.data.length === PAGE_SIZE);
 
