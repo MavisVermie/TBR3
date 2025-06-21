@@ -76,8 +76,8 @@ function DirectMessageChatWrapper() {
   const { userId: otherUserId } = useParams();
   const currentUserId = getCurrentUserId();
 
-  console.log("👉 DM Route - currentUserId:", currentUserId);
-  console.log("👉 DM Route - otherUserId:", otherUserId);
+  console.log("dmm Route1 - currentuserid:", currentUserId);
+  console.log("dmm Route2 - othersideuserid:", otherUserId);
 
   if (!currentUserId) return <Navigate to="/authentication/login" />;
   return <DirectMessageChat currentUserId={currentUserId} otherUserId={otherUserId} />;

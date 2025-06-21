@@ -1,4 +1,6 @@
-// components/chat/SocketTest.js
+// DONT TOUCH THIS!!!!!!!!! MAVIS WAS HERE
+// I REPEAT DONT TOUCH IT!
+//I REPEAT AGAIN DONT TOUCH
 import { useEffect, useState } from 'react';
 import socket from '../../utils/socket';
 
@@ -7,10 +9,10 @@ export default function SocketTest() {
   const [chat, setChat] = useState([]);
 
   useEffect(() => {
-    console.log('🧪 SocketTest component mounted');
+    console.log('socketTest component mounted');
 
     socket.on('connect', () => {
-      console.log('✅ Connected to WebSocket:', socket.id);
+      console.log('connected to WebSocket:', socket.id);
     });
 
     socket.on('message', (data) => {
@@ -19,7 +21,7 @@ export default function SocketTest() {
     });
 
     socket.on('disconnect', () => {
-      console.log('🚫 Disconnected from WebSocket');
+      console.log('disconnected from WebSocket');
     });
 
     return () => {
