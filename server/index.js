@@ -380,6 +380,7 @@ const result = await pool.query(`
     p.user_id,
     p.features,
     p.created_at,
+    p.availability,
     p.location AS post_location,
     u.email,
     p.description,
@@ -407,7 +408,8 @@ const result = await pool.query(`
       features: post.features || ["Other"],
       attached_photo_url: post.attached_photo_url || null,
       created_at: post.created_at,
-      location: post.post_location || "Unknown"
+      location: post.post_location || "Unknown",
+      availability: post.availability || 'available'
     }));
 
     const response = {

@@ -343,17 +343,39 @@ const showEditButton = post && (
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4 font-mono">
-      <div className="max-w-full mx-auto">
+      <div className="relative max-w-full mx-auto">
         {/* Header Section - Title and Basic Info */}
         <div className="bg-white/90 p-8 rounded-xl shadow-md mb-8">
-          <h1 className="text-4xl font-semibold text-green-600 font-sans">{post.title}</h1>
+<>
+  {/* Availability badge top-left */}
+  {post.availability && (
+    <div className={`absolute top-0 left-0 mt-2 ml-2 px-3 py-1 text-xs font-bold rounded-br-md z-10 shadow ${
+      post.availability === 'available'
+        ? 'bg-green-600 text-white'
+        : post.availability === 'reserved'
+        ? 'bg-yellow-500 text-white'
+        : 'bg-gray-500 text-white'
+    }`}>
+      {post.availability.toUpperCase()}
+    </div>
+  )}
+
+  {/* Centered Title */}
+  <h1 className="text-4xl font-semibold text-green-600 font-sans text-center w-full">
+    {post.title}
+  </h1>
+</>
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">
               Posted by <span className="font-semibold text-gray-800 cursor-pointer text-blue-600 hover:underline" onClick={() => navigate(`/user/${post.user_id}`)}>{post.username}</span>
             </p>
-            <p className="text-sm text-gray-500">
-              Location: <span className="font-semibold text-gray-800">{post.location}</span>
-            </p>
+<p className="text-sm text-gray-500">
+  Location: <span className="font-semibold text-gray-800">
+    {post.location?.split('-')[0]?.trim() || 'Unknown'}
+  </span>
+</p>
+
+
            
           </div>
            <div className="w-1/6">
@@ -477,7 +499,7 @@ const showEditButton = post && (
                 {/* Product Features */}
                 {post.features && post.features.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-medium text-gray-800 mb-3">Features</h3>
+                    <h3 className="text-lg font-medium text-gray-800 mb-3">Category</h3>
                     <ul className="space-y-3">
                       {post.features.map((feature, index) => (
                         <li key={index} className="flex items-start text-gray-700">
@@ -490,6 +512,7 @@ const showEditButton = post && (
                     </ul>
                   </div>
                 )}
+
 
                 {/* Contact Information */}
                 <div className="border-t pt-6">
@@ -521,6 +544,8 @@ const showEditButton = post && (
                     Contact Seller
                   </button>
                 </div>
+
+                
               </div>
             </div>
           </div>

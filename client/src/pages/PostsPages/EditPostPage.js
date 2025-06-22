@@ -27,6 +27,7 @@ function EditPostPage() {
 
   const [currentUserId, setCurrentUserId] = useState(null);
   const [postOwnerId, setPostOwnerId] = useState(null);
+  const [availability, setAvailability] = useState('available');
   const [isAdmin, setIsAdmin] = useState(false);
 
   const categoryOptions = [
@@ -60,7 +61,7 @@ function EditPostPage() {
           setLocation(data.location || '');
           setInitialLocation(data.location || '');
           setPostOwnerId(data.user_id);
-
+          setAvailability(data.availability || 'available');
           const parsedFeatures = data.features || [];
           const fetchedCategory = (parsedFeatures[0] || '').trim();
           if (categoryOptions.includes(fetchedCategory)) {
@@ -135,6 +136,7 @@ setExistingImages(combinedImages);        } else {
 
     const deletedImageUrls = deletedExistingImages.map(index => existingImages[index]);
     formData.append("deletedImages", JSON.stringify(deletedImageUrls));
+    formData.append("availability", availability);
 
     setIsUploading(true);
 
@@ -180,12 +182,41 @@ setExistingImages(combinedImages);        } else {
 
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={5} required className="w-full border p-2 rounded resize-none " placeholder="Description"  />
 
-            <select value={category} onChange={(e) => setCategory(e.target.value)} required className="w-full border p-2 rounded">
-              <option value="" disabled>-- Select a Category --</option>
-              {categoryOptions.map((opt, i) => (
-                <option key={i} value={opt}>{opt}</option>
-              ))}
-            </select>
+<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  <div>
+    <label className="block text-sm font-medium text-gray-700">Category</label>
+    <select value={category} onChange={(e) => setCategory(e.target.value)} required className="w-full border p-2 rounded">
+      <option value="" disabled>-- Select a Category --</option>
+      {categoryOptions.map((opt, i) => (
+        <option key={i} value={opt}>{opt}</option>
+      ))}
+    </select>
+  </div>
+
+<div>
+  <label className="block text-sm font-medium text-gray-700 mb-1">Availability</label>
+  <button
+    type="button"
+    onClick={() => {
+      setAvailability((prev) => {
+        if (prev === 'available') return 'reserved';
+        if (prev === 'reserved') return 'donated';
+        return 'available';
+      });
+    }}
+    className={`
+      w-full py-2 rounded text-white font-semibold transition-colors
+      ${availability === 'available' ? 'bg-green-600 hover:bg-green-700' : ''}
+      ${availability === 'reserved' ? 'bg-yellow-500 hover:bg-yellow-600' : ''}
+      ${availability === 'donated' ? 'bg-red-600 hover:bg-red-700' : ''}
+    `}
+  >
+    {availability.charAt(0).toUpperCase() + availability.slice(1)}
+  </button>
+</div>
+
+</div>
+
 
             <div {...getRootProps()} className="border-dashed border-2 p-4 text-center rounded cursor-pointer text-slate-600">
               <input {...getInputProps()} />

@@ -2,13 +2,13 @@ const router = require("express").Router();
 const authorize = require("../middleware/authorize");
 const pool = require("../db");
 
-// Get user profile info (username, email, zip_code)
+// Get user profile info (username, email,)
 router.get("/", authorize, async (req, res) => {   // ✅ Add authorize here
   try {
     const userId = req.user.id;  // ✅ authorize middleware sets req.user.id
 
     const user = await pool.query(
-      "SELECT username, email, zip_code FROM users WHERE id = $1",
+      "SELECT username, email FROM users WHERE id = $1",
       [userId]
     );
 
@@ -62,7 +62,8 @@ router.put("/update-post/:id", authorize, async (req, res) => {
       phone,
       location,
       features,
-      deletedImages = "[]", // Expecting array of URLs
+      deletedImages = "[]", 
+      availability,
     } = req.body;
 
     // Parse features
@@ -80,6 +81,10 @@ router.put("/update-post/:id", authorize, async (req, res) => {
     } catch (err) {
       console.warn("Failed to parse deletedImages:", err.message);
     }
+    const validAvailabilities = ['available', 'reserved', 'donated'];
+if (availability && !validAvailabilities.includes(availability)) {
+  return res.status(400).json({ message: "Invalid availability value" });
+}
 
     // Update the post details
     const updateQuery = `
@@ -89,8 +94,9 @@ router.put("/update-post/:id", authorize, async (req, res) => {
           email = $3,
           phone = $4,
           location = $5,
-          features = $6
-      WHERE post_id = $7 AND user_id = $8
+          features = $6,
+              availability = $7  -- ✅ add this line
+      WHERE post_id = $8 AND user_id = $9
       RETURNING post_id
     `;
 
@@ -101,6 +107,7 @@ router.put("/update-post/:id", authorize, async (req, res) => {
       phone || null,
       location || null,
       parsedFeatures.length ? parsedFeatures : null,
+      availability || 'available',
       id,
       userId
     ]);
@@ -171,7 +178,6 @@ for (const file of uploadedImages) {
   }
 });
 
-module.exports = router;
 
 
 // Delete a post
@@ -207,6 +213,7 @@ router.get("/posts/:id", async (req, res) => {
         posts.location,
         posts.features,
         posts.user_id,
+        posts.availability,
         users.username,
         users.email,
         posts.phone
@@ -255,7 +262,8 @@ res.json({
   phone: post.phone,
   location: post.location || '',
   features: parsedFeatures,
-  user_id: post.user_id
+  user_id: post.user_id,
+  availability: post.availability || 'available'
 });
 
   } catch (err) {

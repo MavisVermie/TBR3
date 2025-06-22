@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import './cardPost.css';
 import SliderEvent from '../events/SliderEvent';
+import { useLocation } from 'react-router-dom';
 
 const POSTS_PER_PAGE = 12;
 
@@ -18,6 +19,7 @@ export default function CardPost() {
   const [hasMore, setHasMore] = useState(true);
   const [hasEvents, setHasEvents] = useState(false);
   const observerRef = useRef(null);
+  const location = useLocation();
 
   const categoryOptions = [
     'All', 'Furniture', 'Electronics', 'Games', 'Clothing', 'Books',
@@ -90,7 +92,14 @@ export default function CardPost() {
   useEffect(() => {
     fetchPostsPage(1);
   }, [fetchPostsPage]);
-
+useEffect(() => {
+  const shouldRefetch = location.state?.refetchPosts;
+  if (shouldRefetch) {
+    setPosts([]); // clear stale data
+    setPage(1);
+    fetchPostsPage(1);
+  }
+}, [location.state, fetchPostsPage]);
   const locationOptions = useMemo(() => {
     return ['All', ...new Set(posts.map(p => extractCity(p.location)).filter(Boolean))];
   }, [posts]);
@@ -175,7 +184,19 @@ const filteredAndSorted = useMemo(() => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-14 mx-auto">
         {filteredAndSorted.map(post => (
           <Link to={`/posts/${post.post_id}`} key={post.post_id}>
-            <div className="bg-white shadow rounded-xl overflow-hidden transition-transform duration-300 hover:shadow-xl hover:scale-105 hover:ring-2 hover:ring-green-700 w-full h-80 pt-4">
+            <div className="group relative bg-white shadow rounded-xl overflow-hidden transition-transform duration-300 hover:shadow-xl hover:scale-105 hover:ring-2 hover:ring-green-700 w-full h-80 pt-4">
+{post.availability && (
+  <div className={`absolute top-0 left-0 m-2 px-2 py-1 text-xs font-bold rounded-br-md z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200 ${
+    post.availability === 'available'
+      ? 'bg-green-600 text-white'
+      : post.availability === 'reserved'
+      ? 'bg-yellow-500 text-white'
+      : 'bg-gray-500 text-white'
+  }`}>
+    {post.availability.toUpperCase()}
+  </div>
+)}
+
               <div className="w-full h-2/3 flex items-center justify-center bg-white">
                 {post.attached_photo_url ? (
                   <img
