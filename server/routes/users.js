@@ -2,22 +2,55 @@ const router = require("express").Router();
 const pool = require("../db");
 
 // GET /:userId - Get user data by userId
+// GET /:userId - Get user data by userId
 router.get("/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
+
+    // Fetch basic user info
     const userQuery = await pool.query(
       `SELECT id as user_id, username, email FROM users WHERE id = $1`,
       [userId]
     );
+
     if (userQuery.rows.length === 0) {
       return res.status(404).json({ message: "User not found" });
     }
-    res.json(userQuery.rows[0]);
+
+    const user = userQuery.rows[0];
+
+    // Count donated posts
+    const donatedQuery = await pool.query(
+      `SELECT COUNT(*) FROM posts WHERE user_id = $1 AND availability = 'donated'`,
+      [userId]
+    );
+
+    const donatedCount = parseInt(donatedQuery.rows[0].count, 10);
+
+    // Determine badge
+    let badge = null;
+    if (donatedCount >= 100) {
+      badge = 'gold';
+    } else if (donatedCount >= 50) {
+      badge = 'silver';
+    } else if (donatedCount >= 0) {
+      badge = 'bronze';
+    }
+
+    // Send response with badge info
+    res.json({
+      ...user,
+      donatedCount,
+      badge
+    });
+
   } catch (err) {
     console.error("Error fetching user:", err.message);
     res.status(500).send("Server error");
   }
 });
+
+
 // POST /api/users/check-phone
 router.post('/check-phone', async (req, res) => {
   const { phone } = req.body;

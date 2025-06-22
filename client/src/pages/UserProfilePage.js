@@ -67,7 +67,7 @@ const UserProfilePage = () => {
     const fetchUser = async () => {
       try {
         const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/${userId}`);
-    setUser({ ...res.data, id: userId }); // 👈 force-add userId to the user object
+        setUser({ ...res.data, id: userId });
       } catch (err) {
         setError("Failed to fetch user data");
       }
@@ -139,20 +139,28 @@ const UserProfilePage = () => {
     return <div className="p-6 text-gray-500 animate-pulse">Loading profile...</div>;
   if (error) return <div className="p-6 text-red-600">{error}</div>;
   if (!user) return <div className="p-6">No user data available.</div>;
+//heree u can edit the badges
+  const badgeMap = {
+    bronze: "🥉",
+    silver: "🥈",
+    gold: "🥇",
+  };
+  const badgeIcon = user.badge ? badgeMap[user.badge.toLowerCase()] : null;
 
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4">
       <ToastContainer />
       <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-lg p-8 space-y-4">
         <div>
-          <h1 className="text-4xl font-semibold leading-loose text-green-700 mb-4">User Info</h1>
-          <p className="text-xl leading-loose"> Username : <span className="text-red-600">{user.username}</span></p>
-          <p className="text-xl leading-loose">Email : <span className="text-red-600">{user.email}</span></p>
-          <p className="text-xl leading-loose">Phone : <span className="text-red-600"></span></p>
+          <h1 className="text-4xl font-semibold leading-loose text-green-700 mb-4 text-center">User Info</h1>
+          <p className="text-xl leading-loose text-center">
+            Username: <span className="text-red-600">{user.username}</span>
+            {badgeIcon && <span className="ml-2 text-2xl">{badgeIcon}</span>}
+          </p>
+          <p className="text-xl leading-loose text-center">Email: <span className="text-red-600">{user.email}</span></p>
 
-          {/* 💬 Message Button */}
           {currentUserId && currentUserId !== user.id && (
-            <div className="mt-4">
+            <div className="mt-4 text-center">
               <button
                 onClick={() => window.location.href = `/dm/${user.id}`}
                 className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition shadow"

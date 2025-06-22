@@ -241,30 +241,44 @@ router.get("/posts/:id", async (req, res) => {
     }
 
     // Get ALL images (primary + extra), already stored as full URLs
-  const imagesResult = await pool.query(
-  "SELECT image_url FROM post_images WHERE post_id = $1 ORDER BY id ASC",
-  [id]
-);
+    const imagesResult = await pool.query(
+      "SELECT image_url FROM post_images WHERE post_id = $1 ORDER BY id ASC",
+      [id]
+    );
 
-const imageUrls = imagesResult.rows.map(row => row.image_url);
-const primaryImage = imageUrls[0] || null;
-const extraImages = imageUrls.slice(1);
+    const imageUrls = imagesResult.rows.map(row => row.image_url);
+    const primaryImage = imageUrls[0] || null;
+    const extraImages = imageUrls.slice(1);
 
-// Final response
-res.json({
-  post_id: post.post_id,
-  title: post.title,
-  description: post.description,
-  primary_photo: primaryImage,
-  extra_images: extraImages,
-  username: post.username,
-  email: post.email,
-  phone: post.phone,
-  location: post.location || '',
-  features: parsedFeatures,
-  user_id: post.user_id,
-  availability: post.availability || 'available'
-});
+    // 🔥 Count donated posts by this user to determine badge
+    const badgeQuery = await pool.query(`
+      SELECT COUNT(*) FROM posts 
+      WHERE user_id = $1 AND availability = 'donated'
+    `, [post.user_id]);
+
+    const donatedCount = parseInt(badgeQuery.rows[0].count, 10);
+    let badge = null;
+    if (donatedCount >= 100) badge = "gold";
+    else if (donatedCount >= 50) badge = "silver";
+    else if (donatedCount >= 0) badge = "bronze";
+
+    // ✅ Final response
+    res.json({
+      post_id: post.post_id,
+      title: post.title,
+      description: post.description,
+      primary_photo: primaryImage,
+      extra_images: extraImages,
+      username: post.username,
+      email: post.email,
+      phone: post.phone,
+      location: post.location || '',
+      features: parsedFeatures,
+      user_id: post.user_id,
+      availability: post.availability || 'available',
+      badge, // 👈 added badge
+      donatedCount // (optional)
+    });
 
   } catch (err) {
     console.error("Error fetching post by ID:", err.message);

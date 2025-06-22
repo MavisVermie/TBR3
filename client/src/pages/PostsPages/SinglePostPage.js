@@ -366,9 +366,21 @@ const showEditButton = post && (
   </h1>
 </>
           <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-500">
-              Posted by <span className="font-semibold text-gray-800 cursor-pointer text-blue-600 hover:underline" onClick={() => navigate(`/user/${post.user_id}`)}>{post.username}</span>
-            </p>
+<p className="text-sm text-gray-500">
+  Posted by 
+  <span
+    className="font-semibold text-gray-800 cursor-pointer text-blue-600 hover:underline ml-1"
+    onClick={() => navigate(`/user/${post.user_id}`)}
+  >
+    {post.username}
+  </span>
+  {isAdmin && (
+    <span className="ml-2 px-2 py-1 rounded-full text-xs font-bold text-white bg-red-600">
+      ADMIN
+    </span>
+  )}
+</p>
+
 <p className="text-sm text-gray-500">
   Location: <span className="font-semibold text-gray-800">
     {post.location?.split('-')[0]?.trim() || 'Unknown'}
