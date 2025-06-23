@@ -32,7 +32,7 @@ export default function MessagesPage() {
     };
 
     fetchContacts();
-    const interval = setInterval(fetchContacts, 10000); // Refresh every 10s
+    const interval = setInterval(fetchContacts, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -51,23 +51,37 @@ export default function MessagesPage() {
     if (contact.last_sender_id !== currentUserId) return null;
 
     const style = {
-      fontSize: '14px',
+      fontSize: '15px',
       marginLeft: '6px'
     };
 
     if (contact.last_status === 'read') {
-      return <span style={{ ...style, color: '#007bff' }}>✔✔</span>; // Blue for read
+      return <span style={{ ...style, color: '#10b981' }}>✔✔</span>;
     } else {
-      return <span style={{ ...style, color: '#999' }}>✔</span>; // Gray for sent
+      return <span style={{ ...style, color: '#bbb' }}>✔</span>;
     }
   };
 
-  if (loading) return <p>Loading conversations...</p>;
-  if (contacts.length === 0) return <p>No conversations yet.</p>;
+  if (loading) return <p style={{ textAlign: 'center', marginTop: '30px' }}>Loading conversations...</p>;
+  if (contacts.length === 0) return <p style={{ textAlign: 'center', marginTop: '30px' }}>No conversations yet.</p>;
 
   return (
-    <div style={{ maxWidth: '600px', margin: 'auto', padding: '20px' }}>
-      <h2 style={{ textAlign: 'center', marginBottom: '20px' }}>Messages</h2>
+    <div style={{
+      maxWidth: '650px',
+      margin: 'auto',
+      padding: '20px',
+      fontFamily: `'Segoe UI', Tahoma, Geneva, Verdana, sans-serif`
+    }}>
+      <h2 style={{
+        textAlign: 'center',
+        marginBottom: '30px',
+        fontSize: '26px',
+        fontWeight: '700',
+        color: '#b91c1c'
+      }}>
+        Messages
+      </h2>
+
       <ul style={{ listStyle: 'none', padding: 0 }}>
         {contacts.map(contact => (
           <li
@@ -75,64 +89,74 @@ export default function MessagesPage() {
             onClick={() => navigate(`/dm/${contact.id}`)}
             style={{
               cursor: 'pointer',
-              padding: '12px',
-              borderBottom: '1px solid #eee',
+              padding: '16px 20px',
+              marginBottom: '14px',
+              borderRadius: '12px',
+              backgroundColor: '#fefefe',
+              boxShadow: '0 1px 4px rgba(0, 0, 0, 0.06)',
               display: 'flex',
               alignItems: 'center',
-              gap: '12px',
-              borderRadius: '8px',
-              backgroundColor: '#fafafa',
-              transition: 'background 0.2s ease-in-out'
+              gap: '14px',
+              transition: 'all 0.2s ease'
             }}
-            onMouseEnter={e => (e.currentTarget.style.background = '#f1f1f1')}
-            onMouseLeave={e => (e.currentTarget.style.background = '#fafafa')}
+            onMouseEnter={e => (e.currentTarget.style.background = '#f0fdf4')}
+            onMouseLeave={e => (e.currentTarget.style.background = '#fefefe')}
           >
-            {/* Profile Circle */}
+            {/* Avatar */}
             <div style={{
-              width: '40px',
-              height: '40px',
+              width: '48px',
+              height: '48px',
               borderRadius: '50%',
-              backgroundColor: '#007bff',
+              background: '#16a34a',
               color: '#fff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: 'bold',
-              fontSize: '18px',
-              flexShrink: 0
+              fontSize: '20px',
+              flexShrink: 0,
+              boxShadow: '0 2px 6px rgba(0,0,0,0.1)'
             }}>
               {contact.username?.charAt(0)?.toUpperCase() || '?'}
             </div>
 
-            {/* Contact Info */}
+            {/* Content */}
             <div style={{ flex: 1 }}>
               <div style={{
-                fontWeight: contact.unread_count > 0 ? 'bold' : 'normal',
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'center'
+                alignItems: 'center',
+                marginBottom: '6px'
               }}>
-                {contact.username}
+                <span style={{
+                  fontWeight: contact.unread_count > 0 ? '700' : '500',
+                  fontSize: '17px',
+                  color: '#111'
+                }}>
+                  {contact.username}
+                </span>
                 {contact.unread_count > 0 && (
                   <span style={{
-                    backgroundColor: '#ff4d4f',
-                    color: 'white',
+                    backgroundColor: '#10b981',
+                    color: '#fff',
                     fontSize: '12px',
+                    fontWeight: '600',
                     borderRadius: '999px',
-                    padding: '2px 8px',
-                    marginLeft: '10px'
+                    padding: '4px 10px',
+                    marginLeft: '12px',
+                    lineHeight: '1'
                   }}>
                     {contact.unread_count}
                   </span>
                 )}
               </div>
+
               <div style={{
-                fontSize: '14px',
-                color: '#555',
+                fontSize: '15px',
+                color: '#444',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
                 textOverflow: 'ellipsis',
-                marginTop: '2px',
                 display: 'flex',
                 alignItems: 'center'
               }}>
@@ -143,8 +167,8 @@ export default function MessagesPage() {
             {/* Timestamp */}
             <div style={{
               fontSize: '12px',
-              color: '#999',
-              marginLeft: '8px',
+              color: '#888',
+              marginLeft: '10px',
               whiteSpace: 'nowrap'
             }}>
               {formatTime(contact.last_timestamp)}

@@ -1,4 +1,3 @@
-//MAVIS WAS HEREEE
 import { useEffect, useRef, useState } from 'react';
 import socket from '../../utils/socket';
 import axios from 'axios';
@@ -18,16 +17,18 @@ export default function DirectMessageChat({ currentUserId, otherUserId }) {
 
   const PAGE_SIZE = 20;
 
+  const scrollToBottom = () => {
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+    }
+  };
+
   const fetchMessages = async (initial = false) => {
     try {
       const token = localStorage.getItem('token');
       const before = !initial && chat.length > 0 ? chat[0].timestamp : null;
-
       const url = `${process.env.REACT_APP_API_URL}/messages/${otherUserId}${before ? `?before=${before}` : ''}`;
-      const res = await axios.get(url, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
+      const res = await axios.get(url, { headers: { Authorization: `Bearer ${token}` } });
       const newMessages = res.data.map((msg) => ({
         id: msg.id,
         from: msg.sender_id === currentUserId ? 'me' : 'them',
@@ -35,43 +36,27 @@ export default function DirectMessageChat({ currentUserId, otherUserId }) {
         timestamp: msg.timestamp,
         status: msg.status || 'sent',
       }));
-
-if (initial) {
-  setChat(newMessages);
-  setTimeout(() => {
-    scrollToBottom();
-  }, 0); // added a delay so DOM updates...mavis
-} else {
-  setChat((prev) => [...newMessages, ...prev]);
-}
-
-
+      if (initial) {
+        setChat(newMessages);
+        setTimeout(() => scrollToBottom(), 0);
+      } else {
+        setChat((prev) => [...newMessages, ...prev]);
+      }
       setHasMore(res.data.length === PAGE_SIZE);
-
       if (initial) {
         const readRes = await axios.patch(
           `${process.env.REACT_APP_API_URL}/messages/${otherUserId}/read`,
           {},
           { headers: { Authorization: `Bearer ${token}` } }
         );
-
         if (Array.isArray(readRes.data?.readMessageIds)) {
           readRes.data.readMessageIds.forEach((msgId) => {
-            socket.emit('message_read', {
-              readerId: currentUserId,
-              messageId: msgId,
-            });
+            socket.emit('message_read', { readerId: currentUserId, messageId: msgId });
           });
         }
       }
     } catch (err) {
       console.error('Error fetching messages:', err);
-    }
-  };
-
-  const scrollToBottom = () => {
-    if (chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   };
 
@@ -87,36 +72,17 @@ if (initial) {
         console.error('Error fetching user info:', err);
       }
     };
-    
+
     fetchUserName();
     fetchMessages(true);
-
-    socket.emit('chat_open', {
-      userId: currentUserId,
-      chattingWith: otherUserId,
-    });
+    socket.emit('chat_open', { userId: currentUserId, chattingWith: otherUserId });
 
     return () => {
       socket.emit('chat_close', { userId: currentUserId });
-      socket.emit('stop_typing', {
-        fromUserId: currentUserId,
-        toUserId: otherUserId,
-      });
+      socket.emit('stop_typing', { fromUserId: currentUserId, toUserId: otherUserId });
     };
   }, [currentUserId, otherUserId]);
-useEffect(() => {
-  if (chatContainerRef.current) {
-    // Scroll only if the user is near the bottom
-    const container = chatContainerRef.current;
-    const threshold = 100; // pixels
-    const isAtBottom =
-      container.scrollHeight - container.scrollTop - container.clientHeight < threshold;
 
-    if (isAtBottom) {
-      container.scrollTop = container.scrollHeight;
-    }
-  }
-}, [chat]);
   useEffect(() => {
     socket.connect();
     socket.emit('register', currentUserId);
@@ -124,42 +90,24 @@ useEffect(() => {
     const handlePrivateMessage = ({ fromUserId, message, timestamp, id, status }) => {
       if (parseInt(fromUserId) === parseInt(otherUserId)) {
         setChat((prev) => {
-          const alreadyExists = prev.some((msg) => msg.id === id);
-          if (alreadyExists) return prev;
-
-          return [
-            ...prev,
-            {
-              id,
-              from: 'them',
-              text: message,
-              timestamp: timestamp || new Date().toISOString(),
-              status: status || 'delivered',
-            },
-          ];
+          const exists = prev.some((msg) => msg.id === id);
+          if (exists) return prev;
+          return [...prev, { id, from: 'them', text: message, timestamp, status: status || 'delivered' }];
         });
-
         socket.emit('message_read', { readerId: currentUserId, messageId: id });
-        scrollToBottom();
       }
     };
 
     const handleMessageStatusUpdate = ({ messageId, status }) => {
-      setChat((prev) =>
-        prev.map((msg) => (msg.id === messageId ? { ...msg, status } : msg))
-      );
+      setChat((prev) => prev.map((msg) => (msg.id === messageId ? { ...msg, status } : msg)));
     };
 
     const handleTyping = ({ fromUserId }) => {
-      if (parseInt(fromUserId) === parseInt(otherUserId)) {
-        setTypingIndicator(true);
-      }
+      if (parseInt(fromUserId) === parseInt(otherUserId)) setTypingIndicator(true);
     };
 
     const handleStopTyping = ({ fromUserId }) => {
-      if (parseInt(fromUserId) === parseInt(otherUserId)) {
-        setTypingIndicator(false);
-      }
+      if (parseInt(fromUserId) === parseInt(otherUserId)) setTypingIndicator(false);
     };
 
     socket.on('private_message', handlePrivateMessage);
@@ -176,6 +124,10 @@ useEffect(() => {
   }, [currentUserId, otherUserId]);
 
   useEffect(() => {
+    scrollToBottom();
+  }, [chat]);
+
+  useEffect(() => {
     const container = chatContainerRef.current;
     if (!container) return;
 
@@ -183,14 +135,11 @@ useEffect(() => {
       if (container.scrollTop === 0 && hasMore && !loadingMore) {
         setLoadingMore(true);
         const prevHeight = container.scrollHeight;
-
         await fetchMessages(false);
-
         requestAnimationFrame(() => {
           const newHeight = container.scrollHeight;
           container.scrollTop = newHeight - prevHeight;
         });
-
         setLoadingMore(false);
       }
     };
@@ -198,12 +147,6 @@ useEffect(() => {
     container.addEventListener('scroll', handleScroll);
     return () => container.removeEventListener('scroll', handleScroll);
   }, [hasMore, loadingMore, chat]);
-
-  useEffect(() => {
-    if (typingIndicator && chatContainerRef.current) {
-      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
-    }
-  }, [typingIndicator]);
 
   const sendMessage = async () => {
     const trimmed = message.trim();
@@ -226,28 +169,17 @@ useEffect(() => {
       };
 
       setChat((prev) => [...prev, newMessage]);
-
       socket.emit('private_message', {
         toUserId: otherUserId,
         fromUserId: currentUserId,
         message: trimmed,
         messageId: res.data.id,
       });
-
-      socket.emit('stop_typing', {
-        fromUserId: currentUserId,
-        toUserId: otherUserId,
-      });
-
+      socket.emit('stop_typing', { fromUserId: currentUserId, toUserId: otherUserId });
       setMessage('');
-      scrollToBottom();
     } catch (err) {
       console.error('Error sending message:', err);
     }
-  };
-
-  const handleEmojiClick = (emojiData) => {
-    setMessage((prev) => prev + emojiData.emoji);
   };
 
   const handleTypingChange = (e) => {
@@ -256,89 +188,63 @@ useEffect(() => {
 
     if (!isTyping) {
       setIsTyping(true);
-      socket.emit('typing', {
-        fromUserId: currentUserId,
-        toUserId: otherUserId,
-      });
+      socket.emit('typing', { fromUserId: currentUserId, toUserId: otherUserId });
     }
 
     clearTimeout(typingTimeout.current);
     typingTimeout.current = setTimeout(() => {
       setIsTyping(false);
-      socket.emit('stop_typing', {
-        fromUserId: currentUserId,
-        toUserId: otherUserId,
-      });
+      socket.emit('stop_typing', { fromUserId: currentUserId, toUserId: otherUserId });
     }, 1500);
   };
 
-  const formatTime = (timestamp) => {
-    const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-  };
+  const handleEmojiClick = (emojiData) => setMessage((prev) => prev + emojiData.emoji);
+  const formatTime = (timestamp) => new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
   const getTick = (msg) => {
     if (msg.from !== 'me') return null;
-    if (msg.status === 'read') return '✓✓';
-    if (msg.status === 'delivered') return '✓✓';
-    return '✓';
+    const base = 'inline-block text-xs ml-2 align-middle';
+    if (msg.status === 'read') return <span className={`${base} text-green-400`}>✔✔</span>;
+    if (msg.status === 'delivered') return <span className={`${base} text-gray-400`}>✔✔</span>;
+    return <span className={`${base} text-gray-400`}>✔</span>;
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
-      <h2 className="text-center text-xl font-semibold mb-4 text-gray-800">
-        Chat with {otherUserName}
-      </h2>
-
+    <div className="w-full max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+      <h2 className="text-center text-2xl font-semibold mb-6 text-red-700">chatting with {otherUserName}</h2>
       <div
         ref={chatContainerRef}
-        className="border border-gray-300 rounded-lg p-4 h-[400px] overflow-y-auto bg-white shadow-sm"
+        className="border border-gray-300 rounded-lg p-4 h-[70vh] overflow-y-auto bg-white shadow-sm"
       >
-        {loadingMore && <div className="text-sm text-gray-400 text-center">Loading more...</div>}
-
+        {loadingMore && <div className="text-sm text-gray-400 text-center">loading...</div>}
         {chat.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex ${msg.from === 'me' ? 'justify-end' : 'justify-start'} mb-2`}
-          >
-            <div className="text-sm max-w-sm">
-              <div
-                className={`px-4 py-2 rounded-xl ${
-                  msg.from === 'me' ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'
-                }`}
-              >
+          <div key={msg.id} className={`flex ${msg.from === 'me' ? 'justify-end' : 'justify-start'} mb-3`}>
+            <div className="text-sm max-w-md">
+              <div className={`px-5 py-3 rounded-xl relative ${msg.from === 'me' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-900'}`}>
                 {msg.text}
-                {msg.from === 'me' && (
-                  <span
-                    className={`text-xs ml-2 ${
-                      msg.status === 'read' ? 'text-green-500' : 'text-gray-400'
-                    }`}
-                  >
-                    {getTick(msg)}
-                  </span>
-                )}
               </div>
-              <div className="text-[11px] text-gray-500 mt-1 text-right">
-                {formatTime(msg.timestamp)}
+              <div className="flex justify-between text-[11px] text-gray-500 mt-1">
+                <span>{formatTime(msg.timestamp)}</span>
+                {msg.from === 'me' && getTick(msg)}
               </div>
             </div>
           </div>
         ))}
-
         {typingIndicator && (
-          <div className="flex items-center gap-1 mt-2 text-sm text-gray-500 animate-pulse">
+          <div className="flex items-center gap-1 mt-3 text-sm text-gray-500 animate-pulse">
             <span className="w-2 h-2 rounded-full bg-gray-400 animate-bounce" />
             <span className="w-2 h-2 rounded-full bg-gray-400 animate-bounce delay-100" />
             <span className="w-2 h-2 rounded-full bg-gray-400 animate-bounce delay-200" />
-            <span className="ml-2">{otherUserName} is typing...</span>
+            <span className="ml-2">{otherUserName} Typing..</span>
           </div>
         )}
       </div>
 
       {showEmojiPicker && (
-        <div className="mt-2 flex justify-end">
+        <div className="mt-3 w-full">
           <EmojiPicker
             onEmojiClick={handleEmojiClick}
+            width="100%"
             height={350}
             previewConfig={{ showPreview: false }}
             skinTonesDisabled
@@ -349,8 +255,8 @@ useEffect(() => {
         </div>
       )}
 
-      <div className="mt-4 flex items-center gap-2">
-        <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="text-xl">😊</button>
+      <div className="mt-4 flex flex-col sm:flex-row items-center gap-3">
+        <button onClick={() => setShowEmojiPicker(!showEmojiPicker)} className="text-2xl">😊</button>
         <input
           value={message}
           onChange={handleTypingChange}
@@ -361,14 +267,12 @@ useEffect(() => {
             }
           }}
           placeholder="Type a message..."
-          className="flex-1 p-3 rounded-full border border-gray-300 text-sm outline-none bg-gray-50"
+          className="flex-1 p-4 rounded-full border border-gray-300 text-sm outline-none bg-gray-50 w-full"
         />
         <button
           onClick={sendMessage}
-          className="px-4 py-2 rounded-full bg-blue-600 text-white font-semibold text-sm"
-        >
-          Send
-        </button>
+          className="px-6 py-3 rounded-full bg-green-600 hover:bg-green-700 text-white font-semibold text-sm shadow"
+        >send</button>
       </div>
     </div>
   );

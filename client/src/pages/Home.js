@@ -57,7 +57,7 @@ const Homepage = () => {
           <img src="/images/list.jpg" alt="Who we are" className="shadow-lg w-full h-[400px] object-cover rounded-lg" />
         </div>
         <div className="md:w-1/2">
-          <h2 className="text-4xl font-bold text-[#10b981] mb-2 text-center mb-7 md:text-left">
+          <h2 className="text-4xl font-bold text-[#10b981] text-center mb-7 md:text-left">
             What can you donate?
           </h2>
           <p className="text-lg text-white leading-loose text-center md:text-left whitespace-pre-line">
