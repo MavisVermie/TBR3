@@ -152,13 +152,15 @@ router.get('/unread/count', authorize, async (req, res) => {
     const userId = req.user.id;
 
     const result = await pool.query(
-      `SELECT COUNT(*) FROM messages WHERE receiver_id = $1 AND is_read = FALSE`,
+      `SELECT COUNT(DISTINCT sender_id) AS chat_count
+       FROM messages
+       WHERE receiver_id = $1 AND is_read = FALSE`,
       [userId]
     );
 
-    res.json({ unreadCount: parseInt(result.rows[0].count) });
+    res.json({ unreadCount: parseInt(result.rows[0].chat_count) });
   } catch (err) {
-    console.error('Error getting unread messages count:', err);
+    console.error('Error getting unread chat count:', err);
     res.status(500).json({ error: 'Server error' });
   }
 });

@@ -147,11 +147,12 @@ useEffect(() => {
                     src={profile}
                     alt="User"
                   />
-                  {claimNotifications > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5">
-                      {claimNotifications}
-                    </span>
-                  )}
+{totalNotifications > 0 && (
+  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5">
+    {totalNotifications}
+  </span>
+)}
+
                 </Menu.Button>
                 <Transition
                   as={Fragment}
