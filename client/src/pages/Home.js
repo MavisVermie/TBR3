@@ -86,35 +86,63 @@ const AnimatedNumber = ({ value }) => {
 
 const HomeStats = () => {
   const [stats, setStats] = useState({ posts: 0, users: 0 });
+  const [isVisible, setIsVisible] = useState(false);
+  const sectionRef = React.useRef();
+
   useEffect(() => {
-    fetch("/api/stats/counts")
-      .then(res => res.json())
-      .then(data => setStats(data))
-      .catch(() => setStats({ posts: 0, users: 0 }));
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect(); // مرة واحدة فقط
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+
+    return () => observer.disconnect();
   }, []);
+
+  useEffect(() => {
+    if (isVisible) {
+      fetch("/api/stats/counts")
+        .then(res => res.json())
+        .then(data => setStats(data))
+        .catch(() => setStats({ posts: 0, users: 0 }));
+    }
+  }, [isVisible]);
+
   return (
-    <div className="flex flex-col items-center my-10 w-full">
-      <div className="flex flex-wrap justify-center gap-8 w-full">
-        <div className="relative bg-gradient-to-br from-green-200 via-white to-green-100 rounded-2xl shadow-2xl px-12 py-10 flex flex-col items-center min-w-[240px] border-2 border-green-300 hover:scale-105 transition-transform duration-300 overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 to-green-200 rounded-t-2xl animate-pulse"></div>
-          <FaRegNewspaper className="text-6xl text-green-700 mb-3 drop-shadow-lg animate-spin-slow" />
-          <div className="text-5xl font-extrabold text-green-900 mb-2">
-            <AnimatedNumber value={stats.posts} />
+    <div ref={sectionRef} className="flex flex-col items-center w-full ">
+      {isVisible && (
+        <div className="flex flex-wrap justify-center gap-14 w-full">
+          {/* Posts */}
+          <div className="relative bg-white rounded-full shadow-lg w-[190px] h-[190px] flex flex-col items-center justify-center border-4 border-green-700 hover:scale-105 transition-transform duration-300">
+            <FaRegNewspaper className="text-5xl text-black mb-2" />
+            <div className="text-3xl font-bold text-black">
+              <AnimatedNumber value={stats.posts} />
+            </div>
+            <div className="text-base text-black font-semibold mt-1">Posts</div>
           </div>
-          <div className="text-xl text-green-800 font-semibold tracking-wide">عدد المنشورات</div>
-        </div>
-        <div className="relative bg-gradient-to-br from-blue-200 via-white to-blue-100 rounded-2xl shadow-2xl px-12 py-10 flex flex-col items-center min-w-[240px] border-2 border-blue-300 hover:scale-105 transition-transform duration-300 overflow-hidden">
-          <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-blue-400 to-blue-200 rounded-b-2xl animate-pulse"></div>
-          <FaUsers className="text-6xl text-blue-700 mb-3 drop-shadow-lg animate-spin-slow-reverse" />
-          <div className="text-5xl font-extrabold text-blue-900 mb-2">
-            <AnimatedNumber value={stats.users} />
+
+          {/* Users */}
+          <div className="relative bg-white rounded-full shadow-lg w-[190px] h-[190px] flex flex-col items-center justify-center border-4 border-green-700 hover:scale-105 transition-transform duration-300">
+            <FaUsers className="text-5xl text-black mb-2" />
+            <div className="text-3xl font-bold text-black">
+              <AnimatedNumber value={stats.users} />
+            </div>
+            <div className="text-base text-black font-semibold mt-1">Users</div>
           </div>
-          <div className="text-xl text-blue-800 font-semibold tracking-wide">عدد المستخدمين</div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
+
 
 const Homepage = () => {
   const navigate = useNavigate();
@@ -134,19 +162,32 @@ const Homepage = () => {
           Your browser does not support the video tag.
         </video>
       </section>
-      <HomeStats />
+     
       <BarSection />
-      <section className="relative w-full h-auto  overflow-hidden rounded-b-xl shadow-lg ">
+      <section className="relative w-full h-auto bg-gray-100 overflow-hidden rounded-b-xl shadow-xl ">
         <video
           autoPlay
           loop
           muted
           playsInline
-          className="w-full h-full object-cover  mx-4"
+          className="w-full h-full object-cover mx-4"
         >
           <source src="https://media.tbr3.org/videos/home4.mp4" type="video/mp4" />
           Your browser does not support the video tag.
-        </video> </section>
+        </video> 
+        </section> 
+      <div className=" bg-black font-sans py-20 "> 
+        <p className="mb-10 text-white font-semibold"><span className="text-5xl text-green-500" >Join a community of changemakers</span><br></br><br></br>
+          <span className="text-2xl font-normal "> Be the one who gives generously and lives sustainably.</span><br></br><br></br>
+          <span className=" font-normal"> support a proudly Jordanian paltform making a real difference with TBR3.</span></p>
+           <button className="bg-green-600 text-white px-14 py-3 rounded-full shadow-md hover:bg-green-700 hover:shadow-lg transition duration-300 mb-14  ">
+          GET STARTED
+         </button>
+        <HomeStats />
+     
+                  </div>
+       
+        
     </div>
 </section>
   );

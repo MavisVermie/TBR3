@@ -23,3 +23,8 @@ code {
     monospace;
 }
 
+input:-webkit-autofill {
+  transition: background-color 50000s ease-in-out 0s !important;
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important;
+  box-shadow: 0 0 0px 1000px white inset !important;
+}
