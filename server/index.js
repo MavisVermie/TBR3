@@ -25,7 +25,6 @@ const cache = new NodeCache();
 // const sharp = require('sharp');
 const feedbackRouter = require("./routes/feedback");
 const donationsRoutes = require("./routes/donations");
-const statsRoutes = require('./routes/stats');
 
 const path = require('path'); 
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -46,7 +45,6 @@ app.use("/Posting", require("./routes/itemPost"));
 app.use('/messages', require('./routes/messages'));
 app.use('/api/verify', verifyRoutes);
 app.use("/api/donations", donationsRoutes);
-app.use('/api/stats', statsRoutes);
 
 // app.use("/images", require("./routes/imageRoutes"));
 // Backend Route to Fetch Images by postId

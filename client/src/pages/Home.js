@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUsers, FaRegNewspaper } from "react-icons/fa6";
 
+// مكون الأعمدة المتحركة
 const BarSection = () => {
   const [animate, setAnimate] = useState(false);
 
@@ -63,59 +63,6 @@ const BarSection = () => {
   );
 };
 
-const AnimatedNumber = ({ value }) => {
-  const [display, setDisplay] = useState(0);
-  useEffect(() => {
-    let start = 0;
-    const end = value;
-    if (start === end) return;
-    let increment = end > 100 ? Math.ceil(end / 50) : 1;
-    let current = start;
-    const timer = setInterval(() => {
-      current += increment;
-      if (current >= end) {
-        current = end;
-        clearInterval(timer);
-      }
-      setDisplay(current);
-    }, 20);
-    return () => clearInterval(timer);
-  }, [value]);
-  return <span>{display.toLocaleString()}</span>;
-};
-
-const HomeStats = () => {
-  const [stats, setStats] = useState({ posts: 0, users: 0 });
-  useEffect(() => {
-    fetch("/api/stats/counts")
-      .then(res => res.json())
-      .then(data => setStats(data))
-      .catch(() => setStats({ posts: 0, users: 0 }));
-  }, []);
-  return (
-    <div className="flex flex-col items-center my-10 w-full">
-      <div className="flex flex-wrap justify-center gap-8 w-full">
-        <div className="relative bg-gradient-to-br from-green-200 via-white to-green-100 rounded-2xl shadow-2xl px-12 py-10 flex flex-col items-center min-w-[240px] border-2 border-green-300 hover:scale-105 transition-transform duration-300 overflow-hidden">
-          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-green-400 to-green-200 rounded-t-2xl animate-pulse"></div>
-          <FaRegNewspaper className="text-6xl text-green-700 mb-3 drop-shadow-lg animate-spin-slow" />
-          <div className="text-5xl font-extrabold text-green-900 mb-2">
-            <AnimatedNumber value={stats.posts} />
-          </div>
-          <div className="text-xl text-green-800 font-semibold tracking-wide">عدد المنشورات</div>
-        </div>
-        <div className="relative bg-gradient-to-br from-blue-200 via-white to-blue-100 rounded-2xl shadow-2xl px-12 py-10 flex flex-col items-center min-w-[240px] border-2 border-blue-300 hover:scale-105 transition-transform duration-300 overflow-hidden">
-          <div className="absolute bottom-0 left-0 w-full h-2 bg-gradient-to-r from-blue-400 to-blue-200 rounded-b-2xl animate-pulse"></div>
-          <FaUsers className="text-6xl text-blue-700 mb-3 drop-shadow-lg animate-spin-slow-reverse" />
-          <div className="text-5xl font-extrabold text-blue-900 mb-2">
-            <AnimatedNumber value={stats.users} />
-          </div>
-          <div className="text-xl text-blue-800 font-semibold tracking-wide">عدد المستخدمين</div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 const Homepage = () => {
   const navigate = useNavigate();
 
@@ -134,8 +81,9 @@ const Homepage = () => {
           Your browser does not support the video tag.
         </video>
       </section>
-      <HomeStats />
+
       <BarSection />
+
       <section className="relative w-full h-auto  overflow-hidden rounded-b-xl shadow-lg ">
         <video
           autoPlay
@@ -153,7 +101,3 @@ const Homepage = () => {
 };
 
 export default Homepage;
-
-// Tailwind custom animation (add to tailwind.config.js if not present):
-// 'spin-slow': 'spin 3s linear infinite',
-// 'spin-slow-reverse': 'spin 3s linear reverse infinite',
