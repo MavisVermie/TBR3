@@ -1,81 +1,102 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
+// مكون الأعمدة المتحركة
+const BarSection = () => {
+  const [animate, setAnimate] = useState(false);
+
+  useEffect(() => {
+    setAnimate(true);
+  }, []);
+
+  return (
+    <div className="flex flex-col items-center w-full px-4 my-10">
+      <div className="flex flex-wrap justify-center md:justify-between w-full min-h-[800px] gap-4">
+        <div
+          className={`bg-[#0b5f7db2] w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-0 transition-all duration-700  hover : shadow-xl ease-out ${
+            animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          } hover:scale-105  duration-300`}
+        >
+          <img src="/1.gif" className="w-full h-full object-cover rounded-md" />
+        </div>
+
+        <div
+          className={`bg-contimg w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-4 md:mt-16 transition-all duration-700 ease-out delay-100 ${
+            animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          } hover:scale-105 duration-300`}
+        >
+          <p className="py-12 px-6 font-medium text-black text-[18px] tracking-wide leading-relaxed text-justify">
+            <span className="font-semibold text-lg">TBR3</span> is a Jordanian-born platform inspired by the Arabic word{" "}
+            <span className="font-serif font-bold">"تبَرّع"</span> meaning <span className="font-serif font-bold">"to donate"</span>, reflecting a mission rooted in giving, sustainability, and community care.
+            <br /><br />
+            It allows people to share second-hand items instead of discarding them — reducing waste and offering support to those in need.
+            <br /><br />
+            The platform promotes a circular economy and social solidarity by encouraging users to give instead of throw away.
+            <img src="/new.gif" className="h-64 px-32 mx-auto" />
+          </p>
+        </div>
+
+        <div
+          className={`bg-[#0b5e7d] w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-4 md:mt-8 transition-all duration-700 ease-out delay-200 ${
+            animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          } hover:scale-105 brightness-110 duration-300`}
+        >
+          <img src="/donation.jpg" className="w-full h-full object-cover rounded-md" />
+        </div>
+
+        <div
+          className={`bg-contimg w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-4 md:mt-24 transition-all duration-700 ease-out delay-300 ${
+            animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          } hover:scale-105 duration-300`}
+        >
+          <p className="py-12 px-6 font-semibold text-black text-[18px] tracking-wide leading-relaxed text-justify">
+            By extending the life cycle of goods, TBR3 actively supports green computing principles, minimising environmental impact, conserving resources, and encouraging eco-conscious behaviour.
+            <br /><br />
+            The platform also aligns deeply with Islamic values such as charity, avoiding waste, and stewardship of the Earth.
+            <br /><br />
+            TBR3 is more than just a donation platform, it's a movement that brings technology, faith, and environmental responsibility together to build a kinder, greener, and more giving society.
+            <img src="/movingarabic.gif" className="h-56 px-28 pb-10 mx-auto" />
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const Homepage = () => {
   const navigate = useNavigate();
+
   return (
+    <section className="">
     <div className="min-h-screen bg-gray-100 text-[#065f46] font-sans">
-
-      <section className="relative w-full h-[500px] overflow-hidden rounded-b-xl shadow-lg">
-        <img
-          src="/images/banner2.gif"
-          alt="background donation"
-          className="w-full h-full object-cover backdrop-blur-sm"
-        />
-        <div className="absolute inset-0 flex flex-col justify-center items-center text-white text-center px-4">
-          <h1 className="text-5xl md:text-6xl font-bold mb-6 drop-shadow-lg">
-            Be influential and donate
-          </h1>
-          <p className="text-lg md:text-xl mb-8 max-w-2xl">
-            Help those in need and be Eco-friendly
-          </p>
-          <button
-            onClick={() => navigate("/feed")}
-           className="bg-green-600 hover:bg-[#34d399] text-white font-bold py-3 px-8 rounded-full text-lg transition shadow-lg"
-          >
-           View More
-          </button>
-
-        </div>
+      <section className="relative w-full h-[650px] overflow-hidden rounded-b-xl shadow-lg">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover"
+        >
+          <source src="https://media.tbr3.org/videos/waste.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       </section>
 
-      <div className="w-full mx-auto flex flex-col md:flex-row gap-8">
-        <section className="flex flex-col md:flex-row items-center bg-green-600 p-10 mt-20 shadow-lg gap-10">
-          <div className="md:w-1/2">
-            <h2 className="text-4xl font-medium text-white mb-4 text-center md:text-left">Our perspective..</h2>
-            <p className="text-lg text-white leading-loose text-center md:text-left">
-              TBR3 is a Jordanian-born platform inspired by the Arabic word "تبَرّع" meaning "to donate" 
-              reflecting a mission rooted in giving, sustainability, and community care. 
-              It allows people to share second-hand items instead of discarding them,
-              reducing waste and offering support to those in need.<br /><br />
-              By extending the life cycle of goods, 
-              TBR3 actively supports green computing principles, minimising environmental impact, conserving resources,
-              and encouraging eco-conscious behaviour. The platform also aligns deeply with Islamic values such as charity,
-              avoiding waste, and stewardship of the Earth. <br /><br />
-              TBR3 is more than just a donation platform, it's a movement that brings 
-              technology, faith, and environmental responsibility together to build a kinder, greener, and more giving society.
-            </p>
-          </div>
-          <div className="md:w-1/2">
-            <img src="/images/donation.jpg" alt="donation" className="rounded-lg shadow-lg w-full h-[500px] object-cover" />
-          </div>
-        </section>
-      </div>
+      <BarSection />
 
-      <section className="flex flex-col md:flex-row items-center bg-[#093965] p-10 mt-20 shadow-lg mb-10 gap-10">
-        <div className="md:w-1/2">
-          <img src="/images/list.jpg" alt="Who we are" className="shadow-lg w-full h-[400px] object-cover rounded-lg" />
-        </div>
-        <div className="md:w-1/2">
-          <h2 className="text-4xl font-bold text-[#10b981] mb-2 text-center mb-7 md:text-left">
-            What can you donate?
-          </h2>
-          <p className="text-lg text-white leading-loose text-center md:text-left whitespace-pre-line">
-            Items
-            Clothing – gently used or new clothes, shoes, coats.<br></br><br></br>
-
-            Furniture – beds, sofas, tables, etc.<br></br><br></br>
-
-            Electronics – phones, laptops, tablets (in working condition).<br></br><br></br>
-
-            Books and Toys – for children or general community use.<br></br><br></br>
-
-            Household items – kitchenware, linens, appliances.<br></br><br></br>
-          </p>
-        </div>
-      </section>
-
+      <section className="relative w-full h-auto  overflow-hidden rounded-b-xl shadow-lg ">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover  mx-4"
+        >
+          <source src="https://media.tbr3.org/videos/home4.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video> </section>
     </div>
+</section>
   );
 };
 
