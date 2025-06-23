@@ -33,7 +33,7 @@ const BarSection = () => {
             It allows people to share second-hand items instead of discarding them — reducing waste and offering support to those in need.
             <br /><br />
             The platform promotes a circular economy and social solidarity by encouraging users to give instead of throw away.
-            <img src="/new.gif" className="h-64 px-32 mx-auto" />
+            <img src="/new.gif" className="w-[230px] h-auto mx-auto" />
           </p>
         </div>
 
