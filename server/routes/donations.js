@@ -140,4 +140,24 @@ router.put("/claims/:id/decline", authorize, async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+router.get("/claims/count/:donatorId", authorize, async (req, res) => {
+  const { donatorId } = req.params;
+
+  if (String(donatorId) !== String(req.user.id)) {
+    return res.status(403).json({ message: "Unauthorized" });
+  }
+
+  try {
+    const result = await pool.query(`
+      SELECT COUNT(*) FROM donation_claims dc
+      JOIN posts p ON dc.post_id = p.post_id
+      WHERE p.user_id = $1 AND dc.status = 'pending'
+    `, [donatorId]);
+
+    res.json({ pendingClaims: parseInt(result.rows[0].count) });
+  } catch (err) {
+    console.error("Error counting claims:", err.message);
+    res.status(500).send("Server error");
+  }
+});
 module.exports = router;

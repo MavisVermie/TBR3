@@ -6,6 +6,7 @@ import profile from "../../assets/profilepic.png";
 import React, { Fragment, useEffect, useState, useRef } from "react";
 import { toast } from "react-toastify";
 import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
@@ -15,23 +16,52 @@ export default function Navbar({ setAuth, isAuthenticated }) {
   const [username, setUsername] = useState("");
   const [isAdmin, setIsAdmin] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [claimNotifications, setClaimNotifications] = useState(0);
   const navigate = useNavigate();
   const location = useLocation();
   const menuRef = useRef(null);
+const [unreadMessages, setUnreadMessages] = useState(0);
+const [totalNotifications, setTotalNotifications] = useState(0);
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token) return;
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) return;
+  try {
+    const decoded = jwtDecode(token);
+    setIsAdmin(Boolean(decoded.isAdmin));
+    if (decoded.username) setUsername(decoded.username);
 
-    try {
-      const decoded = jwtDecode(token);
-      setIsAdmin(Boolean(decoded.isAdmin) === true);
-      if (decoded.username) setUsername(decoded.username);
-    } catch (err) {
-      console.error("Failed to decode token:", err);
-      setIsAdmin(false);
-    }
-  }, [isAuthenticated]);
+    const fetchCounts = async () => {
+      try {
+        const [claimsRes, messagesRes] = await Promise.all([
+          axios.get(`${process.env.REACT_APP_API_URL}/api/donations/claims/count/${decoded.userId}`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+          axios.get(`${process.env.REACT_APP_API_URL}/messages/unread/count`, {
+            headers: { Authorization: `Bearer ${token}` },
+          }),
+        ]);
+
+        const pendingClaims = claimsRes.data.pendingClaims || 0;
+        const unreadMessages = messagesRes.data.unreadCount || 0;
+
+        setClaimNotifications(pendingClaims);
+        setUnreadMessages(unreadMessages);
+        setTotalNotifications(pendingClaims + unreadMessages);
+
+      } catch (err) {
+        console.error("Error fetching notifications:", err);
+      }
+    };
+
+    fetchCounts();
+
+  } catch (err) {
+    console.error("Failed to decode token:", err);
+    setIsAdmin(false);
+  }
+}, [isAuthenticated]);
+
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -70,10 +100,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
     <nav className="w-full bg-green-700 relative shadow-md z-50">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-0 font-sans">
         <div className="flex h-20 items-center justify-between w-full">
-
-          {/* Menu Button and Logo */}
           <div className="flex items-center space-x-4">
-            {/* Mobile/Tablet menu button */}
             <div className="md:hidden">
               <button
                 className="p-2 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-white"
@@ -92,7 +119,6 @@ export default function Navbar({ setAuth, isAuthenticated }) {
             </Link>
           </div>
 
-          {/* Navigation - Center */}
           <div className="hidden lg:flex flex-1 justify-start space-x-8">
             {navigation.map((item) => (
               <Link
@@ -105,7 +131,6 @@ export default function Navbar({ setAuth, isAuthenticated }) {
             ))}
           </div>
 
-          {/* Buttons - Right */}
           <div className="flex items-center space-x-4">
             <button
               onClick={toggleLanguage}
@@ -116,12 +141,17 @@ export default function Navbar({ setAuth, isAuthenticated }) {
 
             {isAuthenticated ? (
               <Menu as="div" className="relative">
-                <Menu.Button className="flex items-center text-sm focus:outline-none">
+                <Menu.Button className="flex items-center text-sm focus:outline-none relative">
                   <img
                     className="h-8 w-8 rounded-full border border-white"
                     src={profile}
                     alt="User"
                   />
+                  {claimNotifications > 0 && (
+                    <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs rounded-full px-1.5 py-0.5">
+                      {claimNotifications}
+                    </span>
+                  )}
                 </Menu.Button>
                 <Transition
                   as={Fragment}
@@ -159,6 +189,49 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                         </Link>
                       )}
                     </Menu.Item>
+<Menu.Item>
+  {({ active }) => (
+    <Link
+      to="/myclaims"
+      className={classNames(
+        active ? "bg-green-500" : "",
+        "block px-5 py-2 text-sm"
+      )}
+    >
+      <div >
+        <span>📥 Claim Requests</span>
+        {claimNotifications > 0 && (
+          <span className="bg-red-600 text-white text-xs font-bold rounded-full px-1.5 py-0.5">
+            {claimNotifications}
+          </span>
+        )}
+      </div>
+    </Link>
+  )}
+</Menu.Item>
+
+
+<Menu.Item>
+  {({ active }) => (
+    <Link
+      to="/messages"
+      className={classNames(
+        active ? "bg-green-500" : "",
+        "block px-5 py-2 text-sm"
+      )}
+    >
+      <div>
+        <span>🗪 My Messages</span>
+        {unreadMessages > 0 && (
+          <span className="bg-red-600 text-white text-xs font-bold rounded-full px-1.5 py-0.5">
+            {unreadMessages}
+          </span>
+        )}
+      </div>
+    </Link>
+  )}
+</Menu.Item>
+
                     {isAdmin && (
                       <Menu.Item>
                         {({ active }) => (
@@ -173,21 +246,7 @@ export default function Navbar({ setAuth, isAuthenticated }) {
                           </Link>
                         )}
                       </Menu.Item>
-                      
                     )}
-                    <Menu.Item>
-                            {({ active }) => (
-                              <Link
-                                to="/messages"
-                                className={classNames(
-                                  active ? "bg-green-500" : "",
-                                  "block px-4 py-2 text-sm"
-                                )}
-                              >
-                               🗪  My Messages
-                              </Link>
-                            )}
-                          </Menu.Item>
                     <Menu.Item>
                       {({ active }) => (
                         <button
@@ -224,13 +283,10 @@ export default function Navbar({ setAuth, isAuthenticated }) {
         </div>
       </div>
 
-      {/* Slide-in menu for Mobile & Tablet */}
       {isMenuOpen && (
         <div className="fixed inset-0 z-40 flex">
-          {/* Overlay */}
           <div className="fixed inset-0 bg-black bg-opacity-30" />
 
-          {/* Sidebar Panel */}
           <div
             ref={menuRef}
             className="relative bg-green-700 text-white w-64 h-full p-6 space-y-4 shadow-xl z-50 transition-all duration-300"

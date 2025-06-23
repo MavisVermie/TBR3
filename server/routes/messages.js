@@ -146,5 +146,21 @@ router.patch('/:messageId/delivered', authorize, async (req, res) => {
     res.status(500).json({ error: 'Server error' });
   }
 });
+// Get total unread messages for current user
+router.get('/unread/count', authorize, async (req, res) => {
+  try {
+    const userId = req.user.id;
+
+    const result = await pool.query(
+      `SELECT COUNT(*) FROM messages WHERE receiver_id = $1 AND is_read = FALSE`,
+      [userId]
+    );
+
+    res.json({ unreadCount: parseInt(result.rows[0].count) });
+  } catch (err) {
+    console.error('Error getting unread messages count:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
+});
 
 module.exports = router;
