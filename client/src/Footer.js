@@ -4,7 +4,7 @@ import logo from './assets/TB.png';
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-800 text-gray-300 py-8">
+    <footer className="bg-black text-gray-300 py-8">
       <div className="max-w-screen-xl mx-auto px-4 flex flex-col md:flex-row justify-between items-start md:items-center space-y-6 md:space-y-0 text-sm">
        
 
