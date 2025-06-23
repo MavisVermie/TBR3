@@ -43,7 +43,6 @@ const RegistrationPage = ({ setAuth }) => {
     try {
       setIsSending(true);
 
-      // 🔒 Check if phone is already registered
       const checkRes = await fetch(`${process.env.REACT_APP_API_URL}/api/users/check-phone`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -56,7 +55,6 @@ const RegistrationPage = ({ setAuth }) => {
         throw new Error(checkData.error || 'Phone already registered');
       }
 
-      // ✅ Send OTP if not registered or if bypassed
       const res = await fetch(`${process.env.REACT_APP_API_URL}/api/verify/send`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -68,7 +66,6 @@ const RegistrationPage = ({ setAuth }) => {
       setOtpSent(true);
       toast.success('OTP sent to your phone');
 
-      // ⏳ Start 60-second cooldown
       setCooldown(60);
       const interval = setInterval(() => {
         setCooldown((prev) => {
@@ -79,7 +76,6 @@ const RegistrationPage = ({ setAuth }) => {
           return prev - 1;
         });
       }, 1000);
-
     } catch (err) {
       toast.error('Error: ' + err.message);
     } finally {
@@ -159,100 +155,110 @@ const RegistrationPage = ({ setAuth }) => {
   return (
     <div className="flex min-h-screen">
       {/* Left side (Form) */}
-      <div className="w-full md:w-2/3 flex flex-col items-center justify-center bg-gray-100 px-4 py-8 font-sans">
-        <h2 className="text-3xl font-bold text-green-600 mb-10">Registration</h2>
-        <form onSubmit={onSubmitForm} className="w-full max-w-md space-y-3">
-          {['username', 'email', 'password'].map((field, index) => (
-            <input
-              key={index}
-              type={field === 'email' ? 'email' : field === 'password' ? 'password' : 'text'}
-              name={field}
-              value={inputs[field]}
-              onChange={onChange}
-              placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
-              className="w-full px-4 py-2 border rounded-full outline-none transition duration-200
-                focus:border-green-500 focus:ring-2 focus:ring-green-400
-                hover:ring-2 hover:ring-green-400"
-              required
-            />
-          ))}
+      <div className="w-full md:w-2/3 flex flex-col items-center justify-start bg-gray-100 px-4 py-32 font-sans">
+        <div className=" w-full max-w-2xl">
+          <h2 className="text-6xl font-bold text-green-600 mb-10 text-center py-7">Registration</h2>
 
-          {/* Phone Number Input + OTP Button */}
-          <div className="flex items-center gap-2">
-            <input
-              type="tel"
-              name="phone_number"
-              value={phone_number}
-              onChange={onChange}
-              placeholder="e.g. +9627XXXXXXXX or 07XXXXXXXX"
-              className="w-full px-4 py-2 border rounded-full outline-none transition duration-200
-                focus:border-green-500 focus:ring-2 focus:ring-green-400
-                hover:ring-2 hover:ring-green-400"
-              required
-            />
-            <button
-              type="button"
-              onClick={sendOtp}
-              disabled={cooldown > 0 || isSending}
-              className={`px-4 py-2 text-white rounded-full transition duration-200 ${
-                cooldown > 0 || isSending
-                  ? 'bg-gray-400 cursor-not-allowed'
-                  : 'bg-blue-500 hover:bg-blue-600'
-              }`}
-            >
-              {isSending
-                ? 'Sending...'
-                : cooldown > 0
-                ? `Resend in ${cooldown}s`
-                : 'Send OTP'}
-            </button>
-          </div>
-
-          {/* OTP Input + Verify */}
-          {otpSent && !phoneVerified && (
-            <div className="flex items-center gap-2">
+          <form onSubmit={onSubmitForm} className="space-y-4">
+            {['username', 'email', 'password'].map((field, index) => (
               <input
-                type="text"
-                value={otp}
-                onChange={(e) => setOtp(e.target.value)}
-                placeholder="Enter OTP"
+                key={index}
+                type={field === 'email' ? 'email' : field === 'password' ? 'password' : 'text'}
+                name={field}
+                value={inputs[field]}
+                onChange={onChange}
+                placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
                 className="w-full px-4 py-2 border rounded-full outline-none transition duration-200
                   focus:border-green-500 focus:ring-2 focus:ring-green-400
                   hover:ring-2 hover:ring-green-400"
+                required
+              />
+            ))}
+
+            <div className="flex items-center gap-2">
+              <input
+                type="tel"
+                name="phone_number"
+                value={phone_number}
+                onChange={onChange}
+                placeholder="e.g. +9627XXXXXXXX or 07XXXXXXXX"
+                className="w-full px-4 py-2 border rounded-full outline-none transition duration-200
+                  focus:border-green-500 focus:ring-2 focus:ring-green-400
+                  hover:ring-2 hover:ring-green-400"
+                required
               />
               <button
                 type="button"
-                onClick={verifyOtp}
-                className="px-4 py-2 bg-green-500 text-white rounded-full hover:bg-green-600"
+                onClick={sendOtp}
+                disabled={cooldown > 0 || isSending}
+                className={`px-6 py-2 text-white whitespace-nowrap rounded-full transition duration-200 ${
+                  cooldown > 0 || isSending
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-green-600 hover:bg-green-700'
+                }`}
               >
-                Verify
+                {isSending
+                  ? 'Sending...'
+                  : cooldown > 0
+                  ? `Resend in ${cooldown}s`
+                  : 'Send OTP'}
               </button>
             </div>
-          )}
 
-          {phoneVerified && (
-            <p className="text-sm text-green-600 font-medium">✅ Phone verified</p>
-          )}
+            {otpSent && !phoneVerified && (
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  placeholder="Enter OTP"
+                  className="w-full px-4 py-2 border rounded-full outline-none transition duration-200
+                    focus:border-green-500 focus:ring-2 focus:ring-green-400
+                    hover:ring-2 hover:ring-green-400"
+                />
+                <button
+                  type="button"
+                  onClick={verifyOtp}
+                  className="px-4 py-2 bg-green-500 text-white rounded-full hover:bg-green-600"
+                >
+                  Verify
+                </button>
+              </div>
+            )}
 
-          <button
-            type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-full font-semibold transition duration-200"
-          >
-            Create Account
-          </button>
-        </form>
+            {phoneVerified && (
+              <p className="text-sm text-green-600 font-medium">✅ Phone verified</p>
+            )}
 
-        <p className="text-sm text-center mt-3 text-gray-700">
-          Already have an account?{' '}
-          <Link to="/authentication/login" className="underline font-medium text-green-600">
-            Log in
-          </Link>
-        </p>
+            <button
+              type="submit"
+              className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-full font-semibold transition duration-200"
+            >
+              Create Account
+            </button>
+          </form>
+
+          <p className="text-sm text-center mt-4 text-gray-700">
+            Already have an account?{' '}
+            <Link to="/authentication/login" className="underline font-medium text-green-600">
+              Log in
+            </Link>
+          </p>
+        </div>
       </div>
 
       {/* Right side (Image) */}
-      <div className="hidden md:block md:w-1/3">
-        <img src="/reg.jpg" alt="Side" className="w-full h-full object-cover" />
+      <div className="hidden md:block md:w-1/3 bg-gray-100">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="w-full h-full object-cover mx-4"
+        >
+          <source src="https://media.tbr3.org/videos/reg5.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       </div>
     </div>
   );
