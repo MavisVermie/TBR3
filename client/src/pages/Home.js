@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaUsers, FaRegNewspaper } from "react-icons/fa6";
+import { Link } from 'react-router-dom';
 
 const BarSection = () => {
   const [animate, setAnimate] = useState(false);
@@ -180,9 +181,11 @@ const Homepage = () => {
         <p className="mb-10 text-white font-semibold"><span className="text-5xl text-green-500" >Join a community of changemakers</span><br></br><br></br>
           <span className="text-2xl font-normal "> Be the one who gives generously and lives sustainably.</span><br></br><br></br>
           <span className=" font-normal"> support a proudly Jordanian paltform making a real difference with TBR3.</span></p>
-           <button className="bg-green-600 text-white px-14 py-3 rounded-full shadow-md hover:bg-green-700 hover:shadow-lg transition duration-300 mb-14  ">
-          GET STARTED
-         </button>
+ <Link to="/authentication/registration">
+  <button className="bg-green-600 text-white px-14 py-3 rounded-full shadow-md hover:bg-green-700 hover:shadow-lg transition duration-300 mb-14">
+    GET STARTED
+  </button>
+</Link>
         <HomeStats />
      
                   </div>
