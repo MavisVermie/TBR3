@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
+import { toast } from 'react-toastify';
+
+import { Link } from "react-router-dom"; // ✅ Add this at the top
 
 const DonatorClaimsPage = () => {
   const [claims, setClaims] = useState([]);
@@ -24,6 +27,7 @@ const DonatorClaimsPage = () => {
         setClaims(res.data);
       } catch (err) {
         console.error("Error fetching claims:", err.message);
+        toast.error("Failed to fetch claims.");
       } finally {
         setLoading(false);
       }
@@ -42,9 +46,10 @@ const DonatorClaimsPage = () => {
 
       // Remove from local list
       setClaims((prev) => prev.filter((c) => c.id !== claimId));
-      alert(`Claim ${action}ed successfully.`);
+      toast.success(`Claim ${action}ed successfully.`);
     } catch (err) {
-      alert("Error processing claim.");
+      console.error("Error processing claim:", err.message);
+      toast.error("Failed to process claim.");
     }
   };
 
@@ -54,18 +59,32 @@ const DonatorClaimsPage = () => {
 
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white shadow-md rounded-xl space-y-4 mt-10">
+
       <h1 className="text-3xl font-bold text-green-700 mb-6">Pending Claims</h1>
+
       {claims.map((claim) => (
-        <div key={claim.id} className="border p-4 rounded-lg shadow flex justify-between items-start flex-wrap">
+        <div
+          key={claim.id}
+          className="border p-4 rounded-lg shadow flex justify-between items-start flex-wrap"
+        >
           <div>
             <p className="text-lg font-semibold text-gray-800">
               📦 {claim.title}
             </p>
-            <p className="text-sm text-gray-500 mt-1">
-              Claimed by: <span className="text-blue-600">{claim.receiver_username}</span>
-            </p>
+ <p className="text-sm text-gray-500 mt-1">
+  Claimed by:{" "}
+  <Link
+    to={`/user/${claim.receiver_id}`}
+    className="text-blue-600 underline hover:text-blue-800 transition"
+  >
+    {claim.receiver_username}
+  </Link>
+</p>
+
             {claim.message && (
-              <p className="text-sm mt-2 text-gray-600 italic">“{claim.message}”</p>
+              <p className="text-sm mt-2 text-gray-600 italic">
+                “{claim.message}”
+              </p>
             )}
             <p className="text-xs mt-1 text-gray-400">
               {new Date(claim.created_at).toLocaleString()}

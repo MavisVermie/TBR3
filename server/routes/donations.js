@@ -25,6 +25,16 @@ router.post("/claims", authorize, async (req, res) => {
     if (existing.rows.length > 0) {
       return res.status(400).json({ message: "Claim already exists" });
     }
+    // Count how many active (pending) claims the user has
+const claimCount = await pool.query(
+  `SELECT COUNT(*) FROM donation_claims 
+   WHERE receiver_id = $1 AND status = 'pending'`,
+  [receiver_id]
+);
+
+if (parseInt(claimCount.rows[0].count) >= 2) {
+  return res.status(400).json({ message: "You already have 2 pending claims." });
+}
 
     // Insert claim
     await pool.query(
@@ -50,13 +60,16 @@ router.get("/claims/:donatorId", authorize, async (req, res) => {
 
   try {
     const result = await pool.query(`
-      SELECT dc.id, dc.status, dc.created_at, dc.message,
-             p.title, p.post_id, u.username as receiver_username
-      FROM donation_claims dc
-      JOIN posts p ON dc.post_id = p.post_id
-      JOIN users u ON dc.receiver_id = u.id
-      WHERE p.user_id = $1 AND dc.status = 'pending'
-      ORDER BY dc.created_at DESC
+SELECT dc.id, dc.status, dc.created_at, dc.message,
+       p.title, p.post_id,
+       u.username as receiver_username,
+       u.id as receiver_id
+FROM donation_claims dc
+JOIN posts p ON dc.post_id = p.post_id
+JOIN users u ON dc.receiver_id = u.id
+WHERE p.user_id = $1 AND dc.status = 'pending'
+ORDER BY dc.created_at DESC
+
     `, [donatorId]);
 
     res.json(result.rows);

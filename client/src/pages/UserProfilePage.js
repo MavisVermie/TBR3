@@ -139,13 +139,12 @@ const UserProfilePage = () => {
     return <div className="p-6 text-gray-500 animate-pulse">Loading profile...</div>;
   if (error) return <div className="p-6 text-red-600">{error}</div>;
   if (!user) return <div className="p-6">No user data available.</div>;
-//heree u can edit the badges
-  const badgeMap = {
-    bronze: "🥉",
-    silver: "🥈",
-    gold: "🥇",
-  };
-  const badgeIcon = user.badge ? badgeMap[user.badge.toLowerCase()] : null;
+
+  // Determine badge based on items_donated
+  let badge = null;
+  if (user.items_donated >= 100) badge = "🥇";
+  else if (user.items_donated >= 50) badge = "🥈";
+  else if (user.items_donated >= 0) badge = "🥉";
 
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4">
@@ -153,11 +152,20 @@ const UserProfilePage = () => {
       <div className="max-w-6xl mx-auto bg-white rounded-2xl shadow-lg p-8 space-y-4">
         <div>
           <h1 className="text-4xl font-semibold leading-loose text-green-700 mb-4 text-center">User Info</h1>
-          <p className="text-xl leading-loose text-center">
-            Username: <span className="text-red-600">{user.username}</span>
-            {badgeIcon && <span className="ml-2 text-2xl">{badgeIcon}</span>}
-          </p>
+<p className="text-xl leading-loose text-center">
+  Username: <span className="text-red-600">{user.username}</span>
+    {user.is_admin && (
+    <span className="ml-3 bg-red-500 text-white px-2 py-1 text-m rounded">
+      ADMIN
+    </span>
+  )}
+  {badge && <span className="ml-2 text-2xl">{badge}</span>}
+
+</p>
+
           <p className="text-xl leading-loose text-center">Email: <span className="text-red-600">{user.email}</span></p>
+          <p className="text-lg text-center mt-2">Items Donated: <span className="font-semibold text-green-700">{user.items_donated}</span></p>
+          {/* <p className="text-lg text-center">Items Received: <span className="font-semibold text-blue-600">{user.items_received}</span></p> */}
 
           {currentUserId && currentUserId !== user.id && (
             <div className="mt-4 text-center">

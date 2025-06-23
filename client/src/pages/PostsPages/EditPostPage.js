@@ -105,7 +105,7 @@ setExistingImages(combinedImages);        } else {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: { 'image/*': ['.jpeg', '.jpg', '.png', '.gif'] },
-    maxSize: 5 * 1024 * 1024
+    maxSize: 10 * 1024 * 1024
   });
 
   const removeImage = (index) => {
@@ -195,24 +195,26 @@ setExistingImages(combinedImages);        } else {
 
 <div>
   <label className="block text-sm font-medium text-gray-700 mb-1">Availability</label>
-  <button
-    type="button"
-    onClick={() => {
-      setAvailability((prev) => {
-        if (prev === 'available') return 'reserved';
-        if (prev === 'reserved') return 'donated';
-        return 'available';
-      });
-    }}
-    className={`
-      w-full py-2 rounded text-white font-semibold transition-colors
-      ${availability === 'available' ? 'bg-green-600 hover:bg-green-700' : ''}
-      ${availability === 'reserved' ? 'bg-yellow-500 hover:bg-yellow-600' : ''}
-      ${availability === 'donated' ? 'bg-red-600 hover:bg-red-700' : ''}
-    `}
-  >
-    {availability.charAt(0).toUpperCase() + availability.slice(1)}
-  </button>
+<button
+  type="button"
+  disabled={availability === 'donated'}
+onClick={() => {
+  if (availability === 'donated') {
+    toast.info("This item is already donated and cannot be changed.");
+    return;
+  }
+  setAvailability((prev) => (prev === 'available' ? 'reserved' : 'available'));
+}}
+  className={`
+    w-full py-2 rounded text-white font-semibold transition-colors
+    ${availability === 'available' ? 'bg-green-600 hover:bg-green-700' : ''}
+    ${availability === 'reserved' ? 'bg-yellow-500 hover:bg-yellow-600' : ''}
+    ${availability === 'donated' ? 'bg-red-600 cursor-not-allowed opacity-70' : ''}
+  `}
+>
+  {availability.charAt(0).toUpperCase() + availability.slice(1)}
+</button>
+
 </div>
 
 </div>

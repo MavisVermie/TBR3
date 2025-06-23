@@ -7,9 +7,8 @@ router.get("/:userId", async (req, res) => {
   try {
     const { userId } = req.params;
 
-    // Fetch basic user info
     const userQuery = await pool.query(
-      `SELECT id as user_id, username, email FROM users WHERE id = $1`,
+      `SELECT id as user_id, username, email, items_donated, items_received, is_admin FROM users WHERE id = $1`,
       [userId]
     );
 
@@ -19,29 +18,13 @@ router.get("/:userId", async (req, res) => {
 
     const user = userQuery.rows[0];
 
-    // Count donated posts
-    const donatedQuery = await pool.query(
-      `SELECT COUNT(*) FROM posts WHERE user_id = $1 AND availability = 'donated'`,
-      [userId]
-    );
-
-    const donatedCount = parseInt(donatedQuery.rows[0].count, 10);
-
-    // Determine badge
-    let badge = null;
-    if (donatedCount >= 100) {
-      badge = 'gold';
-    } else if (donatedCount >= 50) {
-      badge = 'silver';
-    } else if (donatedCount >= 0) {
-      badge = 'bronze';
-    }
-
-    // Send response with badge info
     res.json({
-      ...user,
-      donatedCount,
-      badge
+      user_id: user.user_id,
+      username: user.username,
+      email: user.email,
+      items_donated: user.items_donated || 0,
+      items_received: user.items_received || 0,
+      is_admin: user.is_admin || false,
     });
 
   } catch (err) {
@@ -49,6 +32,7 @@ router.get("/:userId", async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+
 
 
 // POST /api/users/check-phone

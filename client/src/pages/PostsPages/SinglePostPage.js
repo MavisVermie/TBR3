@@ -3,6 +3,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./showDataProduct.css";
 import { jwtDecode } from 'jwt-decode';
+import { toast } from 'react-toastify';
+
 const getImageUrl = (path) => {
   if (!path) return '';
   if (path.startsWith('http')) return path;
@@ -123,20 +125,19 @@ export default function ShowDataProduct() {
   const handleClaimReceived = async () => {
   try {
     const token = localStorage.getItem("token");
-    if (!token) return alert("You must be logged in.");
+    if (!token) return toast.error("You must be logged in!");
 
     await axios.post(
       `${process.env.REACT_APP_API_URL}/api/donations/claims`,
       { post_id: post.post_id, message: "I received this item" },
       { headers: { Authorization: `Bearer ${token}` } }
     );
-
-    alert("Claim sent to the donator!");
+    toast.success("Claim sent to the donator!");
   } catch (err) {
     if (err.response?.status === 400) {
       alert(err.response.data.message);
     } else {
-      alert("Something went wrong.");
+      toast.error("Something went wrong!");
     }
   }
 };
