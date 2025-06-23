@@ -120,6 +120,27 @@ export default function ShowDataProduct() {
       }
     }
   }, []);
+  const handleClaimReceived = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) return alert("You must be logged in.");
+
+    await axios.post(
+      `${process.env.REACT_APP_API_URL}/api/donations/claims`,
+      { post_id: post.post_id, message: "I received this item" },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+
+    alert("Claim sent to the donator!");
+  } catch (err) {
+    if (err.response?.status === 400) {
+      alert(err.response.data.message);
+    } else {
+      alert("Something went wrong.");
+    }
+  }
+};
+
   const processImageQueue = useCallback(async () => {
     if (isProcessingQueue.current || imageLoadQueue.current.length === 0) return;
 
@@ -556,6 +577,16 @@ const showEditButton = post && (
                     Contact Seller
                   </button>
                 </div>
+                    {post.availability === "available" &&
+  currentUserId &&
+  String(currentUserId) !== String(post.user_id) && (
+    <button
+      onClick={handleClaimReceived}
+      className="w-full bg-yellow-500 text-white px-8 py-4 rounded-lg hover:bg-yellow-600 transition text-lg font-semibold shadow-md mt-4"
+    >
+      I received this item
+    </button>
+)}
 
                 
               </div>

@@ -49,7 +49,8 @@ import ArabicSignIn from './pages/arabic/SignInPage';
 import ArabicRegistration from './pages/arabic/RegistrationPage';
 import DirectMessageChat from './components/chat/DirectMessageChat';
 import MessagesPage from './components/chat/MessagesPage';
-
+import DonationClaimsPage from './pages/PostsPages/DonationClaimsPage';
+import DonatorClaimsPage from './pages/PostsPages/DonationClaimsPage';
 const SlowFade = cssTransition({
   enter: 'fadeIn',
   exit: 'fadeOut',
@@ -184,7 +185,7 @@ function App() {
             <Route path="/ar/authentication/registration" element={isAuthenticated ? <Navigate to="/ar/home" /> : <ArabicRegistration setAuth={setAuth} />} />
             <Route path="/admin/flagged" element={<AdminFlaggedPosts />} />
             <Route path="/messages" element={<MessagesPage />} />
-
+            <Route path="/myclaims" element={<DonatorClaimsPage />} />
             {/* ✅ Direct Messaging route */}
           </Routes>
         </Layout>
