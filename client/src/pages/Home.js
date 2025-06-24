@@ -32,7 +32,7 @@ const BarSection = () => {
             <span className="font-serif font-bold">"تبَرّع"</span> meaning <span className="font-serif font-bold">"to donate"</span>.
             <br /><br />
             It allows people to share second-hand items instead of discarding them — reducing waste and offering support to those in need.
-            <img src="/new.gif" className="h-64 px-32 mx-auto mt-4" />
+            <img src="/new.gif" className="w-[200px] h-auto mx-auto" />
           </p>
         </div>
 
@@ -148,7 +148,7 @@ const Homepage = () => {
 
   return (
     <section className="">
-    <div className="min-h-screen bg-gray-100 text-[#065f46] font-sans">
+    <div className="min-h-screen bg-gray-100 text-[#065f46]">
       <section className="relative w-full aspect-video md:h-[650px] overflow-hidden rounded-b-xl shadow-lg">
         <video
           autoPlay
@@ -176,7 +176,7 @@ const Homepage = () => {
         </video> 
         </section> 
 
-      <div className="bg-black font-sans pb-24 px-4 text-center pt-14 ">
+      <div className="bg-black pb-24 px-4 text-center pt-14 ">
   <p className="mb-10 text-white font-semibold text-lg sm:text-xl md:text-2xl lg:text-3xl leading-relaxed">
     <span className="text-3xl sm:text-4xl md:text-5xl text-green-500 block mb-4">Join a community of changemakers</span>
     Be the one who gives generously and lives sustainably.

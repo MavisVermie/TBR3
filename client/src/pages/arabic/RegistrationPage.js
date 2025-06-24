@@ -169,7 +169,7 @@ const RegistrationPage = ({ setAuth }) => {
       </div>
 
       {/* Left side (Form) */}
-      <div className="w-full md:w-2/3 flex flex-col items-center justify-start bg-gray-100 px-4 py-32 font-sans">
+      <div className="w-full md:w-2/3 flex flex-col items-center justify-start bg-gray-100 px-4 py-32 ">
         <div className="w-full max-w-2xl" dir="rtl">
           <h2 className="text-6xl font-semibold text-green-600 mb-10 text-center py-7">إنشاء حساب</h2>
 
