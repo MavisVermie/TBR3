@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { FaUsers, FaRegNewspaper } from "react-icons/fa6";
 import { MdEvent, MdEventAvailable } from "react-icons/md";
 
@@ -112,7 +112,7 @@ const HomeStats = () => {
 
   useEffect(() => {
     if (isVisible) {
-      fetch("/api/stats/counts")
+      fetch(`${process.env.REACT_APP_API_URL}/api/stats/counts`)
         .then(res => res.json())
         .then(data => setStats(data))
         .catch(() => setStats({ posts: 0, users: 0, totalEventsHosted:0 }));
@@ -192,9 +192,12 @@ const Homepage = () => {
         <p className="mb-10 text-white font-semibold"><span className="text-5xl text-green-500" >Join a community of changemakers</span><br></br><br></br>
           <span className="text-2xl font-normal "> Be the one who gives generously and lives sustainably.</span><br></br><br></br>
           <span className=" font-normal"> support a proudly Jordanian paltform making a real difference with TBR3.</span></p>
-           <button className="bg-green-600 text-white px-14 py-3 rounded-full shadow-md hover:bg-green-700 hover:shadow-lg transition duration-300 mb-14  ">
+          <Link to="/authentication/registration">
+                     <button className="bg-green-600 text-white px-14 py-3 rounded-full shadow-md hover:bg-green-700 hover:shadow-lg transition duration-300 mb-14  ">
           GET STARTED
          </button>
+          </Link>
+
         <HomeStats />
 
                   </div>

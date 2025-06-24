@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { FaUsers, FaRegNewspaper } from "react-icons/fa6";
 import { MdEvent, MdEventAvailable } from "react-icons/md";
-
 const BarSection = () => {
   const [animate, setAnimate] = useState(false);
 
@@ -109,7 +108,7 @@ const HomeStats = () => {
 
   useEffect(() => {
     if (isVisible) {
-      fetch("/api/stats/counts")
+      fetch(`${process.env.REACT_APP_API_URL}/api/stats/counts`)
         .then(res => res.json())
         .then(data => setStats(data))
         .catch(() => setStats({ posts: 0, users: 0, totalEventsHosted:0 }));
@@ -193,9 +192,12 @@ const Homepage = () => {
 إدعم منصة أردنية بفخر وأحدث فرقًا حقيقيًا مع تبرَّع
 
   </p>
-  <button className="bg-green-600 text-white px-10 py-3 rounded-full shadow-md hover:bg-green-700 hover:shadow-lg transition duration-300 mb-14 text-base sm:text-lg">
+  <Link to="/ar/authentication/registration">
+      <button className="bg-green-600 text-white px-10 py-3 rounded-full shadow-md hover:bg-green-700 hover:shadow-lg transition duration-300 mb-14 text-base sm:text-lg">
     ابدأ الآن
   </button>
+  </Link>
+
   <HomeStats />
 </div>
 
