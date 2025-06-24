@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import logo from "../../assets/logosign.png";
+import logo from "../../assets/movingarabic.gif";
 
 export default function SignInPage({ setAuth }) {
   const [inputs, setInputs] = useState({
@@ -33,7 +33,7 @@ useEffect(() => {
         localStorage.setItem("token", parseRes.jwtToken);
         setAuth(true);
         toast.success("Logged in Successfully");
-        navigate("/ar/feed"); 
+        navigate("/feed");
       } else {
         setAuth(false);
         toast.error(parseRes);
@@ -44,14 +44,14 @@ useEffect(() => {
   };
 
   return (
-    <section className="bg-bannerImg bg-no-repeat bg-cover w-full min-h-screen flex items-center justify-center">
-      <div className="w-full max-w-md px-6 py-12 shadow-2xl bg-white/10 backdrop-blur-md rounded-2xl transition-all duration-500 ease">
+    <section className=" bg-phoneimg bg-no-repeat md:bg-tabletimg  lg:bg-bannerImg  bg-cover w-full min-h-screen flex items-center justify-center">
+      <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl px-6 py-12 shadow-2xl bg-white/10 backdrop-blur-md rounded-2xl transition-all duration-500 ease">
         <div className="flex flex-col items-center text-center gap-8">
           <img src={logo} alt="TBR3 Logo" className="w-1/2 h-29" />
 
           <form onSubmit={onSubmitForm} className="w-full text-left space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium mr-5 text-white mb-2 text-right">البريد الإلكرتوني</label>
+              <label htmlFor="email" className="block text-sm  text-black mb-2">Email</label>
               <input
                 id="email"
                 name="email"
@@ -65,7 +65,7 @@ useEffect(() => {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-white mr-5 mb-2 text-right">كلمة المرور</label>
+              <label htmlFor="password" className="block text-sm  text-black mb-2">Password</label>
               <input
                 id="password"
                 name="password"
@@ -79,22 +79,22 @@ useEffect(() => {
             </div>
 
             <p className="text-sm text-center">
-              <a href="/ar/forgot-password" className="text-white hover:underline transition duration-150">
-                هل نسيت كلمة المرور؟
+              <a href="/forgot-password" className="text-black hover:underline transition duration-150">
+                Forgot your password?
               </a>
             </p>
 
             <button
               type="submit"
-              className="w-full rounded-xl bg-green-600 px-5 py-2 text-sm font-semibold text-white shadow-lg transition duration-200 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+              className="w-full rounded-xl bg-red-800 px-5 py-2 text-sm font-semibold text-white shadow-lg transition duration-200 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
             >
               Sign in
             </button>
 
-            <p className="text-sm text-center text-white">
-              ليس لديك حساب؟{" "}
-              <a href="/ar/authentication/registration" className="text-black hover:underline transition duration-150">
-                إنشئ حساب
+            <p className="text-sm text-center text-black">
+              Don't have an account?{" "}
+              <a href="/authentication/registration" className="text-red-800 hover:underline transition duration-150">
+                Register
               </a>
             </p>
           </form>

@@ -157,7 +157,7 @@ const RegistrationPage = ({ setAuth }) => {
       {/* Left side (Form) */}
       <div className="w-full md:w-2/3 flex flex-col items-center justify-start bg-gray-100 px-4 py-32 ">
         <div className=" w-full max-w-2xl">
-          <h2 className="text-6xl font-bold text-green-600 mb-10 text-center py-7">Registration</h2>
+          <h2 className="text-6xl font-semibold text-green-600 mb-10 text-center py-7">Registration</h2>
 
           <form onSubmit={onSubmitForm} className="space-y-4">
             {['username', 'email', 'password'].map((field, index) => (
@@ -254,7 +254,7 @@ const RegistrationPage = ({ setAuth }) => {
           loop
           muted
           playsInline
-          className="w-full h-full object-cover mx-4"
+          className="w-full h-full object-cover mx-4 py-3"
         >
           <source src="https://media.tbr3.org/videos/reg5.mp4" type="video/mp4" />
           Your browser does not support the video tag.
