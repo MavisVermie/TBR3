@@ -28,7 +28,7 @@ const Events = () => {
       
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-        <h1 className="text-4xl font-semibold text-green-700">
+        <h1 className="text-4xl font-semibold text-green-700 pt-7">
           <span className="text-red-700">Upcoming</span> Events
         </h1>
       </div>
