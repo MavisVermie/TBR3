@@ -15,7 +15,7 @@ const BarSection = () => {
       <div className="flex flex-wrap justify-center md:justify-between w-full min-h-[800px] gap-4">
         {/* Container 1 */}
         <div
-          className={`bg-[#0b5f7db2] w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-0 transition-all duration-700  hover : shadow-xl ease-out ${
+          className={`bg-[#0b5e7d] w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-4 md:mt-8 transition-all duration-700 ease-out delay-200 ${
             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           } hover:scale-105 duration-300`}
         >
