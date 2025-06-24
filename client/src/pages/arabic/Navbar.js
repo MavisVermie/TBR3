@@ -85,7 +85,7 @@ export default function ArabicNavbar({ setAuth, isAuthenticated }) {
                     <Link
                       key={item.name}
                       to={item.href}
-                      className="text-white text-base font-medium hover:text-green-400 hover:underline underline-offset-4 transition duration-200"
+                      className="text-white text-base font-semibold hover:text-green-400 hover:underline underline-offset-4 transition duration-200"
                     >
                       {item.name}
                     </Link>
