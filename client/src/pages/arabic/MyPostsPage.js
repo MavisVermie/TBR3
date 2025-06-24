@@ -47,7 +47,7 @@ const MyPostsPage = () => {
 
         {myPosts.length === 0 ? (
           <div className="flex items-center justify-center min-h-40">
-            <p className="text-center text-red-600 font-bold text-4xl font-sans">لم تقم بنشر أي شيء بعد</p>
+            <p className="text-center text-red-600 font-bold text-4xl ">لم تقم بنشر أي شيء بعد</p>
           </div>
         ) : (
           <div className="flex flex-wrap -mx-3">

@@ -75,7 +75,7 @@ export default function RegistrationPage({ setAuth }) {
           className="w-full h-full object-cover "
         />
       </div>
-      <div className="w-full md:w-2/3 flex flex-col items-center justify-center bg-gray-100 px-4 py-8  font-sans">
+      <div className="w-full md:w-2/3 flex flex-col items-center justify-center bg-gray-100 px-4 py-8 ">
         <h2 className="text-3xl font-bold text-green-600 mb-10">إنشاء حساب</h2>
         <form onSubmit={onSubmitForm} className="w-full max-w-md space-y-3 ">
           {['username', 'email', 'password', 'phone_number'].map((field, index) => (

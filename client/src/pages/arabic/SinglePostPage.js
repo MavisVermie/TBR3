@@ -340,7 +340,7 @@ const showEditButton = post && (
       <div className="max-w-full mx-auto">
         {/* Header Section - Title and Basic Info */}
         <div className="bg-white/90 p-8 rounded-xl shadow-md mb-8">
-          <h1 className="text-4xl font-semibold text-green-600 font-sans">{post.title}</h1>
+          <h1 className="text-4xl font-semibold text-green-600 ">{post.title}</h1>
           <div className="flex items-center justify-between">
             <p className="text-sm text-gray-500">
               Posted by <span className="font-semibold text-gray-800 cursor-pointer text-blue-600 hover:underline" onClick={() => navigate(`/user/${post.user_id}`)}>{post.username}</span>

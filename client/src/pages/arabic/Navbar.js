@@ -62,7 +62,7 @@ export default function ArabicNavbar({ setAuth, isAuthenticated }) {
     <Disclosure as="nav" className="bg-green-700 z-50" dir="rtl">
       {({ open }) => (
         <>
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 font-sans">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 ">
             <div className="flex h-16 items-center justify-between">
               {/* Mobile menu button */}
               <div className="flex sm:hidden">
