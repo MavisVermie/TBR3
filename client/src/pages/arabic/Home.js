@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 const Homepage = () => {
   const navigate = useNavigate();
   return (
-    <div className="min-h-screen bg-gray-100 text-[#065f46] font-sans">
+    <div className="min-h-screen bg-gray-100 text-[#065f46] ">
 
       <section className="relative w-full h-[500px] overflow-hidden rounded-b-xl shadow-lg">
         <img

@@ -23,7 +23,7 @@ const ForgotPassword = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8 font-sans">
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4 py-8 ">
       <div className="w-full max-w-md bg-green-600 shadow-2xl shadow-green-100 rounded-xl p-8">
         <h1 className="text-3xl font-semibold text-center text-white mb-6">
           هل نسيت كلمة المرور؟

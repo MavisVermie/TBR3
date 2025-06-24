@@ -1,3 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Bitter:ital,wght@0,100..900;1,100..900&display=swap');
+
+body, html, .App {
+  font-family: 'Bitter', serif;
+}
+
 .App {
   text-align: center;
 }
@@ -36,7 +42,7 @@
     transform: rotate(360deg);
   }
 }
-/* App.css */
+
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -55,7 +61,7 @@
   }
   to {
     opacity: 0;
-    transform: translateX(50px); /* move slightly to the right */
+    transform: translateX(50px);
   }
 }
 
@@ -66,12 +72,14 @@
 .fadeOut {
   animation: fadeOut 1s ease forwards;
 }
+
 .Toastify__toast {
-  font-size: 12px !important;       
-  padding: 8px 12px !important;    
-  min-height: auto !important;      
-  max-width: 300px !important;    
+  font-size: 12px !important;
+  padding: 8px 12px !important;
+  min-height: auto !important;
+  max-width: 300px !important;
 }
-.cardPostTop{
+
+.cardPostTop {
   margin-top: 50px;
 }

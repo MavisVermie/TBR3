@@ -171,7 +171,7 @@ const Homepage = () => {
 
   return (
     <section className="">
-    <div className="min-h-screen bg-gray-100 text-[#065f46] font-sans">
+    <div className="min-h-screen bg-gray-100 text-[#065f46] ">
       <section className="relative w-full h-[650px] overflow-hidden rounded-b-xl shadow-lg">
         <video
           autoPlay
@@ -198,7 +198,7 @@ const Homepage = () => {
           Your browser does not support the video tag.
         </video> 
         </section> 
-      <div className=" bg-black font-sans py-20 "> 
+      <div className=" bg-black py-20 "> 
         <p className="mb-10 text-white font-semibold"><span className="text-5xl text-green-500" >Join a community of changemakers</span><br></br><br></br>
           <span className="text-2xl font-normal "> Be the one who gives generously and lives sustainably.</span><br></br><br></br>
           <span className=" font-normal"> support a proudly Jordanian paltform making a real difference with TBR3.</span></p>

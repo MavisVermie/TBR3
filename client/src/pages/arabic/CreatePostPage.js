@@ -123,7 +123,7 @@ function صفحة_إنشاء_منشور({ عندإنشاء_المنشور }) {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col font-sans ">
+    <div className="min-h-screen bg-gray-100 flex flex-col  ">
       <div className="w-full  py-6 px-4 md:px-12 lg:px-24 xl:px-40 mt-3 ">
         <h1 className="text-4xl font-semibold text-red-700 text-center ">
           إنشاء منشور جديد

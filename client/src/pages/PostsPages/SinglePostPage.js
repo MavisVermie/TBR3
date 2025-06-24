@@ -383,7 +383,7 @@ const showEditButton = post && (
   )}
 
   {/* Centered Title */}
-  <h1 className="text-4xl font-semibold text-green-600 font-sans text-center w-full">
+  <h1 className="text-4xl font-semibold text-green-600  text-center w-full">
     {post.title}
   </h1>
 </>
