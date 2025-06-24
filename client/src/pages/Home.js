@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUsers, FaRegNewspaper } from "react-icons/fa6";
+import { FaUsers, FaRegNewspaper   } from "react-icons/fa6";
+import { MdEmojiEvents, MdEventAvailable } from "react-icons/md";
+
 import { Link } from 'react-router-dom';
 
 const BarSection = () => {
@@ -86,7 +88,7 @@ const AnimatedNumber = ({ value }) => {
 };
 
 const HomeStats = () => {
-  const [stats, setStats] = useState({ posts: 0, users: 0 });
+const [stats, setStats] = useState({ posts: 0, users: 0, currentEvents: 0, totalEventsHosted: 0 });
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = React.useRef();
 
@@ -113,7 +115,7 @@ const HomeStats = () => {
       fetch("/api/stats/counts")
         .then(res => res.json())
         .then(data => setStats(data))
-        .catch(() => setStats({ posts: 0, users: 0 }));
+        .catch(() => setStats({ posts: 0, users: 0, currentEvents: 0, totalEventsHosted: 0 }));
     }
   }, [isVisible]);
 
@@ -138,7 +140,26 @@ const HomeStats = () => {
             </div>
             <div className="text-base text-black font-semibold mt-1">Users</div>
           </div>
+                  {/* mavis edit--- total events created*/}
+                        <div className="relative bg-white rounded-full shadow-lg w-[190px] h-[190px] flex flex-col items-center justify-center border-4 border-green-700 hover:scale-105 transition-transform duration-300">
+            <MdEventAvailable className="text-5xl text-black mb-2" />
+            <div className="text-3xl font-bold text-black">
+              <AnimatedNumber value={stats.totalEventsHosted} />
+            </div>
+            <div className="text-base text-black font-semibold mt-1">Events</div>
+          </div>   
+
+          {/*mavis also ---current events */} 
+                                {/* <div className="relative bg-white rounded-full shadow-lg w-[190px] h-[190px] flex flex-col items-center justify-center border-4 border-green-700 hover:scale-105 transition-transform duration-300">
+            <MdEventAvailable className="text-5xl text-black mb-2" />
+            <div className="text-3xl font-bold text-black">
+              <AnimatedNumber value={stats.currentEvents} />
+            </div>
+            <div className="text-base text-black font-semibold mt-1">Current Available Events</div>
+          </div>   */}
         </div>
+
+        
       )}
     </div>
   );
