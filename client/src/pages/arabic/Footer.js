@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import logo from '../../assets/logoo.png'; 
+import logo from '../../assets/footer.png'; 
 
 export default function Footer() {
   return (
-    <footer className="bg-gray-800 text-gray-300 py-8">
+    <footer className="bg-black text-gray-300 py-8">
       <div className="
         max-w-screen-xl mx-auto px-4 
         flex flex-col items-center space-y-6

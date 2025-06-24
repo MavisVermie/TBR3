@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import logo from "../../assets/new.gif";
+import logo from "../../assets/movingarabic.gif";
 
 export default function SignInPage({ setAuth }) {
   const [inputs, setInputs] = useState({
