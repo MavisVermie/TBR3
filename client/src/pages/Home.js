@@ -161,8 +161,8 @@ const Homepage = () => {
   return (
     <section className="">
     <div className="min-h-screen bg-gray-100 text-[#065f46]">
-      <section className="relative w-full h-[650px] overflow-hidden rounded-b-xl shadow-lg">
-        <video
+      <section className="relative w-full aspect-video md:h-[650px] overflow-hidden rounded-b-xl shadow-lg">
+          <video
           autoPlay
           loop
           muted
