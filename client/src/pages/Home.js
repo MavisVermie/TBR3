@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaUsers, FaRegNewspaper } from "react-icons/fa6";
+import { MdEvent, MdEventAvailable } from "react-icons/md";
 
 const BarSection = () => {
   const [animate, setAnimate] = useState(false);
@@ -11,10 +12,10 @@ const BarSection = () => {
 
   return (
     <div className="flex flex-col items-center w-full px-4 my-10">
-      <div className="flex flex-wrap justify-center md:justify-between w-full gap-4">
+      <div className="flex flex-wrap justify-center md:justify-between w-full min-h-[800px] gap-4">
         {/* Container 1 */}
         <div
-          className={`bg-[#0b5f7db2] w-full sm:w-[48%] md:w-[23%] h-auto md:h-[700px] rounded-md mt-4 transition-all duration-700 hover:shadow-xl ease-out ${
+          className={`bg-[#0b5f7db2] w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-0 transition-all duration-700  hover : shadow-xl ease-out ${
             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           } hover:scale-105 duration-300`}
         >
@@ -23,7 +24,7 @@ const BarSection = () => {
 
         {/* Container 2 */}
         <div
-          className={`bg-contimg w-full sm:w-[48%] md:w-[23%] h-auto md:h-[700px] rounded-md mt-4 transition-all duration-700 ease-out delay-100 ${
+          className={`bg-contimg w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-4 md:mt-16 transition-all duration-700 ease-out delay-100 ${
             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           } hover:scale-105 duration-300`}
         >
@@ -38,7 +39,7 @@ const BarSection = () => {
 
         {/* Container 3 */}
         <div
-          className={`bg-[#0b5e7d] w-full sm:w-[48%] md:w-[23%] h-auto md:h-[700px] rounded-md mt-4 transition-all duration-700 ease-out delay-200 ${
+          className={`bg-[#0b5e7d] w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-4 md:mt-8 transition-all duration-700 ease-out delay-200 ${
             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           } hover:scale-105 brightness-110 duration-300`}
         >
@@ -47,13 +48,16 @@ const BarSection = () => {
 
         {/* Container 4 */}
         <div
-          className={`bg-contimg w-full sm:w-[48%] md:w-[23%] h-auto md:h-[700px] rounded-md mt-4 transition-all duration-700 ease-out delay-300 ${
+          className={`bg-contimg w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-4 md:mt-24 transition-all duration-700 ease-out delay-300 ${
             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           } hover:scale-105 duration-300`}
         >
           <p className="py-12 px-6 font-semibold text-black text-[18px] tracking-wide leading-relaxed text-justify">
-            By extending the life cycle of goods, TBR3 supports green computing and aligns with Islamic values like charity and avoiding waste.
-            <img src="/movingarabic.gif" className="h-56 px-28 pb-10 mx-auto mt-4" />
+ By extending the life cycle of goods, TBR3 actively supports green computing principles, minimising environmental impact, conserving resources, and encouraging eco-conscious behaviour.
+            <br /><br />
+            The platform also aligns deeply with Islamic values such as charity, avoiding waste, and stewardship of the Earth.
+            <br /><br />
+            TBR3 is more than just a donation platform, it's a movement that brings technology, faith, and environmental responsibility together to build a kinder, greener, and more giving society.            <img src="/movingarabic.gif" className="h-56 px-28 pb-10 mx-auto mt-4" />
           </p>
         </div>
       </div>
@@ -84,7 +88,7 @@ const AnimatedNumber = ({ value }) => {
 };
 
 const HomeStats = () => {
-  const [stats, setStats] = useState({ posts: 0, users: 0 });
+  const [stats, setStats] = useState({ posts: 0, users: 0,totalEventsHosted: 0 });
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = React.useRef();
 
@@ -111,7 +115,7 @@ const HomeStats = () => {
       fetch("/api/stats/counts")
         .then(res => res.json())
         .then(data => setStats(data))
-        .catch(() => setStats({ posts: 0, users: 0 }));
+        .catch(() => setStats({ posts: 0, users: 0, totalEventsHosted:0 }));
     }
   }, [isVisible]);
 
@@ -136,6 +140,14 @@ const HomeStats = () => {
             </div>
             <div className="text-base text-black font-semibold mt-1">Users</div>
           </div>
+
+          <div className="relative bg-white rounded-full shadow-lg w-[190px] h-[190px] flex flex-col items-center justify-center border-4 border-green-700 hover:scale-105 transition-transform duration-300">
+            <MdEventAvailable className="text-5xl text-black mb-2" />
+  <div className="text-3xl font-bold text-black">
+    <AnimatedNumber value={stats.totalEventsHosted} />
+  </div>
+  <div className="text-base text-black font-semibold mt-1">Events</div>
+</div>
         </div>
       )}
     </div>
@@ -149,7 +161,7 @@ const Homepage = () => {
   return (
     <section className="">
     <div className="min-h-screen bg-gray-100 text-[#065f46]">
-      <section className="relative w-full aspect-video md:h-[650px] overflow-hidden rounded-b-xl shadow-lg">
+      <section className="relative w-full h-[650px] overflow-hidden rounded-b-xl shadow-lg">
         <video
           autoPlay
           loop
@@ -163,7 +175,7 @@ const Homepage = () => {
       </section>
      
       <BarSection />
-       <section className="relative w-full h-auto bg-gray-100 overflow-hidden rounded-b-xl shadow-xl ">
+      <section className="relative w-full h-auto bg-gray-100 overflow-hidden rounded-b-xl shadow-xl ">
         <video
           autoPlay
           loop
@@ -176,18 +188,16 @@ const Homepage = () => {
         </video> 
         </section> 
 
-      <div className="bg-black pb-24 px-4 text-center pt-14 ">
-  <p className="mb-10 text-white font-semibold text-lg sm:text-xl md:text-2xl lg:text-3xl leading-relaxed">
-    <span className="text-3xl sm:text-4xl md:text-5xl text-green-500 block mb-4">Join a community of changemakers</span>
-    Be the one who gives generously and lives sustainably.
-    <br /><br />
-    Support a proudly Jordanian platform making a real difference with TBR3.
-  </p>
-  <button className="bg-green-600 text-white px-10 py-3 rounded-full shadow-md hover:bg-green-700 hover:shadow-lg transition duration-300 mb-14 text-base sm:text-lg">
-    GET STARTED
-  </button>
-  <HomeStats />
-</div>
+      <div className=" bg-black py-20 "> 
+        <p className="mb-10 text-white font-semibold"><span className="text-5xl text-green-500" >Join a community of changemakers</span><br></br><br></br>
+          <span className="text-2xl font-normal "> Be the one who gives generously and lives sustainably.</span><br></br><br></br>
+          <span className=" font-normal"> support a proudly Jordanian paltform making a real difference with TBR3.</span></p>
+           <button className="bg-green-600 text-white px-14 py-3 rounded-full shadow-md hover:bg-green-700 hover:shadow-lg transition duration-300 mb-14  ">
+          GET STARTED
+         </button>
+        <HomeStats />
+
+                  </div>
 
        
         

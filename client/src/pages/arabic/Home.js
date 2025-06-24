@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaUsers, FaRegNewspaper } from "react-icons/fa6";
+import { MdEvent, MdEventAvailable } from "react-icons/md";
 
 const BarSection = () => {
   const [animate, setAnimate] = useState(false);
@@ -10,12 +11,12 @@ const BarSection = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center w-full px-4 my-10">
+    <div className="flex flex-col items-center w-full px-4 my-10"> 
       <div className="flex flex-wrap justify-center md:justify-between w-full gap-4">
    
 
         <div
-          className={`bg-contimg w-full sm:w-[48%] md:w-[23%] h-auto md:h-[700px] rounded-md mt-4 transition-all duration-700 ease-out delay-100 ${
+          className={`bg-contimg w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-4 md:mt-24 transition-all duration-700 ease-out delay-300 ${
             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           } hover:scale-105 duration-300`}
         >
@@ -29,7 +30,7 @@ const BarSection = () => {
         </div>
 
         <div
-          className={`bg-[#0b5e7d] w-full sm:w-[48%] md:w-[23%] h-auto md:h-[700px] rounded-md mt-4 transition-all duration-700 ease-out delay-200 ${
+          className={`bg-[#0b5e7d] w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-4 md:mt-8 transition-all duration-700 ease-out delay-200 ${
             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           } hover:scale-105 brightness-110 duration-300`}
         >
@@ -37,7 +38,7 @@ const BarSection = () => {
         </div>
 
         <div
-          className={`bg-contimg w-full sm:w-[48%] md:w-[23%] h-auto md:h-[700px] rounded-md mt-4 transition-all duration-700 ease-out delay-300 ${
+          className={`bg-contimg w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-4 md:mt-24 transition-all duration-700 ease-out delay-300 ${
             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           } hover:scale-105 duration-300`}
         >
@@ -50,7 +51,7 @@ const BarSection = () => {
         </div>
 
         <div
-          className={`bg-[#0b5f7db2] w-full sm:w-[48%] md:w-[23%] h-auto md:h-[700px] rounded-md mt-4 transition-all duration-700 hover:shadow-xl ease-out ${
+          className={`bg-[#0b5f7db2] w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-0 transition-all duration-700  hover : shadow-xl ease-out ${
             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           } hover:scale-105 duration-300`}
         >
@@ -84,7 +85,7 @@ const AnimatedNumber = ({ value }) => {
 };
 
 const HomeStats = () => {
-  const [stats, setStats] = useState({ posts: 0, users: 0 });
+  const [stats, setStats] = useState({ posts: 0, users: 0, totalEventsHosted:0 });
   const [isVisible, setIsVisible] = useState(false);
   const sectionRef = React.useRef();
 
@@ -111,7 +112,7 @@ const HomeStats = () => {
       fetch("/api/stats/counts")
         .then(res => res.json())
         .then(data => setStats(data))
-        .catch(() => setStats({ posts: 0, users: 0 }));
+        .catch(() => setStats({ posts: 0, users: 0, totalEventsHosted:0 }));
     }
   }, [isVisible]);
 
@@ -135,6 +136,13 @@ const HomeStats = () => {
               <AnimatedNumber value={stats.users} />
             </div>
             <div className="text-base text-black font-semibold mt-1">المستخدمين</div>
+          </div>
+                    <div className="relative bg-white rounded-full shadow-lg w-[190px] h-[190px] flex flex-col items-center justify-center border-4 border-green-700 hover:scale-105 transition-transform duration-300">
+                      <MdEventAvailable className="text-5xl text-black mb-2" />
+            <div className="text-3xl font-bold text-black">
+              <AnimatedNumber value={stats.totalEventsHosted} />
+            </div>
+            <div className="text-base text-black font-semibold mt-1">الفعاليات</div>
           </div>
         </div>
       )}
@@ -182,7 +190,7 @@ const Homepage = () => {
     </span>
 كن من يمنح بسخاء ويعيش بأسلوب مستدام
     <br /><br />
-إدعم منصة أردنية بفخر تُحدث فرقًا حقيقيًا مع تبرَّع
+إدعم منصة أردنية بفخر وأحدث فرقًا حقيقيًا مع تبرَّع
 
   </p>
   <button className="bg-green-600 text-white px-10 py-3 rounded-full shadow-md hover:bg-green-700 hover:shadow-lg transition duration-300 mb-14 text-base sm:text-lg">

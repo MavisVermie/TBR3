@@ -4,7 +4,7 @@ import logo from './assets/TB.png';
 
 export default function Footer() {
   return (
-    <footer className="bg-black text-gray-300 py-8">
+    <footer className="bg-black text-gray-300 py-8 overflow-hidden">
       <div className="max-w-screen-xl mx-auto px-4 flex flex-col md:flex-row md:justify-between md:items-center gap-6">
         
         {/* Navigation Links */}
@@ -20,7 +20,7 @@ export default function Footer() {
           <img
             src={logo}
             alt="Logo"
-            className="h-14 w-auto object-contain"
+            className="h-20 w-auto object-contain"
           />
         </div>
         
