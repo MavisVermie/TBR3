@@ -8,60 +8,61 @@ const BarSection = () => {
   useEffect(() => {
     setAnimate(true);
   }, []);
-
   return (
-    <div className="flex flex-col items-center w-full px-4 my-10"> 
-      <div className="flex flex-wrap justify-center md:justify-between w-full gap-4">
-   
-
+    <div className="flex flex-col items-center w-full px-4 my-14">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+        {/* Container 1 - shifted up */}
         <div
-          className={`bg-contimg w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-4 md:mt-24 transition-all duration-700 ease-out delay-300 ${
-            animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          className={`bg-contimg min-h-[700px] rounded-md transition-all duration-700 ease-out delay-200 ${
+            animate ? "opacity-100 -translate-y-4" : "opacity-0 translate-y-6"
           } hover:scale-105 duration-300`}
         >
-          <p className="py-12 px-6 font-medium text-black text-[18px] tracking-wide leading-relaxed text-right">
-             تدعم مبادئ الحوسبة الخضراء بشكل فعّال مما يقلل من الأثر البيئي ويحافظ على الموارد و يشجع على السلوك البيئي الواعي <br></br><br></br>
-
-             كما تتماشى المنصة بشكل عميق مع القيم الإسلامية مثل الصدقة وتجنب التبذير والحفاظ على الأرض <br></br> <br></br>تبرَّع ليست مجرد منصة , بل هي حركة تجمع بين التكنولوجيا والإيمان والمسؤولية البيئية لبناء مجتمع اكثر لطفا وخضرة وعطاء
-
-            <img src="/new.gif" className="w-[200px] h-auto mx-auto" />
+         
+ <p className="py-12 px-6 font-medium text-black text-[18px] tracking-wide leading-relaxed  text-right">
+    تدعم مبادئ الحوسبة الخضراء بشكل فعّال مما يقلل من الأثر البيئي ويحافظ على الموارد و يشجع على السلوك البيئي الواعي <br></br>
+            <br /><br />
+                          كما تتماشى المنصة بشكل عميق مع القيم الإسلامية مثل الصدقة وتجنب التبذير والحفاظ على الأرض <br></br> <br></br>تبرَّع ليست مجرد منصة , بل هي حركة تجمع بين التكنولوجيا والإيمان والمسؤولية البيئية لبناء مجتمع اكثر لطفا وخضرة وعطاء
+            <img src="/new.gif" className="w-[200px] h-auto mx-auto mt-4" />
           </p>
         </div>
 
+        {/* Container 2 - normal */}
         <div
-          className={`bg-[#0b5e7d] w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-4 md:mt-8 transition-all duration-700 ease-out delay-200 ${
-            animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
-          } hover:scale-105 brightness-110 duration-300`}
-        >
-          <img src="/donation.jpg" className="w-full h-full object-cover rounded-md" />
-        </div>
-
-        <div
-          className={`bg-contimg w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-4 md:mt-24 transition-all duration-700 ease-out delay-300 ${
+          className={`bg-contimg min-h-[700px] rounded-md transition-all duration-700 ease-out delay-100 ${
             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           } hover:scale-105 duration-300`}
         >
-          <p className="py-12 px-6 font-semibold text-black text-[18px] tracking-wide leading-relaxed  text-right">
+                   <img src="/donation.jpg" className="w-full h-full object-cover rounded-md" />
+
+        </div>
+
+        {/* Container 3 - shifted up */}
+        <div
+          className={`bg-contimg  min-h-[700px]  rounded-md transition-all duration-700 ease-out delay-200 ${
+            animate ? "opacity-100 -translate-y-4" : "opacity-0 translate-y-6"
+          } hover:scale-105  duration-300`}
+        >
+           <p className="py-12 px-6 font-semibold text-black text-[18px] tracking-wide leading-relaxed  text-right">
  منصة أردنية وُلِدت من الكلمة العربية "تَبَرّع" والتي تعكس مهمة قائمة على العطاء والاستدامة ورعاية المجتمع<br></br> <br></br>
 وتتيح هذه المنصة للناس مشاركة الأغراض المستعملة بدلا من التخلص منها مما يقلل من النفايات ويوفر الدعم لمن هم في حاجة من خلال إطالة دورة حياة المنتجات <br></br><br></br>
 <br></br><br></br>
-            <img src="/movingarabic.gif" className="h-56 px-28 pb-10 mx-auto mt-4" />
-          </p>
+            </p>
+          <img src="/movingarabic.gif" className="h-56 px-28 pb-10 mx-auto mt-4" />
         </div>
 
+        {/* Container 4 - normal */}
         <div
-          className={`bg-[#0b5f7db2] w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-0 transition-all duration-700  hover : shadow-xl ease-out ${
+          className={` min-h-[700px] rounded-md transition-all duration-700 ease-out delay-300 ${
             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           } hover:scale-105 duration-300`}
         >
-          <img src="/1.gif" className="w-full h-full object-cover rounded-md" />
+                   <img src="/1.gif" className="w-full h-full object-cover rounded-md" />
+
         </div>
       </div>
     </div>
   );
 };
-
-
 const AnimatedNumber = ({ value }) => {
   const [display, setDisplay] = useState(0);
   useEffect(() => {
@@ -183,26 +184,25 @@ const Homepage = () => {
         </video> 
         </section> 
 
-      <div className="bg-black pb-24 px-4 text-center pt-14 ">
-  <p className="mb-10 text-white font-semibold text-lg sm:text-xl md:text-2xl lg:text-3xl leading-relaxed">
-    <span className="text-3xl sm:text-4xl md:text-5xl text-green-500 block mb-7" >  !إنضم إلى مجتمع من صانعي التغيير   
+      <div className="bg-black py-20 px-4 text-center">
+  <p className="mb-10 text-white font-semibold">
+    <span className="block text-3xl sm:text-4xl md:text-5xl text-green-500 mb-6">
+  !إنضم إلى مجتمع من صانعي التغيير 
     </span>
+    <span className="block text-lg sm:text-xl md:text-2xl font-normal text-white mb-4">
 كن من يمنح بسخاء ويعيش بأسلوب مستدام
-    <br /><br />
+    </span>
+    <span className="block text-sm sm:text-base font-normal text-white">
 إدعم منصة أردنية بفخر وأحدث فرقًا حقيقيًا مع تبرَّع
-
+    </span>
   </p>
   <Link to="/ar/authentication/registration">
-      <button className="bg-green-600 text-white px-10 py-3 rounded-full shadow-md hover:bg-green-700 hover:shadow-lg transition duration-300 mb-14 text-base sm:text-lg">
+    <button className="bg-green-600 text-white px-10 sm:px-14 py-3 rounded-full shadow-md hover:bg-green-700 hover:shadow-lg transition duration-300 mb-7">
     ابدأ الآن
-  </button>
+    </button>
   </Link>
-
   <HomeStats />
 </div>
-
-       
-        
     </div>
 </section>
   );

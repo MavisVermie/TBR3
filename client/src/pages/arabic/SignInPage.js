@@ -44,14 +44,14 @@ useEffect(() => {
   };
 
   return (
-    <section className=" bg-phoneimg bg-no-repeat md:bg-tabletimg  lg:bg-bannerImg  bg-cover w-full min-h-screen flex items-center justify-center">
+    <section className=" bg-phoneimg bg-no-repeat md:bg-tabletimg  lg:bg-forarabic  bg-cover w-full min-h-screen flex items-center justify-center">
       <div className="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-xl px-6 py-12 shadow-2xl bg-white/10 backdrop-blur-md rounded-2xl transition-all duration-500 ease">
         <div className="flex flex-col items-center text-center gap-8">
           <img src={logo} alt="TBR3 Logo" className="w-1/2 h-29" />
 
-          <form onSubmit={onSubmitForm} className="w-full text-left space-y-6">
+          <form onSubmit={onSubmitForm} className="w-full space-y-6 text-right ">
             <div>
-              <label htmlFor="email" className="block text-sm  text-black mb-2">Email</label>
+              <label htmlFor="email" className="block text-sm  text-black mb-2">البريد الإلكتروني</label>
               <input
                 id="email"
                 name="email"
@@ -60,12 +60,12 @@ useEffect(() => {
                 required
                 value={email}
                 onChange={onChange}
-                className="w-full rounded-xl border border-gray-300 bg-white py-2 px-4 text-gray-800 placeholder-gray-400 shadow-md focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 sm:text-sm hover:ring-green-400 hover:ring-4 transition duration-300"
+                className="w-full rounded-xl border border-gray-300 bg-white py-2 px-4 text-gray-800 placeholder-gray-400 shadow-md focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 sm:text-sm hover:ring-green-400 hover:ring-4 transition duration-300 text-right"
               />
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm  text-black mb-2">Password</label>
+              <label htmlFor="password" className="block text-sm  text-black mb-2">كلمة السر</label>
               <input
                 id="password"
                 name="password"
@@ -74,13 +74,13 @@ useEffect(() => {
                 required
                 value={password}
                 onChange={onChange}
-                className="w-full rounded-xl border border-gray-300 bg-white py-2 px-4 text-gray-800 placeholder-gray-400 shadow-md focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 sm:text-sm hover:ring-green-400 hover:ring-4 transition duration-300"
+                className="w-full rounded-xl border border-gray-300 bg-white py-2 px-4 text-gray-800 placeholder-gray-400 shadow-md focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 sm:text-sm hover:ring-green-400 hover:ring-4 transition duration-300 text-right"
               />
             </div>
 
             <p className="text-sm text-center">
               <a href="/forgot-password" className="text-black hover:underline transition duration-150">
-                Forgot your password?
+              نسيت كلمة السر؟
               </a>
             </p>
 
@@ -88,13 +88,13 @@ useEffect(() => {
               type="submit"
               className="w-full rounded-xl bg-red-800 px-5 py-2 text-sm font-semibold text-white shadow-lg transition duration-200 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
             >
-              Sign in
+             تسجيل الدخول
             </button>
 
             <p className="text-sm text-center text-black">
-              Don't have an account?{" "}
+            ليس لديك حساب؟{" "}
               <a href="/authentication/registration" className="text-red-800 hover:underline transition duration-150">
-                Register
+                إنشئ حساب
               </a>
             </p>
           </form>
