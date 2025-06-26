@@ -11,20 +11,20 @@ const BarSection = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center w-full px-4 my-10">
-      <div className="flex flex-wrap justify-center md:justify-between w-full min-h-[800px] gap-4">
-        {/* Container 1 */}
+    <div className="flex flex-col items-center w-full px-4 my-14">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 w-full">
+        {/* Container 1 - shifted up */}
         <div
-          className={`bg-[#0b5e7d] w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-4 md:mt-8 transition-all duration-700 ease-out delay-200 ${
-            animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          className={`bg-[#0b5e7d] min-h-[700px] rounded-md transition-all duration-700 ease-out delay-200 ${
+            animate ? "opacity-100 -translate-y-4" : "opacity-0 translate-y-6"
           } hover:scale-105 duration-300`}
         >
           <img src="/1.gif" className="w-full h-full object-cover rounded-md" />
         </div>
 
-        {/* Container 2 */}
+        {/* Container 2 - normal */}
         <div
-          className={`bg-contimg w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-4 md:mt-16 transition-all duration-700 ease-out delay-100 ${
+          className={`bg-contimg min-h-[700px] rounded-md transition-all duration-700 ease-out delay-100 ${
             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           } hover:scale-105 duration-300`}
         >
@@ -33,37 +33,40 @@ const BarSection = () => {
             <span className="font-serif font-bold">"تبَرّع"</span> meaning <span className="font-serif font-bold">"to donate"</span>.
             <br /><br />
             It allows people to share second-hand items instead of discarding them — reducing waste and offering support to those in need.
-            <img src="/new.gif" className="w-[200px] h-auto mx-auto" />
+            <img src="/new.gif" className="w-[200px] h-auto mx-auto mt-4" />
           </p>
         </div>
 
-        {/* Container 3 */}
+        {/* Container 3 - shifted up */}
         <div
-          className={`bg-[#0b5e7d] w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-4 md:mt-8 transition-all duration-700 ease-out delay-200 ${
-            animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
+          className={`bg-[#0b5e7d] min-h-[700px] rounded-md transition-all duration-700 ease-out delay-200 ${
+            animate ? "opacity-100 -translate-y-4" : "opacity-0 translate-y-6"
           } hover:scale-105 brightness-110 duration-300`}
         >
           <img src="/donation.jpg" className="w-full h-full object-cover rounded-md" />
         </div>
 
-        {/* Container 4 */}
+        {/* Container 4 - normal */}
         <div
-          className={`bg-contimg w-full md:w-[23%] h-auto md:h-[700px] mx-2 rounded-md mt-4 md:mt-24 transition-all duration-700 ease-out delay-300 ${
+          className={`bg-contimg min-h-[700px] rounded-md transition-all duration-700 ease-out delay-300 ${
             animate ? "opacity-100 translate-y-0" : "opacity-0 translate-y-10"
           } hover:scale-105 duration-300`}
         >
           <p className="py-12 px-6 font-semibold text-black text-[18px] tracking-wide leading-relaxed text-justify">
- By extending the life cycle of goods, TBR3 actively supports green computing principles, minimising environmental impact, conserving resources, and encouraging eco-conscious behaviour.
+            By extending the life cycle of goods, TBR3 actively supports green computing principles, minimising environmental impact, conserving resources, and encouraging eco-conscious behaviour.
             <br /><br />
             The platform also aligns deeply with Islamic values such as charity, avoiding waste, and stewardship of the Earth.
             <br /><br />
-            TBR3 is more than just a donation platform, it's a movement that brings technology, faith, and environmental responsibility together to build a kinder, greener, and more giving society.            <img src="/movingarabic.gif" className="h-56 px-28 pb-10 mx-auto mt-4" />
+            TBR3 is more than just a donation platform, it's a movement that brings technology, faith, and environmental responsibility together to build a kinder, greener, and more giving society.
+        
           </p>
+              <img src="/movingarabic.gif" className="h-56 px-28 pb-10 mx-auto mt-4" />
         </div>
       </div>
     </div>
   );
 };
+
 
 
 const AnimatedNumber = ({ value }) => {
@@ -97,7 +100,7 @@ const HomeStats = () => {
       entries => {
         if (entries[0].isIntersecting) {
           setIsVisible(true);
-          observer.disconnect(); // مرة واحدة فقط
+          observer.disconnect(); 
         }
       },
       { threshold: 0.3 }
@@ -188,23 +191,28 @@ const Homepage = () => {
         </video> 
         </section> 
 
-      <div className=" bg-black py-20 "> 
-        <p className="mb-10 text-white font-semibold"><span className="text-5xl text-green-500" >Join a community of changemakers</span><br></br><br></br>
-          <span className="text-2xl font-normal "> Be the one who gives generously and lives sustainably.</span><br></br><br></br>
-          <span className=" font-normal"> support a proudly Jordanian paltform making a real difference with TBR3.</span></p>
-          <Link to="/authentication/registration">
-                     <button className="bg-green-600 text-white px-14 py-3 rounded-full shadow-md hover:bg-green-700 hover:shadow-lg transition duration-300 mb-14  ">
-          GET STARTED
-         </button>
-          </Link>
-
-        <HomeStats />
+      <div className="bg-black py-20 px-4 text-center">
+  <p className="mb-10 text-white font-semibold">
+    <span className="block text-3xl sm:text-4xl md:text-5xl text-green-500 mb-6">
+      Join a community of changemakers
+    </span>
+    <span className="block text-lg sm:text-xl md:text-2xl font-normal text-white mb-4">
+      Be the one who gives generously and lives sustainably.
+    </span>
+    <span className="block text-sm sm:text-base font-normal text-white">
+      Support a proudly Jordanian platform making a real difference with <strong>TBR3</strong>.
+    </span>
+  </p>
+  <Link to="/authentication/registration">
+    <button className="bg-green-600 text-white px-10 sm:px-14 py-3 rounded-full shadow-md hover:bg-green-700 hover:shadow-lg transition duration-300 mb-7">
+      GET STARTED
+    </button>
+  </Link>
+  <HomeStats />
+</div>
+        
 
                   </div>
-
-       
-        
-    </div>
 </section>
   );
 };
