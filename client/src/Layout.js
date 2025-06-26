@@ -6,6 +6,7 @@ import Footer from './Footer.js';
 
 import ArabicNavbar from './pages/arabic/Navbar.js';
 import ArabicFooter from './pages/arabic/Footer.js';
+import BannerBar from './components/navbar/BannerBar.js'; 
 
 export default function Layout({ children, setAuth, isAuthenticated, checkAuthenticated }) {
   const location = useLocation();
@@ -13,6 +14,7 @@ export default function Layout({ children, setAuth, isAuthenticated, checkAuthen
 
   return (
     <div className="flex flex-col min-h-screen">
+      <BannerBar />
       {/* Navbar based on language */}
       {isArabic ? (
         <ArabicNavbar setAuth={setAuth} isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated} />

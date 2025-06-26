@@ -20,6 +20,7 @@ import AdminPanel from './pages/AdminStuff/AdminPanel';
 import AdminPosts from './pages/AdminStuff/AdminPosts';
 import AdminUsers from './pages/AdminStuff/AdminUsers';
 import AdminEvents from './pages/AdminStuff/AdminEvents';
+import AdminBanner from './pages/AdminStuff/AdminBanner';
 import AdminFlaggedPosts from './pages/AdminStuff/AdminFlaggedPosts';
 import NewHome from './pages/Home';
 import SinglePost from './pages/PostsPages/SinglePostPage';
@@ -170,6 +171,8 @@ function App() {
             <Route path="/events/:id" element={<ShowEvent />} />
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/events" element={<AdminEvents />} />
+                        <Route path="/admin/banner" element={<AdminBanner />} />
+
             <Route path="/ar/about" element={<ArabicAboutPage />} />
             <Route path="/ar/create_post" element={isAuthenticated ? <ArabicCreatePostPage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/ar/profile" element={isAuthenticated ? <ArabicProfilePage isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated} /> : <SignInPage setAuth={setAuth} />} />

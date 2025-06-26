@@ -165,7 +165,17 @@ app.put("/update-credentials", authorize, async (req, res) => {
 });
 
 
-
+app.get("/banner", async (req, res) => {
+  try {
+    const result = await pool.query(
+      "SELECT * FROM banners WHERE is_active = TRUE ORDER BY created_at DESC LIMIT 1"
+    );
+    res.json({ banner: result.rows[0] || null });
+  } catch (err) {
+    console.error("Public banner fetch error:", err.message);
+    res.status(500).json({ msg: "Server error" });
+  }
+});
 
 // Registration
 // Registration Route
