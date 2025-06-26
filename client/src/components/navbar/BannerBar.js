@@ -18,7 +18,7 @@ export default function BannerBar() {
   if (!banner) return null;
 
   return (
-    <div className="bg-red-600 text-white text-sm text-center p-2 shadow-md z-50">
+    <div className="bg-red-800 text-white text-sm text-center p-2 shadow-md z-50">
       <div
         dangerouslySetInnerHTML={{ __html: banner.content }}
         className="max-w-screen-lg mx-auto px-4"
