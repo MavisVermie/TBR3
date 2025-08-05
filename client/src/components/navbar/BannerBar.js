@@ -19,7 +19,7 @@ export default function BannerBar() {
             const now = Date.now();
             const age = now - timestamp;
 
-            // less than 24h ago, keep hidden
+            // less than 24h ago, keep hidden+
             if (age < 24 * 60 * 60 * 1000) {
               setIsClosed(true);
               return;

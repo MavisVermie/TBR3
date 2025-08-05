@@ -3,8 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { useDropzone } from 'react-dropzone';
 import { jwtDecode } from 'jwt-decode';
-import ContactInfo from '../../components/contactInfo/contactInfo';
-import LocationMap from '../../components/contactInfo/locationMap';
+import ContactInfo from '../../components/contactInfo/contactInfoAr';
+import LocationMap from '../../components/contactInfo/locationMapAr';
 
 function EditPostPage() {
   const { id } = useParams();
@@ -27,6 +27,7 @@ function EditPostPage() {
 
   const [currentUserId, setCurrentUserId] = useState(null);
   const [postOwnerId, setPostOwnerId] = useState(null);
+  const [availability, setAvailability] = useState('available');
   const [isAdmin, setIsAdmin] = useState(false);
 
   const categoryOptions = [
@@ -41,7 +42,7 @@ function EditPostPage() {
         setCurrentUserId(decoded.userId);
         setIsAdmin(decoded.isAdmin);
       } catch (e) {
-        console.error("فشل في فك ترميز التوكن", e);
+        console.error("Failed to decode token", e);
       }
     }
   }, [token]);
@@ -56,13 +57,12 @@ function EditPostPage() {
           setTitle(data.title || '');
           setDescription(data.description || '');
           setEmail(data.email || '');
-          setPhone(data.phone_number || '');
+          setPhone(data.phone || '');
           setLocation(data.location || '');
           setInitialLocation(data.location || '');
           setPostOwnerId(data.user_id);
-
+          setAvailability(data.availability || 'available');
           const parsedFeatures = data.features || [];
-
           const fetchedCategory = (parsedFeatures[0] || '').trim();
           if (categoryOptions.includes(fetchedCategory)) {
             setCategory(fetchedCategory);
@@ -71,21 +71,19 @@ function EditPostPage() {
           }
 
           setFeatures(parsedFeatures.slice(1));
+const combinedImages = [];
 
-          const base64Images = [];
-          if (data.primary_photo) base64Images.push(data.primary_photo);
-          if (data.extra_images && Array.isArray(data.extra_images)) {
-            base64Images.push(...data.extra_images);
-          }
-          setExistingImages(base64Images);
-        } else {
-          toast.error("فشل في تحميل المنشور");
-          navigate('/ar/home');
+if (data.primary_photo) combinedImages.push(data.primary_photo);
+if (Array.isArray(data.extra_images)) combinedImages.push(...data.extra_images);
+
+setExistingImages(combinedImages);        } else {
+          toast.error("Failed to load post");
+          navigate('/');
         }
       } catch (error) {
-        console.error("خطأ في تحميل المنشور:", error);
-        toast.error("حدث خطأ ما");
-        navigate('/ar/home');
+        console.error("Error fetching post:", error);
+        toast.error("Something went wrong");
+        navigate('/');
       } finally {
         setLoadingData(false);
       }
@@ -99,7 +97,7 @@ function EditPostPage() {
       file.type.startsWith('image/') && file.size <= 5 * 1024 * 1024
     );
     if (validFiles.length !== acceptedFiles.length) {
-      toast.warning("تم رفض بعض الصور. الحد الأقصى للحجم هو 5 ميغابايت لكل صورة.");
+      toast.warning("Some files were rejected. Only images under 5MB are allowed.");
     }
     setImages(prev => [...prev, ...validFiles]);
   }, []);
@@ -107,7 +105,7 @@ function EditPostPage() {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: { 'image/*': ['.jpeg', '.jpg', '.png', '.gif'] },
-    maxSize: 5 * 1024 * 1024
+    maxSize: 10 * 1024 * 1024
   });
 
   const removeImage = (index) => {
@@ -118,7 +116,7 @@ function EditPostPage() {
     e.preventDefault();
 
     if (!category) {
-      toast.error("يرجى اختيار فئة");
+      toast.error("Please select a category");
       return;
     }
 
@@ -136,7 +134,9 @@ function EditPostPage() {
       formData.append("images", img);
     });
 
-    formData.append("deletedImages", JSON.stringify(deletedExistingImages));
+    const deletedImageUrls = deletedExistingImages.map(index => existingImages[index]);
+    formData.append("deletedImages", JSON.stringify(deletedImageUrls));
+    formData.append("availability", availability);
 
     setIsUploading(true);
 
@@ -150,15 +150,15 @@ function EditPostPage() {
       });
 
       if (response.ok) {
-        toast.success("تم تحديث المنشور بنجاح");
-        navigate(`/ar/posts/${id}`);
+        toast.success("Post updated successfully");
+        navigate(`/posts/${id}`);
       } else {
         const errorText = await response.text();
-        toast.error(errorText || "فشل في تحديث المنشور");
+        toast.error(errorText || "Failed to update post");
       }
     } catch (err) {
-      console.error("خطأ في التحديث:", err);
-      toast.error("حدث خطأ أثناء تحديث المنشور.");
+      console.error("Submit Error:", err);
+      toast.error("An error occurred while updating the post.");
     } finally {
       setIsUploading(false);
     }
@@ -166,13 +166,13 @@ function EditPostPage() {
 
   const isOwner = currentUserId === postOwnerId;
 
-  return (
-    <div className="w-full min-h-screen bg-gray-100 pt-5">
+ return (
+    <div className="w-full min-h-screen bg-gray-100 pt-5" dir="rtl">
       <div className="container mx-auto bg-white p-6 w-2/3 shadow-md rounded-lg mt-5">
         <h1 className="text-4xl text-red-700 font-semibold text-center mb-6">تعديل منشورك</h1>
         {loadingData ? (
-          <p>جاري تحميل بيانات المنشور...</p>
-        ) : !isOwner /* && !isAdmin */ ? (
+          <p>جارٍ تحميل بيانات المنشور...</p>
+        ) : !isOwner ? (
           <p className="text-red-600 text-center font-semibold">
             ❌ لا تملك الصلاحية لتعديل هذا المنشور.
           </p>
@@ -182,24 +182,52 @@ function EditPostPage() {
 
             <textarea value={description} onChange={(e) => setDescription(e.target.value)} rows={5} required className="w-full border p-2 rounded resize-none" placeholder="الوصف" />
 
-            <select value={category} onChange={(e) => setCategory(e.target.value)} required className="w-full border p-2 rounded">
-              <option value="" disabled>-- اختر فئة --</option>
-              {categoryOptions.map((opt, i) => (
-                <option key={i} value={opt}>{opt}</option>
-              ))}
-            </select>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">الفئة</label>
+                <select value={category} onChange={(e) => setCategory(e.target.value)} required className="w-full border p-2 rounded">
+                  <option value="" disabled>-- اختر الفئة --</option>
+                  {categoryOptions.map((opt, i) => (
+                    <option key={i} value={opt}>{opt}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">الحالة</label>
+                <button
+                  type="button"
+                  disabled={availability === 'donated'}
+                  onClick={() => {
+                    if (availability === 'donated') {
+                      toast.info("تم التبرع بهذا العنصر ولا يمكن تغييره.");
+                      return;
+                    }
+                    setAvailability((prev) => (prev === 'available' ? 'reserved' : 'available'));
+                  }}
+                  className={`
+                    w-full py-2 rounded text-white font-semibold transition-colors
+                    ${availability === 'available' ? 'bg-green-600 hover:bg-green-700' : ''}
+                    ${availability === 'reserved' ? 'bg-yellow-500 hover:bg-yellow-600' : ''}
+                    ${availability === 'donated' ? 'bg-red-600 cursor-not-allowed opacity-70' : ''}
+                  `}
+                >
+                  {availability === 'available' ? 'متاح' : availability === 'reserved' ? 'محجوز' : 'تم التبرع'}
+                </button>
+              </div>
+            </div>
 
             <div {...getRootProps()} className="border-dashed border-2 p-4 text-center rounded cursor-pointer text-slate-600">
               <input {...getInputProps()} />
-              {isDragActive ? <p>قم بإفلات الصور هنا...</p> : <p>اضغط أو اسحب الصور للرفع (الحد الأقصى 5MB لكل صورة)</p>}
+              {isDragActive ? <p>أسقط الصور هنا...</p> : <p>انقر أو اسحب الصور للرفع (بحد أقصى 5 ميجابايت لكل صورة)</p>}
             </div>
 
             {(existingImages.length > 0 || images.length > 0) && (
               <div className="grid grid-cols-3 gap-3">
-                {existingImages.map((img, idx) => (
+                {existingImages.map((url, idx) => (
                   !deletedExistingImages.includes(idx) && (
                     <div key={`existing-${idx}`} className="relative">
-                      <img src={`data:image/jpeg;base64,${img}`} alt={`existing-${idx}`} className="w-full h-24 object-cover rounded" />
+                      <img src={url} alt={`existing-${idx}`} className="w-full h-24 object-cover rounded" />
                       <button
                         type="button"
                         onClick={() => setDeletedExistingImages(prev => [...prev, idx])}
@@ -221,12 +249,12 @@ function EditPostPage() {
             )}
 
             <LocationMap onLocationSelect={setLocation} initialLocation={initialLocation} />
-            {location && <p className="text-sm text-gray-600">الموقع المختار: {location}</p>}
+            {location && <p className="text-sm text-gray-600">الموقع المحدد: {location}</p>}
 
             <ContactInfo email={email} setEmail={setEmail} phone={phone} setPhone={setPhone} />
 
             <button type="submit" disabled={isUploading} className="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-red-700">
-              {isUploading ? "جارٍ التحديث..." : "تحديث المنشور"}
+              {isUploading ? "جاري التحديث..." : "تحديث المنشور"}
             </button>
           </form>
         )}
@@ -234,5 +262,6 @@ function EditPostPage() {
     </div>
   );
 }
+
 
 export default EditPostPage;

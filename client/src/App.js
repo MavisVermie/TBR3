@@ -45,13 +45,16 @@ import ArabicPrivacyPolicy from './pages/arabic/PrivacyPolicy';
 import ArabicTermsOfService from './pages/arabic/TermsOfService';
 import ArabicContactUs from './pages/arabic/ContactUs';
 import ArabicEvents from './pages/arabic/Events';
-import ArabicShowEvent from './components/events/showEvent';
+import ArabicShowEvent from './pages/arabic/showEvent';
 import ArabicSignIn from './pages/arabic/SignInPage';
 import ArabicRegistration from './pages/arabic/RegistrationPage';
 import DirectMessageChat from './components/chat/DirectMessageChat';
 import MessagesPage from './components/chat/MessagesPage';
 import DonationClaimsPage from './pages/PostsPages/DonationClaimsPage';
 import DonatorClaimsPage from './pages/PostsPages/DonationClaimsPage';
+import ArabicMessagesPage from './pages/arabic/MessagesPage';
+import ArabicDonatorClaimsPage from './pages/arabic/DonationClaimsPage';
+
 const SlowFade = cssTransition({
   enter: 'fadeIn',
   exit: 'fadeOut',
@@ -143,6 +146,8 @@ function App() {
         <Layout setAuth={setAuth} isAuthenticated={isAuthenticated} checkAuthenticated={checkAuthenticated}>
           <Routes>
                         <Route path="/dm/:userId" element={<DirectMessageChatWrapper />} />
+                                                <Route path="/ar/dm/:userId" element={<DirectMessageChatWrapper />} />
+
             <Route path="/" element={<NewHome />} />
             <Route path="/feed" element={isAuthenticated ? <HomePage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/ar/feed" element={isAuthenticated ? <ArabicFeed /> : <SignInPage setAuth={setAuth} />} />
@@ -157,6 +162,8 @@ function App() {
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/edit_post/:id" element={isAuthenticated ? <EditPostPage /> : <SignInPage setAuth={setAuth} />} />
             <Route path="/admin" element={<AdminPanel />} />
+                        <Route path="/ar/admin" element={<AdminPanel />} />
+
             <Route path="/admin/posts" element={<AdminPosts />} />
             <Route path="/posts/:id" element={<SinglePost />} />
             <Route path="/myposts" element={<MyPostsPage />} />
@@ -183,13 +190,16 @@ function App() {
             <Route path="/ar/terms" element={<ArabicTermsOfService />} />
             <Route path="/ar/contact" element={<ArabicContactUs />} />
             <Route path="/ar/events" element={<ArabicEvents />} />
+                        <Route path="/ar/messages" element={<ArabicMessagesPage />} />
+
             <Route path="/ar/events/:id" element={<ArabicShowEvent />} />
             <Route path="/ar/authentication/login" element={isAuthenticated ? <Navigate to="/ar/home" /> : <ArabicSignIn setAuth={setAuth} />} />
             <Route path="/ar/authentication/registration" element={isAuthenticated ? <Navigate to="/ar/home" /> : <ArabicRegistration setAuth={setAuth} />} />
             <Route path="/admin/flagged" element={<AdminFlaggedPosts />} />
             <Route path="/messages" element={<MessagesPage />} />
             <Route path="/myclaims" element={<DonatorClaimsPage />} />
-            {/* ✅ Direct Messaging route */}
+                        <Route path="/ar/myclaims" element={<ArabicDonatorClaimsPage />} />
+
           </Routes>
         </Layout>
       </BrowserRouter>

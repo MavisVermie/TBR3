@@ -141,7 +141,7 @@ const RegistrationPage = ({ setAuth }) => {
         localStorage.setItem('token', parseRes.jwtToken);
         setAuth(true);
         toast.success('تم التسجيل بنجاح');
-        navigate('/feed');
+        navigate('/ar/feed');
       } else {
         setAuth(false);
         toast.error('حدث خطأ أثناء التسجيل');

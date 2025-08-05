@@ -3,6 +3,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import "../PostsPages/showDataProduct.css";
 import { jwtDecode } from 'jwt-decode';
+import { toast } from 'react-toastify';
+
+const getImageUrl = (path) => {
+  if (!path) return '';
+  if (path.startsWith('http')) return path;
+  return `${process.env.REACT_APP_API_URL}/${path}`;
+};
 
 /**
  * SinglePost Component
@@ -14,9 +21,9 @@ const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
 const IMAGE_LOAD_TIMEOUT = 5000;
 
-const loadImage = (base64String) => {
+const loadImage = (imagePath) => {
   return new Promise((resolve, reject) => {
-    if (!base64String) {
+    if (!imagePath) {
       reject(new Error('Invalid image data'));
       return;
     }
@@ -37,13 +44,14 @@ const loadImage = (base64String) => {
     };
 
     try {
-      img.src = `data:image/jpeg;base64,${base64String}`;
+      img.src = getImageUrl(imagePath);
     } catch (error) {
       clearTimeout(timeoutId);
       reject(new Error('Invalid image format'));
     }
   });
 };
+
 
 const fetchWithRetry = async (url, options = {}, retries = MAX_RETRIES) => {
   try {
@@ -114,6 +122,26 @@ export default function ShowDataProduct() {
       }
     }
   }, []);
+  const handleClaimReceived = async () => {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) return toast.error("You must be logged in!");
+
+    await axios.post(
+      `${process.env.REACT_APP_API_URL}/api/donations/claims`,
+      { post_id: post.post_id, message: "I received this item" },
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    toast.success("Claim sent to the donator!");
+  } catch (err) {
+    if (err.response?.status === 400) {
+      alert(err.response.data.message);
+    } else {
+      toast.error("Something went wrong!");
+    }
+  }
+};
+
   const processImageQueue = useCallback(async () => {
     if (isProcessingQueue.current || imageLoadQueue.current.length === 0) return;
 
@@ -207,13 +235,13 @@ export default function ShowDataProduct() {
     fetchPost();
   }, [fetchPost]);
 
-  const allImages = useMemo(() => {
-    if (!post) return [];
-    return [
-      post.primary_photo,
-      ...(post.extra_images || [])
-    ].filter(Boolean);
-  }, [post]);
+const allImages = useMemo(() => {
+  if (!post) return [];
+  const primary = post.primary_photo ? [post.primary_photo] : [];
+  const extras = post.extra_images || [];
+  return [...primary, ...extras];
+}, [post]);
+
 
   const handleImageClick = useCallback((index) => {
     setCurrentImageIndex(index);
@@ -337,24 +365,58 @@ const showEditButton = post && (
 
   return (
     <div className="min-h-screen bg-gray-100 py-10 px-4 font-mono">
-      <div className="max-w-full mx-auto">
+      <div className="relative max-w-full mx-auto">
         {/* Header Section - Title and Basic Info */}
         <div className="bg-white/90 p-8 rounded-xl shadow-md mb-8">
-          <h1 className="text-4xl font-semibold text-green-600 ">{post.title}</h1>
+<>
+  {/* Availability badge top-left */}
+  {post.availability && (
+    <div className={`absolute top-0 left-0 mt-2 ml-2 px-3 py-1 text-xs font-bold rounded-br-md z-10 shadow ${
+      post.availability === 'available'
+        ? 'bg-green-600 text-white'
+        : post.availability === 'reserved'
+        ? 'bg-yellow-500 text-white'
+        : 'bg-gray-500 text-white'
+    }`}>
+      {post.availability.toUpperCase()}
+    </div>
+  )}
+
+  {/* Centered Title */}
+  <h1 className="text-4xl font-semibold text-green-600  text-center w-full">
+    {post.title}
+  </h1>
+</>
           <div className="flex items-center justify-between">
-            <p className="text-sm text-gray-500">
-              Posted by <span className="font-semibold text-gray-800 cursor-pointer text-blue-600 hover:underline" onClick={() => navigate(`/user/${post.user_id}`)}>{post.username}</span>
-            </p>
-            <p className="text-sm text-gray-500">
-              Location: <span className="font-semibold text-gray-800">{post.location}</span>
-            </p>
+<p className="text-sm text-gray-500">
+  Posted by 
+  <span
+    className="font-semibold text-gray-800 cursor-pointer text-blue-600 hover:underline ml-1"
+    onClick={() => navigate(`/user/${post.user_id}`)}
+  >
+    {post.username}
+  </span>
+  {isAdmin && (
+    <span className="ml-2 px-2 py-1 rounded-full text-xs font-bold text-white bg-red-600">
+      ADMIN
+    </span>
+  )}
+</p>
+
+<p className="text-sm text-gray-500">
+  Location: <span className="font-semibold text-gray-800">
+    {post.location?.split('-')[0]?.trim() || 'Unknown'}
+  </span>
+</p>
+
+
            
           </div>
            <div className="w-1/6">
                 {showEditButton && (<button
                 onClick={() => navigate(`/edit_post/${post.post_id}`)}
                 className="w-full bg-red-600 text-white px-8 py-4 rounded-lg hover:bg-red-800
-              transition text-lg font-semibold shadow-md mt-4"> تعديل على المنشور  </button>)}
+              transition text-lg font-semibold shadow-md mt-4"> Edit Post  </button>)}
         </div>
         </div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -376,25 +438,26 @@ const showEditButton = post && (
                     </button>
                   )}
 
-                  {/* Main Image Display */}
-                  <div className="flex items-center justify-center p-4">
-                    {allImages[currentImageIndex] && (
-                      <img
-                        src={`data:image/jpeg;base64,${allImages[currentImageIndex]}`}
-                        alt="Main"
-                        className={`max-w-full max-h-[500px] w-auto h-auto object-contain rounded-sm transition-opacity duration-300 ${
-                          loadedImages[`extra_${currentImageIndex}`] ? 'opacity-100' : 'opacity-0'
-                        }`}
-                        loading="lazy"
-                        onLoad={(e) => {
-                          setLoadedImages(prev => ({
-                            ...prev,
-                            [`extra_${currentImageIndex}`]: true
-                          }));
-                        }}
-                      />
-                    )}
-                  </div>
+{/* Main Image Display */}
+<div className="flex items-center justify-center p-4">
+  {allImages[currentImageIndex] && (
+    <img
+      src={getImageUrl(allImages[currentImageIndex])}
+      alt="Main"
+      className={`max-w-full max-h-[500px] w-auto h-auto object-contain rounded-sm transition-opacity duration-300 ${
+        loadedImages[`extra_${currentImageIndex}`] ? 'opacity-100' : 'opacity-0'
+      }`}
+      loading="lazy"
+      onLoad={(e) => {
+        setLoadedImages(prev => ({
+          ...prev,
+          [`extra_${currentImageIndex}`]: true
+        }));
+      }}
+    />
+  )}
+</div>
+
 
                   {/* Next Image Button */}
                   {allImages.length > 1 && (
@@ -422,7 +485,7 @@ const showEditButton = post && (
                           onClick={() => handleImageClick(idx)}
                         >
                           <img
-                            src={`data:image/jpeg;base64,${img}`}
+                            src={getImageUrl(img)}
                             alt={`Thumbnail ${idx + 1}`}
                             className={`max-w-full max-h-full w-auto h-auto object-contain transition-all duration-300 ${
                               loadedImages[`extra_${idx}`] ? 'opacity-100 scale-100' : 'opacity-0 scale-95'
@@ -458,7 +521,7 @@ const showEditButton = post && (
           <div className="lg:col-span-1">
             <div className="bg-white p-6 rounded-l shadow-lg mb-8">
     
-              <h2 className="text-xl font-semibold text-green-700 mb-4">تفاصيل المنتج</h2>
+              <h2 className="text-xl font-semibold text-green-700 mb-4">تفاصيل المنشور</h2>
   
               <div className="space-y-6">
                 {/* Product Description */}
@@ -470,7 +533,7 @@ const showEditButton = post && (
                 {/* Product Features */}
                 {post.features && post.features.length > 0 && (
                   <div>
-                    <h3 className="text-lg font-medium text-gray-800 mb-3">الميزات</h3>
+                    <h3 className="text-lg font-medium text-gray-800 mb-3">الفئة</h3>
                     <ul className="space-y-3">
                       {post.features.map((feature, index) => (
                         <li key={index} className="flex items-start text-gray-700">
@@ -484,17 +547,18 @@ const showEditButton = post && (
                   </div>
                 )}
 
+
                 {/* Contact Information */}
                 <div className="border-t pt-6">
                   <h3 className="text-lg  font-semibold text-red-600 mb-3">معلومات التواصل</h3>
                   <div className="space-y-4">
                     <div>
-                      <p className="text-sm text-gray-500">البريد الالكتروني</p>
+                      <p className="text-sm text-gray-500">الايميل</p>
                       <p className="text-gray-800 font-medium">{post.email}</p>
                     </div>
                     {post.phone && (
                       <div>
-                        <p className="text-sm text-gray-500">رقم التلفون</p>
+                        <p className="text-sm text-gray-500">رقم الهاتف</p>
                         <p className="text-gray-800 font-medium">{post.phone}</p>
                       </div>
                     )}
@@ -511,9 +575,21 @@ const showEditButton = post && (
                     onClick={() => setShowContact(true)}
                     className="w-full bg-green-600 text-white px-8 py-4 rounded-lg hover:bg-green-700 transition text-lg font-semibold shadow-md"
                   >
-                    Contact Seller
+                    التواصل مع المتبرع
                   </button>
                 </div>
+                    {post.availability === "available" &&
+  currentUserId &&
+  String(currentUserId) !== String(post.user_id) && (
+    <button
+      onClick={handleClaimReceived}
+      className="w-full bg-yellow-500 text-white px-8 py-4 rounded-lg hover:bg-yellow-600 transition text-lg font-semibold shadow-md mt-4"
+    >
+      I received this item
+    </button>
+)}
+
+                
               </div>
             </div>
           </div>
@@ -523,11 +599,11 @@ const showEditButton = post && (
         {showContact && (
           <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
             <div className="bg-white p-8 rounded-xl shadow-xl text-center w-96">
-              <h2 className="text-2xl font-bold text-green-700 mb-6">معلومات التواصل</h2>
+              <h2 className="text-2xl font-bold text-green-700 mb-6">Contact Information</h2>
 
               {/* Email Section */}
               <div className="mb-6">
-                <p className="text-gray-800 font-medium mb-2">البريد الالكتروني:</p>
+                <p className="text-gray-800 font-medium mb-2">Email:</p>
                 <a
                   href={`mailto:${post.email}`}
                   className="text-blue-600 underline break-words hover:text-blue-800"
@@ -538,7 +614,7 @@ const showEditButton = post && (
 
               {/* Phone Number Section */}
               <div className="mb-6">
-                <p className="text-gray-800 font-medium mb-2">رقم التلفون:</p>
+                <p className="text-gray-800 font-medium mb-2">رقم الهاتف:</p>
                 <p className="text-gray-700 mb-3">{post.phone || "Not provided"}</p>
 
                 {/* WhatsApp Button */}
@@ -556,9 +632,21 @@ const showEditButton = post && (
                     >
                       <path d="M20.52 3.48a11.9 11.9 0 0 0-16.86 0 11.9 11.9 0 0 0-2.65 13.07L.3 23.7l7.32-1.92a11.91 11.91 0 0 0 5.9 1.54 11.9 11.9 0 0 0 8.4-20.84zM12 21.48a9.39 9.39 0 0 1-4.77-1.3l-.34-.2-4.34 1.14 1.15-4.22-.22-.35a9.38 9.38 0 1 1 8.52 4.93zm5.26-7.32c-.28-.14-1.67-.82-1.92-.91-.26-.1-.45-.14-.63.14s-.73.9-.9 1.1c-.16.18-.33.2-.6.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.39-1.65-1.55-1.92-.16-.28-.02-.43.12-.57.12-.12.28-.3.41-.45.14-.16.18-.28.28-.46.1-.18.05-.35-.02-.49-.07-.14-.63-1.5-.87-2.05-.23-.56-.47-.48-.63-.49h-.54c-.18 0-.46.06-.7.3s-.91.9-.91 2.2c0 1.3.94 2.55 1.07 2.73.14.18 1.85 2.83 4.48 3.96.63.27 1.12.43 1.5.55.63.2 1.2.17 1.66.1.51-.08 1.67-.68 1.9-1.34.23-.65.23-1.2.16-1.34-.08-.14-.26-.2-.54-.34z" />
                     </svg>
-                    Chat on WhatsApp
+                    التواصل على الواتساب
                   </a>
                 )}
+                {currentUserId && String(currentUserId) !== String(post.user_id) && (
+  <button
+    onClick={() => {
+      setShowContact(false);  // Close modal
+      navigate(`/ar/dm/${post.user_id}`);  // Navigate to DM page
+    }}
+    className="mt-3 inline-flex items-center justify-center px-6 py-3 bg-blue-600 text-white rounded-lg shadow hover:bg-blue-700 transition w-full"
+  >
+    💬 مراسلة المتبرع
+  </button>
+)}
+
               </div>
 
               {/* Close Button */}
