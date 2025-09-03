@@ -1,6 +1,6 @@
 # TBR3 🎲♻️
 
-TBR3 (تبرّع) is a **green computing charity platform** built with Flutter, Node.js, Express, and PostgreSQL.  
+TBR3 (تبرّع) is a **green computing charity platform** built with Node.js, Express, and PostgreSQL.  
 It lets people **donate second-hand items instead of selling them**, connecting donors with people in need.  
 The project is inspired by the Arabic word *تبرّع* ("to donate") and is aligned with Islamic values of **charity** and **sustainability**. 🌱
 
