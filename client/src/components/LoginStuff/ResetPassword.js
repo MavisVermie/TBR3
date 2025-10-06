@@ -15,6 +15,17 @@ export default function ResetPassword() {
       return;
     }
 
+    // Client-side password validation
+    if (!password || password.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
+
+    if (password.length > 128) {
+      toast.error("Password must be less than 128 characters long");
+      return;
+    }
+
     try {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/reset-password`, {
         method: "POST",
@@ -50,8 +61,10 @@ export default function ResetPassword() {
               id="password"
               name="password"
               type="password"
-              placeholder="Enter new password"
+              placeholder="Enter new password (min 6 characters)"
               required
+              minLength={6}
+              maxLength={128}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-2 rounded-md border border-gray-300 shadow-sm focus:ring-2 focus:ring-green-500 focus:outline-none text-gray-800"

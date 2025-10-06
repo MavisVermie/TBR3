@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { sanitizeHtml } from "../../utils/sanitize";
 
 export default function BannerBar() {
   const [banner, setBanner] = useState(null);
@@ -50,7 +51,7 @@ export default function BannerBar() {
   return (
     <div className="bg-red-800 text-white text-sm text-center p-2 shadow-md z-50 relative">
       <div
-        dangerouslySetInnerHTML={{ __html: banner.content }}
+        dangerouslySetInnerHTML={{ __html: sanitizeHtml(banner.content) }}
         className="max-w-screen-lg mx-auto px-4"
       />
       <button

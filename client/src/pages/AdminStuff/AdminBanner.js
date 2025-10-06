@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { sanitizeHtml } from "../../utils/sanitize";
 
 const AdminBanner = () => {
   const [banners, setBanners] = useState([]);
@@ -109,7 +110,7 @@ const AdminBanner = () => {
               b.is_active ? "border-red-500 bg-red-50" : "bg-gray-50"
             }`}
           >
-            <div dangerouslySetInnerHTML={{ __html: b.content }} className="mb-2" />
+            <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(b.content) }} className="mb-2" />
             <div className="text-sm text-gray-600 flex justify-between items-center">
               <span>{new Date(b.created_at).toLocaleString()}</span>
               <button
