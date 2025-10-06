@@ -1,5 +1,6 @@
 require('dotenv').config();
-console.log("JWT Secret loaded:", process.env.JWT_SECRET);
+// Verify JWT secret is loaded without exposing it
+console.log("JWT Secret loaded:", process.env.JWT_SECRET ? "✓" : "✗");
 const express = require("express");
 const app = express();
 const cors = require("cors");
@@ -236,7 +237,19 @@ app.post('/reset-password', async (req, res) => {
   try {
     const { token, new_password } = req.body;
 
-//I NEED TO ADD CHECK PASSWORD LENGTH HERE 
+    // Validate password requirements
+    if (!new_password || new_password.length < 6) {
+      return res.status(400).json({ 
+        message: 'Password must be at least 6 characters long' 
+      });
+    }
+
+    // Additional password strength validation
+    if (new_password.length > 128) {
+      return res.status(400).json({ 
+        message: 'Password must be less than 128 characters long' 
+      });
+    }
 
     const tokenRes = await pool.query(
       'SELECT user_id, expires FROM password_resets WHERE token = $1',
@@ -249,9 +262,9 @@ app.post('/reset-password', async (req, res) => {
 
     const userId = tokenRes.rows[0].user_id;
     const hashedPassword = await bcrypt.hash(new_password, 10); //hash the new password
-    // //debug
-    console.log(" raw password:", new_password);
-    console.log(" hashed password:", hashedPassword);
+    
+    // Log password reset attempt without exposing sensitive data
+    console.log(`Password reset successful for user ID: ${userId}`);
 
 //update password in database
     await pool.query(
